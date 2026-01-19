@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/carehome/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/geolocator_apple/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios14/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios14/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios14/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios15/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios15/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios15/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios16/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios16/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/ios16/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/shared/maps_example_dart/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/shared/maps_example_dart/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/google_maps_flutter_ios/example/shared/maps_example_dart/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/build" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/carehome/ios/.symlinks/plugins/package_info_plus/example/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
