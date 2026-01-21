@@ -1,13 +1,14 @@
+import 'package:carehome/features/account/presentation/pages/account.dart';
 import 'package:carehome/features/auth/presentation/pages/forget_password.dart';
 import 'package:carehome/features/auth/presentation/pages/login.dart';
 import 'package:carehome/features/auth/presentation/pages/register.dart';
-import 'package:carehome/features/home/presentation/pages/home.dart';
 import 'package:carehome/features/splash/splash.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/colors.dart';
+import '../home/presentation/pages/home.dart';
 
-import '../../core/constants/colors.dart';
-import '../../core/constants/image_strings.dart';
+
 
 class CBottomNavigationBar extends StatefulWidget {
   const CBottomNavigationBar({super.key});
@@ -30,7 +31,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
       case 3 :
         return SplashScreen();
       case 4:
-        return LoginScreen();
+        return AccountScreen();
       default:
         return const SizedBox.shrink();
     }
@@ -105,7 +106,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                   ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.account_circle),
-                    label:"home",
+                    label:"Account",
                     activeIcon: const Icon(Icons.account_circle),
                   ),
                 ],

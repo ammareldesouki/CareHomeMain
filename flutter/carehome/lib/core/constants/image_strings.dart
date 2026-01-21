@@ -5,7 +5,7 @@ class TImages {
   // -- App Images
 
   static const String SplashScreen = "assets/images/SplashScreen.png";
-  static const String logoImage = "assets/images/logo.jpg"
+  static const String logoImage = "assets/icons/app_logo.png"
       ;
 
   static const String forgetPassword = "assets/images/forgotpassword.png";

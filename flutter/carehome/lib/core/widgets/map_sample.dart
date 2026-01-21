@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:carehome/core/models/care_home.dart';
-import 'package:carehome/features/home/presentation/widgets/care_home_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -80,49 +79,49 @@ class _MapScreenState extends State<MapScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Stack(
         children: [
-            GoogleMap(
-                    initialCameraPosition: CameraPosition(
-            target: currentPosition!,
-            zoom: 16,
-                    ),
-                    markers: markers,
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    onMapCreated: (controller) {
-            mapController = controller;
-            _moveCamera();
-                    },
-                  ),
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: currentPosition!,
+              zoom: 16,
+            ),
+            markers: markers,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            onMapCreated: (controller) {
+              mapController = controller;
+              _moveCamera();
+            },
+          ),
 
 
-    Positioned(
-    bottom: 0,
-    left: 0,
-    right: 0,
-    child: Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: SizedBox(
-    height: 100,
-   child:  ListView.separated(
-    shrinkWrap: true,
-    itemCount: widget.carehomeList.length,
-    scrollDirection: Axis.horizontal,
-    itemBuilder: (_, index) {
-    return CareHomeCard(
-    careHomeData: widget.carehomeList[index],
-    );
-
-    },
-    separatorBuilder: (_, index) => SizedBox(width: 10),
-    ),
-
-    ),
-    ),
-    ),
-          // Positioned(child: InkWell(onTap: (){Navigator.pop(context);},child: CircleAvatar( backgroundColor: TColors.primary,child: Center(child: Icon(Icons.arrow_back_ios,size: 30,)))),top: 50,left: 10,),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: SizedBox(
+          //       height: 100,
+          //       child:  ListView.separated(
+          //         shrinkWrap: true,
+          //         itemCount: widget.carehomeList.length,
+          //         scrollDirection: Axis.horizontal,
+          //         itemBuilder: (_, index) {
+          //           return CareHomeCard(
+          //             careHomeData: widget.carehomeList[index],
+          //           );
+          //
+          //         },
+          //         separatorBuilder: (_, index) => SizedBox(width: 10),
+          //       ),
+          //
+          // ),
+          //   ),
+          // ),
+           Positioned(child: InkWell(onTap: (){Navigator.pop(context);},child: CircleAvatar( backgroundColor: TColors.primary,child: Center(child: Icon(Icons.arrow_back_ios,size: 30,)))),top: 50,left: 10,),
 
         ],
-          ),
+      ),
     );
   }
 

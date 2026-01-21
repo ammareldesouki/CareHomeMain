@@ -1,10 +1,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/data/fakedata.dart' as AppFakeData;
+import '../../../../../core/constants/colors.dart';
+import '../../../../../core/data/fakedata.dart' as AppFakeData;
+import '../../../../../core/widgets/map_sample.dart';
 
-import '../../../../core/constants/colors.dart';
-import '../../../../core/widgets/map_sample.dart';
 
 class HomeHeader extends StatelessWidget{
   @override
