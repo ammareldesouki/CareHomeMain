@@ -1,11 +1,11 @@
 import 'package:carehome/core/data/fakedata.dart';
-import 'package:carehome/features/home/presentation/widgets/home_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-import '../../../../core/data/fakedata.dart' as AppFakeData;
+import '../../../../../core/data/fakedata.dart' as AppFakeData;
 import '../widgets/care_home_card.dart';
+import '../widgets/home_header.dart';
 
 class HomeScreen extends StatelessWidget {
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/Helper/time_date_method.dart';
-import '../../../../core/models/care_home.dart';
+import '../../../../../core/Helper/time_date_method.dart';
+import '../../../../../core/models/care_home.dart';
 
 class AppointmentCard extends StatelessWidget {
   const AppointmentCard({
