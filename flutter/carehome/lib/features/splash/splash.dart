@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: SizedBox(
           height: 200,
 
-          child: Image(image: AssetImage(TImages.logoImage)),
+          child: Image(image: AssetImage(TImages.logoRemove)),
         ),
       ),
     );

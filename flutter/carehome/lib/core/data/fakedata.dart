@@ -1,3 +1,4 @@
+import '../../features/careHome/application/data/models/application_model.dart';
 import '../models/care_home.dart';
 
 final List<CareHomeData> CareHomeDatasFakeData = [
@@ -242,5 +243,36 @@ final List<CareHomeData> CareHomeDatasFakeData = [
         ],
       ),
     ],
+  ),
+];
+
+final List<ApplicationModel> applications = [
+  ApplicationModel(
+    name: 'Sarah Johnson',
+    email: 'sarah.j@email.com',
+    position: 'Evening Care Assistant – Sunrise Care Home',
+    appliedDate: '2026-01-20',
+    status: 'pending',
+  ),
+  ApplicationModel(
+    name: 'Michael Brown',
+    email: 'michael.b@email.com',
+    position: 'Morning Care Assistant – Harmony Living',
+    appliedDate: '2026-01-18',
+    status: 'accepted',
+  ),
+  ApplicationModel(
+    name: 'Emily Davis',
+    email: 'emily.d@email.com',
+    position: 'Night Care Assistant – Golden Age',
+    appliedDate: '2026-01-10',
+    status: 'expired',
+  ),
+  ApplicationModel(
+    name: 'John Smith',
+    email: 'john.s@email.com',
+    position: 'Care Assistant – Sunrise Care Home',
+    appliedDate: '2026-01-22',
+    status: 'pending',
   ),
 ];

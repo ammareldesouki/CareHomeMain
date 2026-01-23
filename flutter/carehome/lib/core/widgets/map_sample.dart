@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../features/home/presentation/widgets/care_home_card.dart';
 import '../constants/colors.dart';
 
 class MapScreen extends StatefulWidget {
@@ -15,6 +16,9 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
+
   GoogleMapController? mapController;
   LatLng? currentPosition;
   Set<Marker> markers = {};
@@ -22,6 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(viewportFraction: 0.85);
     _getLocationOnStart();
   }
 
@@ -73,13 +78,14 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  Widget build(BuildContext context,) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: currentPosition == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
         children: [
-          GoogleMap(
+                /// 🗺️ MAP
+                GoogleMap(
             initialCameraPosition: CameraPosition(
               target: currentPosition!,
               zoom: 16,
@@ -93,36 +99,55 @@ class _MapScreenState extends State<MapScreen> {
             },
           ),
 
+                /// 🔙 Back button
+                Positioned(
+                  top: 50,
+                  left: 10,
+                  child: InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: CircleAvatar(
+                      backgroundColor: TColors.primary,
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
 
-          // Positioned(
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(8.0),
-          //     child: SizedBox(
-          //       height: 100,
-          //       child:  ListView.separated(
-          //         shrinkWrap: true,
-          //         itemCount: widget.carehomeList.length,
-          //         scrollDirection: Axis.horizontal,
-          //         itemBuilder: (_, index) {
-          //           return CareHomeCard(
-          //             careHomeData: widget.carehomeList[index],
-          //           );
-          //
-          //         },
-          //         separatorBuilder: (_, index) => SizedBox(width: 10),
-          //       ),
-          //
-          // ),
-          //   ),
-          // ),
-           Positioned(child: InkWell(onTap: (){Navigator.pop(context);},child: CircleAvatar( backgroundColor: TColors.primary,child: Center(child: Icon(Icons.arrow_back_ios,size: 30,)))),top: 50,left: 10,),
-
+                /// 🪪 CARE HOME CURSOR SCROLL (CAROUSEL)
+          Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 200,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.carehomeList.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return AnimatedPadding(
+                    duration: const Duration(milliseconds: 300),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: index == _currentIndex ? 0 : 12,
+                    ),
+                    child: CareHomeCard(
+                      careHomeData: widget.carehomeList[index],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
-
 }

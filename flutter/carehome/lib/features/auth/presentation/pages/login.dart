@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Image(
-                  image: AssetImage(TImages.logoImage),
+                  image: AssetImage(TImages.logoRemove),
                   height: MediaQuery.sizeOf(context).height * 0.2,
                 ),
 

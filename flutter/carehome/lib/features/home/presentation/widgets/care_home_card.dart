@@ -12,75 +12,114 @@ class CareHomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: InkWell(
-        onTap: (){
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
           // Navigator.pushNamed(context, routeName)
-          
         },
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.25,
           width: double.infinity,
           decoration: BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            color: TColors.primary,
+
+            /// Blue line on the left (like the image)
+            border: const Border(
+              left: BorderSide(color: Colors.blue, width: 5),
+            ),
+
+            /// Soft shadow
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
               children: [
-        
-        
-               Text(
-                careHomeData.name,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 children: [
-                   Text(careHomeData.branch),
-        
-        
-                   Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.white,
+
+                /// Title + Distance
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        careHomeData.name,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
+
+                    /// Distance Badge
+                    Container(
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-        
-        
-                      children: [
-                        Icon(Icons.location_city),
-                        Text(careHomeData.distanceFromMe.toString()),
-                      ],
-                      )
-                    ),
-                 ],
-               ),
-                SizedBox(
-                  height: 100,
-                  child: ListView.separated(
-                    itemCount: careHomeData.appointments.length,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final appointment = careHomeData.appointments[index];
-        
-                      return AppointmentCard(appointment: appointment);
-                    },
-                  ),
+                        children: [
+                          const Icon(Icons.location_on,
+                              size: 14, color: Colors.white),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${careHomeData.distanceFromMe} km",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-        
-          ]),
-        
-        ),
+
+                const SizedBox(height: 10),
+
+                /// Branch
+                Row(
+                  children: [
+                    const Icon(Icons.business, size: 16, color: Colors.grey),
+                    const SizedBox(width: 6),
+                    Text(
+                      careHomeData.branch,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+                const Divider(),
+
+                // /// Appointments
+                // SizedBox(
+                //   height: 90,
+                //   child: ListView.separated(
+                //     itemCount: careHomeData.appointments.length,
+                //     scrollDirection: Axis.horizontal,
+                //     separatorBuilder: (_, __) => const SizedBox(width: 10),
+                //     itemBuilder: (context, index) {
+                //       final appointment = careHomeData.appointments[index];
+                //       return AppointmentCard(appointment: appointment);
+                //     },
+                //   ),
+                // ),
+              ],
             ),
-      ));
+          ),
+        ),
+      ),
+    );
   }
 }
-
