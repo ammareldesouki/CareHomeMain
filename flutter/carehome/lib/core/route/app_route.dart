@@ -19,7 +19,7 @@ class AppRouter {
         );
       case RouteNames.layout:
         return MaterialPageRoute(
-          builder: (_) => CBottomNavigationBar(),
+          builder: (_) => CBottomNavigationBar(roleId: 2,),
           settings: settings,
         );
       case RouteNames.login:

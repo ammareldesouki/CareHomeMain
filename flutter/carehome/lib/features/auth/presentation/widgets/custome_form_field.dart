@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/colors.dart';
+
 class TCustomeFormField extends StatefulWidget {
   const TCustomeFormField({
     this.controller,
@@ -69,7 +71,7 @@ class _TCustomeFormFieldState extends State<TCustomeFormField> {
           obscureText: hidden,
           keyboardType: widget.textInputType,
           obscuringCharacter: '*',
-          cursorColor: Colors.white,
+          cursorColor: TColors.primary,
 
           validator: (value) {
             if (widget.validation == null) {
@@ -98,7 +100,10 @@ class _TCustomeFormFieldState extends State<TCustomeFormField> {
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(width: 1.0, color: Colors.black),
             ),
-            enabledBorder: InputBorder.none,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(width: 1.0, color: Colors.grey),
+            ),
             errorStyle: TextStyle(fontSize: 18, color: Colors.red),
           ),
         ),
