@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../../features/home/presentation/widgets/care_home_card.dart';
-import '../constants/colors.dart';
+import '../../../../core/constants/colors.dart';
+import '../widgets/offer_card_map.dart';
 
 class MapScreen extends StatefulWidget {
   final List<CareHomeData> carehomeList;
+
   const MapScreen({super.key, required this.carehomeList});
 
   @override
@@ -83,21 +84,21 @@ class _MapScreenState extends State<MapScreen> {
       body: currentPosition == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
-        children: [
+              children: [
                 /// 🗺️ MAP
                 GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: currentPosition!,
-              zoom: 16,
-            ),
-            markers: markers,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            onMapCreated: (controller) {
-              mapController = controller;
-              _moveCamera();
-            },
-          ),
+                  initialCameraPosition: CameraPosition(
+                    target: currentPosition!,
+                    zoom: 16,
+                  ),
+                  markers: markers,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                    _moveCamera();
+                  },
+                ),
 
                 /// 🔙 Back button
                 Positioned(
@@ -117,37 +118,37 @@ class _MapScreenState extends State<MapScreen> {
                 ),
 
                 /// 🪪 CARE HOME CURSOR SCROLL (CAROUSEL)
-          Positioned(
-            bottom: 50,
-            left: 0,
-            right: 0,
-            child: SizedBox(
-              height: 200,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.carehomeList.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return AnimatedPadding(
-                    duration: const Duration(milliseconds: 300),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: index == _currentIndex ? 0 : 12,
+                Positioned(
+                  bottom: 50,
+                  left: 0,
+                  right: 0,
+                  child: SizedBox(
+                    height: 200,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: widget.carehomeList.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return AnimatedPadding(
+                          duration: const Duration(milliseconds: 300),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: index == _currentIndex ? 0 : 12,
+                          ),
+                          child: OfferCardMap(
+                            careHomeData: widget.carehomeList[index],
+                          ),
+                        );
+                      },
                     ),
-                    child: CareHomeCard(
-                      careHomeData: widget.carehomeList[index],
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

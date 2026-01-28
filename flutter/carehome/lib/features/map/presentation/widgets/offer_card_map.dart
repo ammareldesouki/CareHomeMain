@@ -2,12 +2,10 @@ import 'package:carehome/core/constants/colors.dart';
 import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 
-import 'appointmentday_card.dart';
-
-class CareHomeCard extends StatelessWidget {
+class OfferCardMap extends StatelessWidget {
   final CareHomeData careHomeData;
 
-  const CareHomeCard({super.key, required this.careHomeData});
+  const OfferCardMap({super.key, required this.careHomeData});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +41,6 @@ class CareHomeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 /// Title + Distance
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,26 +48,29 @@ class CareHomeCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         careHomeData.name,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
 
                     /// Distance Badge
                     Container(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.location_on,
-                              size: 14, color: Colors.white),
+                          const Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: Colors.white,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             "${careHomeData.distanceFromMe} km",
@@ -81,7 +81,7 @@ class CareHomeCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
 
@@ -96,24 +96,21 @@ class CareHomeCard extends StatelessWidget {
                       careHomeData.branch,
                       style: const TextStyle(color: Colors.grey),
                     ),
+                    Spacer(),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: TColors.primary,
+                      ),
+
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Offers : ${careHomeData.appointments.length.toString()}",
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-
-                const SizedBox(height: 12),
-                const Divider(),
-
-                /// Appointments
-                SizedBox(
-                  height: 100,
-                  child: ListView.separated(
-                    itemCount: careHomeData.appointments.length,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final appointment = careHomeData.appointments[index];
-                      return AppointmentCard(appointment: appointment);
-                    },
-                  ),
                 ),
               ],
             ),
