@@ -5,6 +5,7 @@ import '../../../../core/constants/image_strings.dart';
 import '../../../../core/route/route_name.dart';
 import '../../../../core/utils/validator.dart';
 import '../../../../core/widgets/elvated_button.dart';
+import '../../../layout/bottom_navegation_bar.dart';
 import '../widgets/custome_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,13 +29,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginPressed() {
     if (formKey.currentState!.validate()) {
-      // UI only – no backend / bloc
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Validation Successful")),
       );
 
-      Navigator.pushNamed(context, RouteNames.layout);
-
+      if (emailController.text == "carehome@gmail.com")
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => CBottomNavigationBar(roleId: 2,),));
+      else
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => CBottomNavigationBar(roleId: 1,),));
     }
   }
 

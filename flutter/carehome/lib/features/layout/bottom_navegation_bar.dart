@@ -1,4 +1,3 @@
-import 'package:carehome/core/widgets/map_sample.dart';
 import 'package:carehome/features/account/presentation/pages/account.dart';
 import 'package:carehome/features/auth/presentation/pages/forget_password.dart';
 import 'package:carehome/features/auth/presentation/pages/login.dart';
@@ -12,6 +11,7 @@ import '../../../core/constants/colors.dart';
 import '../../core/data/fakedata.dart';
 import '../careHome/application/presentation/pages/application_screen.dart';
 import '../home/presentation/pages/home.dart';
+import '../map/presentation/pages/map.dart';
 
 
 
