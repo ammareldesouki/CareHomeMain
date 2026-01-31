@@ -16,49 +16,35 @@ class BranchCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
+            const SizedBox(width: 10),
+
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
-                Image(
-                  image: AssetImage('assets/images/carehome.png'),
-                  height: 100,
-                  width: 100,
+                Text(
+                  "Sunrise Care Home",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
 
-                const SizedBox(width: 10),
+                Row(
+                  children: const [
+                    Icon(Icons.location_on, size: 16),
+                    SizedBox(width: 4),
+                    Text("Ryadh - Saudi Arabia"),
+                  ],
+                ),
 
-                Expanded(
-                  // 🔑 مهم جدا علشان يمنع overflow
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 6),
 
-                    children: [
-                      Text(
-                        "Sunrise Care Home",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      Row(
-                        children: const [
-                          Icon(Icons.location_on, size: 16),
-                          SizedBox(width: 4),
-                          Text("Ryadh - Saudi Arabia"),
-                        ],
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      Text(
-                        "dfhjkasdfhkjdsafkalsdfhdslfhdsfldshflsdahfhladsfdsfrterwtreterwt",
-                        maxLines: 2, // 👈 سطرين فقط
-                        overflow: TextOverflow.ellipsis, // 👈 ... لو زاد
-                        softWrap: true,
-                      ),
-                    ],
-                  ),
+                Text(
+                  "dfhjkasdfhkjdsafkalsdfhdslfhdsfldshflsdahfhladsfdsfrterwtreterwt",
+                  maxLines: 2, // 👈 سطرين فقط
+                  overflow: TextOverflow.ellipsis, // 👈 ... لو زاد
+                  softWrap: true,
                 ),
               ],
             ),
@@ -66,25 +52,23 @@ class BranchCard extends StatelessWidget {
             Row(
               spacing: 10,
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: Icon(Icons.delete, color: Colors.red),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      elevation: 5,
-                    ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Icon(Icons.delete, color: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 5,
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
+
+
+                ElevatedButton(
                     onPressed: () {},
                     child: Text("View Details"),
                   ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
+
+
+                ElevatedButton(
                     onPressed: () {},
                     child: Icon(Icons.edit, color: Colors.black),
                     style: ElevatedButton.styleFrom(
@@ -92,7 +76,7 @@ class BranchCard extends StatelessWidget {
                       elevation: 5,
                     ),
                   ),
-                ),
+
               ],
             ),
           ],

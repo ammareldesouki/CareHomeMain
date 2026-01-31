@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
       initialRoute: RouteNames.splash,
       onGenerateRoute: AppRouter.generateRoute,
       home:SplashScreen(),
-      themeMode: ThemeMode.system,
+
       theme: TAppTheme.lightAppTheme,
-      darkTheme: TAppTheme.darkAppTheme,
+      // darkTheme: TAppTheme.darkAppTheme,
     );
   }
 }

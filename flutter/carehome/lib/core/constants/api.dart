@@ -1,12 +1,11 @@
 
 class ApiConstat {
-  static const String baseUrl = "https://etqan-academy.com/wp-json/learnpress/v1";
+  static const String baseUrl = "http://13.60.80.187:5000/api";
   static const String authBaseUrl =
       "https://etqan-academy.com/wp-json/jwt-auth/v1";
 }
 
 class EndPoints {
-  static const String categories = "/course_category";
-  static const String courses = "/courses";
-  static const String authenticate = "/token";
+  static const String AuhtLogin = "/auth/login";
+  static const String Rigester = "/auth/register";
 }

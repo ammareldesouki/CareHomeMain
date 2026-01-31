@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         spacing: 16,
         children: [
-         HomeHeader(),
+          // HomeHeader(),
           Expanded(
             child: ListView.separated(
               shrinkWrap: true,

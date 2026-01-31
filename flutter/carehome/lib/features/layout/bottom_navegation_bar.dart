@@ -33,7 +33,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
         case 0:
           return HomeScreen();
         case 1:
-          return SignUpScreen();
+          return MapScreen(carehomeList: CareHomeDatasFakeData);
         case 2:
           return ForgetPasswordScreen();
         case 3 :
@@ -91,7 +91,10 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BottomNavigationBar(
-                currentIndex: _screenIndex,
+                      showSelectedLabels: true,
+                      showUnselectedLabels: true,
+
+                      currentIndex: _screenIndex,
                 onTap: (index) => setState(() => _screenIndex = index),
                 backgroundColor: TColors.lightBackground,
                 elevation: 0,
@@ -102,25 +105,24 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
-                // unselectedLabelStyle: TextStyle(
-                //   fontSize: 14,
-                //   fontWeight: FontWeight.w500,
-                // ),
-                items: [
+                      unselectedLabelStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+
+                      items: [
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.search),
                     label:"Search",
                     activeIcon: const Icon(Icons.search),
                   ),
                   BottomNavigationBarItem(
-                    icon:  Icon(Icons.watch_later_outlined),
-
-                    label:"Appoitments",
-                    activeIcon: Icon(Icons.watch_later_outlined),
-
-          ),
-
-                  BottomNavigationBarItem(
+                          icon: const Icon(Icons.location_searching_outlined),
+                          label: "Maps",
+                          activeIcon: const Icon(
+                            Icons.location_searching_outlined,
+                          ),
+                        )BottomNavigationBarItem(
                     icon: const Icon(Icons.bookmark,),
                     label:"home",
                     activeIcon: const Icon(Icons.bookmark),
@@ -168,6 +170,9 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: BottomNavigationBar(
+                  showSelectedLabels: true,
+                  showUnselectedLabels: true,
+
                   currentIndex: _screenIndex,
                   onTap: (index) => setState(() => _screenIndex = index),
                   backgroundColor: TColors.lightBackground,
@@ -179,14 +184,16 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
-                  // unselectedLabelStyle: TextStyle(
-                  //   fontSize: 14,
-                  //   fontWeight: FontWeight.w500,
-                  // ),
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                   items: [
                     BottomNavigationBarItem(
                       icon: const Icon(Icons.location_city),
                       label: "Branches",
+
+
                       activeIcon: const Icon(Icons.location_city),
                     ),
                     BottomNavigationBarItem(

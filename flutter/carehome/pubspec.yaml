@@ -21,6 +21,8 @@ dependencies:
   dartz: ^0.10.1
   http: ^1.6.0
   dio: ^5.9.0
+  geocoding: ^4.0.0
+  get_it: ^9.2.0
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:carehome/core/constants/colors.dart';
 import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 
+import '../../../psw/offer/presentation/pages/offer_details.dart';
 import 'appointmentday_card.dart';
 
 class CareHomeCard extends StatelessWidget {
@@ -16,7 +17,8 @@ class CareHomeCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Navigator.pushNamed(context, routeName)
+          Navigator.push(context, MaterialPageRoute(
+              builder: (context) => OfferDetails(careHomeData: careHomeData,)));
         },
         child: Container(
           width: double.infinity,
@@ -39,7 +41,7 @@ class CareHomeCard extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -54,7 +56,7 @@ class CareHomeCard extends StatelessWidget {
                         style: Theme
                             .of(context)
                             .textTheme
-                            .titleLarge
+                            .bodyMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -64,18 +66,18 @@ class CareHomeCard extends StatelessWidget {
                       padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.green,
+                        color: Colors.grey.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.location_on,
-                              size: 14, color: Colors.white),
+                          Icon(Icons.location_on,
+                              size: 14, color: Colors.blue.withOpacity(0.8)),
                           const SizedBox(width: 4),
                           Text(
                             "${careHomeData.distanceFromMe} km",
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Colors.blue.withOpacity(0.8),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -85,7 +87,7 @@ class CareHomeCard extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 10),
+
 
                 /// Branch
                 Row(
@@ -99,12 +101,12 @@ class CareHomeCard extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 12),
+
                 const Divider(),
 
                 /// Appointments
                 SizedBox(
-                  height: 100,
+                  height: 60,
                   child: ListView.separated(
                     itemCount: careHomeData.appointments.length,
                     scrollDirection: Axis.horizontal,

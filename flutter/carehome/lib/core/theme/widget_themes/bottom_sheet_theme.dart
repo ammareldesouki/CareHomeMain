@@ -5,7 +5,7 @@ import '../../constants/colors.dart';
 class BottomNavTheme {
   static BottomNavigationBarThemeData dark = BottomNavigationBarThemeData(
     backgroundColor: TColors.dark,
-    selectedItemColor: TColors.primary,
+    selectedItemColor: Color(0xff85A9C9),
     unselectedItemColor: Colors.white,
     selectedIconTheme: IconThemeData(size: 28),
     unselectedIconTheme: IconThemeData(size: 22),

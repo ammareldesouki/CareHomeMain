@@ -15,7 +15,7 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      constraints: const BoxConstraints(minWidth: 90),
+
       decoration: BoxDecoration(
         color: (appointment.timeSlots.where((slot) => slot.isAvailable ==true).length==0)?    Colors.grey.withOpacity(0.4):Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -27,7 +27,7 @@ class AppointmentCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min, // 🔑 MIN HEIGHT
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -52,9 +52,9 @@ class AppointmentCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 6),
 
           // Slots badge
+          const SizedBox(width: 6),
 
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

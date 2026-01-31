@@ -1,5 +1,11 @@
 import 'package:carehome/features/auth/domain/repositories/auth_repo_interface.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/local_storge_key.dart';
+import '../../../../core/failure/failure.dart';
+import '../../../../core/failure/server_failure.dart';
 import '../../domain/entities/user_entity.dart';
 import '../data_sources/auth_remote_datasource.dart';
 
@@ -15,21 +21,78 @@ class AuthRepoImpl implements AuthRepoInterFace {
   }
 
   @override
-  Future<UserEntity> signIn({
-    required String email,
-    required String password,
-  }) async {
-    return await remote.login(email, password);
-  }
+  Future<Either<Failure, UserEntity>> signIn(
+      { required email, required password}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    final response = await remote.login(email, password);
+    try {
+      print("------------${response.toString()}");
+      if (response.statusCode == 200) {
+        var data = UserEntity.fromJson(response.data);
+        prefs.setString(LocalKeys.AuthToken, data.token);
+
+        return Right(data);
+      } else {
+        return Left(
+          ServerFailure(
+            statusCode: response.statusCode.toString(),
+            messageEn: response.data["message"],
+          ),
+        );
+      }
+    } on DioException catch (dioExption) {
+      return Left(
+        ServerFailure(
+          statusCode: dioExption.response.toString(),
+          messageEn: dioExption.response?.data["message"],
+        ),
+      );
+    } catch (error) {
+      return Left(
+        ServerFailure(
+          statusCode: response.statusCode.toString(),
+          messageEn: error.toString(),
+          messageAr: '',
+          message: '',
+        ),
+      );
+    }
+  }
   @override
-  Future<UserEntity> signUp({
-    required String name,
-    required String email,
-    required String password,
-    required String phone,
-    required String role,
-  }) async {
-    return await remote.register(name, email, password, phone, role);
+  @override
+  Future<Either<Failure, UserEntity>> signUp({ required name,
+    required email,
+    required password,
+    required phone,
+    required role,}) async {
+    print("SignUp request: $email  $password $name $phone $role");
+    try {
+      final response = await remote.register(
+          name, email, password, phone, role);
+
+      if (response.statusCode == 200) {
+        print("SignUp response: ${response.data}");
+        var data = UserEntity.fromJson(response.data);
+        return Right(data);
+      } else {
+        return Left(
+          ServerFailure(
+            statusCode: response.statusCode.toString(),
+            messageEn: response.data["message"],
+          ),
+        );
+      }
+    } on DioException catch (dioExption) {
+      print("SignUp response: ${dioExption.response}");
+
+      return Left(
+        ServerFailure(
+          statusCode: dioExption.response.toString(),
+
+          messageEn: dioExption.response?.data.toString(),
+        ),
+      );
+    }
   }
 }
