@@ -1,11 +1,51 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/constants/colors.dart';
+import '../../data/models/selected_location.dart';
+import 'location_picker_screen.dart';
 
-class AddOfferForm extends StatelessWidget {
+class Shift {
+  DateTime? date;
+  TimeOfDay? from;
+  TimeOfDay? to;
+
+  Shift({this.date, this.from, this.to});
+}
+
+class AddOfferForm extends StatefulWidget {
   const AddOfferForm({super.key});
+
+  @override
+  State<AddOfferForm> createState() => _AddOfferFormState();
+}
+
+class _AddOfferFormState extends State<AddOfferForm> {
+  List<Shift> shifts = [Shift()];
+  SelectedLocation? selectedLocation;
+
+  Future<void> _pickDate(int index) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+    if (date != null) setState(() => shifts[index].date = date);
+  }
+
+  Future<void> _pickTime(int index, bool isFrom) async {
+    final time =
+    await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    if (time != null) {
+      setState(() {
+        isFrom ? shifts[index].from = time : shifts[index].to = time;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: TColors.light,
       insetPadding: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
@@ -18,105 +58,148 @@ class AddOfferForm extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Add New Job Offer',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    children: [
+                      Text('Add New Job Offer',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       SizedBox(height: 4),
-                      Text(
-                        'Create a new part-time position',
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      Text('Create a new part-time position',
+                          style: TextStyle(color: Colors.grey)),
                     ],
                   ),
                   IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close)),
                 ],
               ),
 
               const SizedBox(height: 20),
 
-              /// Job Title
-              const Text(
-                'Job Title',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
+              const Text('Job Title',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
               _inputField(hint: 'e.g., Evening Care Assistant'),
 
               const SizedBox(height: 16),
 
               /// Branch
-              const Text(
-                'Branch',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
+              const Text('Branch',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
-              _dropdownField(hint: 'Select branch'),
+              InkWell(
+                onTap: () async {
+                  final result =
+                  await Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                        builder: (_) => const LocationPickerScreen()),
+                  );
 
-              const SizedBox(height: 16),
-
-              /// Date - Day - Time
-              Row(
-                children: [
-                  Expanded(
-                    child: _inputField(
-                      hint: 'dd/mm/yyyy',
-                      icon: Icons.calendar_today,
-                    ),
+                  if (result != null) {
+                    setState(() {
+                      selectedLocation = SelectedLocation(
+                        lat: result["lat"],
+                        lng: result["lng"],
+                        address: result["address"],
+                      );
+                    });
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(width: 2, color: Colors.grey),
                   ),
-                  const SizedBox(width: 8),
-                  // Expanded(child: _dropdownField(hint: 'Select day')),
-                  const SizedBox(width: 8),
-                  Expanded(child: _inputField(hint: 'e.g., 18:00 - 22:00')),
-                ],
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_searching,
+                          color: TColors.primarIconColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          selectedLocation == null
+                              ? "Tap To Select Location"
+                              : selectedLocation!.address,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 16),
 
-              /// Requirements
-              const Text(
-                'Requirements',
-                style: TextStyle(fontWeight: FontWeight.w600),
+              /// Shifts (زي ما كانت)
+              const Text('Shifts',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+
+              Column(
+                children: List.generate(shifts.length, (i) {
+                  final shift = shifts[i];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Shift ${i + 1}",
+                          style:
+                          const TextStyle(fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _shiftBox(
+                            text: shift.date == null
+                                ? "Select date"
+                                : "${shift.date!.day}/${shift.date!
+                                .month}/${shift.date!.year}",
+                            icon: Icons.calendar_today,
+                            onTap: () => _pickDate(i),
+                          ),
+                          _shiftBox(
+                            text: shift.from == null
+                                ? "From"
+                                : shift.from!.format(context),
+                            icon: Icons.access_time,
+                            onTap: () => _pickTime(i, true),
+                          ),
+                          _shiftBox(
+                            text: shift.to == null
+                                ? "To"
+                                : shift.to!.format(context),
+                            icon: Icons.access_time,
+                            onTap: () => _pickTime(i, false),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  );
+                }),
               ),
-              const SizedBox(height: 6),
-              _inputField(
-                hint: 'List requirements and qualifications...',
-                maxLines: 3,
+
+              TextButton.icon(
+                onPressed: () => setState(() => shifts.add(Shift())),
+                icon: const Icon(Icons.add),
+                label: const Text("Add another shift"),
               ),
 
               const SizedBox(height: 24),
 
-              /// Actions
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
-                  ),
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel')),
                   const SizedBox(width: 12),
                   ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    onPressed: () {
+                      debugPrint(selectedLocation?.address);
+                    },
                     child: const Text('Add Offer'),
                   ),
                 ],
@@ -128,38 +211,52 @@ class AddOfferForm extends StatelessWidget {
     );
   }
 
-  /// TextField
-  Widget _inputField({required String hint, int maxLines = 1, IconData? icon}) {
-    return TextField(
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade600),
-        prefixIcon: icon != null ? Icon(icon, size: 18) : null,
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+  Widget _shiftBox({required String text,
+    required IconData icon,
+    required VoidCallback onTap}) {
+    final width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final boxWidth = (width - 80) / 2;
+
+    return SizedBox(
+      width: boxWidth,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: Colors.grey),
+              const SizedBox(width: 8),
+              Expanded(
+                child:
+                Text(text, overflow: TextOverflow.ellipsis),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Dropdown placeholder
-  Widget _dropdownField({required String hint}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(hint, style: TextStyle(color: Colors.grey.shade600)),
-          const Icon(Icons.keyboard_arrow_down),
-        ],
+  Widget _inputField({required String hint, int maxLines = 1}) {
+    return TextField(
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey.shade600),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none),
       ),
     );
   }

@@ -26,7 +26,7 @@ class TElevatedButtonTheme {
   static final darkElevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       elevation: 0,
-      backgroundColor: TColors.buttonPrimary,
+      backgroundColor: TColors.primarIconColor,
 
       padding: const EdgeInsets.symmetric(vertical: 18),
       textStyle: TextStyle(fontSize: 20, color: Colors.white),

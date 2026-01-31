@@ -118,6 +118,7 @@ final List<CareHomeData> CareHomeDatasFakeData = [
 
   CareHomeData(
     name: 'Serenity House',
+
     branch: 'Riyadh - East',
     distanceFromMe: 7.2,
     salaryPerHour: 65,
@@ -175,6 +176,23 @@ final List<CareHomeData> CareHomeDatasFakeData = [
     appointments: [
       AppointmentDay(
         day: 'Wednesday',
+        date: '2026-01-29',
+        timeSlots: [
+          TimeSlot(time: '8:00 AM - 12:00 PM'),
+          TimeSlot(time: '1:00 PM - 5:00 PM'),
+        ],
+      ),
+
+      AppointmentDay(
+        day: 'Sunday',
+        date: '2026-01-29',
+        timeSlots: [
+          TimeSlot(time: '8:00 AM - 12:00 PM'),
+          TimeSlot(time: '1:00 PM - 5:00 PM'),
+        ],
+      ),
+      AppointmentDay(
+        day: 'Thursday',
         date: '2026-01-29',
         timeSlots: [
           TimeSlot(time: '8:00 AM - 12:00 PM'),

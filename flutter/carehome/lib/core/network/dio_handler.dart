@@ -9,7 +9,7 @@ class NetworkDioHandler {
 
   late Dio dio = Dio(
     BaseOptions(
-      baseUrl: ApiConstat.baseUrl,
+      baseUrl: this.baseUrl,
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
