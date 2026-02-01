@@ -40,24 +40,37 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthSignInLoading) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Looding.....")),
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            if (state is AuthSignInSuccess) {
+              Navigator.pop(context); // close loading
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      CBottomNavigationBar(role: state.user.role),
+                ),
               );
             }
 
             if (state is AuthSignInError) {
-              print(" erorrrr");
-              // show snackbar
-            }
-            if (state is AuthSignInSuccess) {
+              Navigator.pop(context); // close loading
+
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Validation Successful")),
+                SnackBar(
+                  content: Text(state.error),
+                ),
               );
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) =>
-                    CBottomNavigationBar(role: state.user.role,),));
             }
-            // TODO: implement listener
           },
           builder: (context, state) {
             return SafeArea(
@@ -128,10 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 TElevatedButton(
                   onPressed: () {
-                    var data = SignInRequest(
-                        email: emailController.text,
-                        password: passwordController.text);
-                    context.read<AuthBloc>().add(SignInEvent(data));
+                    if (formKey.currentState!.validate()) {
+                      var data = SignInRequest(
+                          email: emailController.text,
+                          password: passwordController.text);
+                      context.read<AuthBloc>().add(SignInEvent(data));
+                    }
+
                   },
                text:   "Sign In",
                   ),
