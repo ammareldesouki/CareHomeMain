@@ -1,11 +1,11 @@
-class SignInResponse {
+class SignUpResponse {
   final String token;
   final String expiresAtUtc;
   final String email;
   final String role;
   final String userId;
 
-  SignInResponse({
+  SignUpResponse({
     required this.token,
     required this.expiresAtUtc,
     required this.email,
@@ -13,8 +13,8 @@ class SignInResponse {
     required this.userId,
   });
 
-  factory SignInResponse.fromJson(Map<String, dynamic> json) {
-    return SignInResponse(
+  factory SignUpResponse.fromJson(Map<String, dynamic> json) {
+    return SignUpResponse(
       token: json['token'],
       expiresAtUtc: json['expiresAtUtc'],
       email: json['email'],

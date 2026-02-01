@@ -1,18 +1,15 @@
 import 'package:carehome/core/constants/api.dart';
 import 'package:carehome/core/network/dio_handler.dart';
+import 'package:carehome/features/auth/data/models/signup_request.dart';
+import 'package:carehome/features/auth/data/models/singIn_request.dart';
 import 'package:carehome/features/auth/data/models/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as api show post;
 
 abstract class AuthRemoteDataSource {
-  Future<Response> login(String email, String password);
+  Future<Response> login(SignInRequest user);
 
-  Future<Response> register(
-    String name,
-    String email,
-    String password,
-    String phone,
-    String role,
+  Future<Response> register(SignupRequest user
   );
 
   Future<void> forgetPassword(String email);
@@ -24,10 +21,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.networkDioHandler);
 
   @override
-  Future<Response> login(String email, String password) async {
+  Future<Response> login(SignInRequest user) async {
     return networkDioHandler.dio.post(
       EndPoints.AuhtLogin,
-      data: {'email': email, 'password': password},
+      data: {'email': user.email, 'password': user.password},
     );
   }
 
@@ -40,21 +37,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Response> register(
-    String name,
-    String email,
-    String password,
-    String phone,
-    String role,
+  Future<Response> register(SignupRequest user
   ) async {
     return networkDioHandler.dio.post(
       EndPoints.Rigester,
       data: {
-        'email': email,
-        'password': password,
-        'name': name,
-        'phone': phone,
-        'role': role,
+        'email': user.email,
+        'password': user.password,
+        'fullName': user.fullName,
+        'phoneNumber': user.phoneNumber,
+        'role': user.role,
+        'dateOfBirth': user.dateOfBirth
       },
     );
 

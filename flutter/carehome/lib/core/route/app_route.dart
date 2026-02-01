@@ -17,11 +17,11 @@ class AppRouter {
           builder: (_) => SplashScreen(),
           settings: settings,
         );
-      case RouteNames.layout:
-        return MaterialPageRoute(
-          builder: (_) => CBottomNavigationBar(roleId: 2,),
-          settings: settings,
-        );
+      // case RouteNames.layout:
+      //   return MaterialPageRoute(
+      //     builder: (_) => CBottomNavigationBar(role: 2,),
+      //     settings: settings,
+      //   );
       case RouteNames.login:
         return MaterialPageRoute(
           builder: (_) => LoginScreen(),
