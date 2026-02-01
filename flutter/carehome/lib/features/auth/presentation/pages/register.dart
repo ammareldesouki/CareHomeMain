@@ -36,18 +36,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is AuthSignUpSuccess) {
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) =>
-                    CBottomNavigationBar(role: state.user.role),));
-            }
-            if (state is AuthSignUpError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.error),
-                  ));
+            if (state is AuthSignUpLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
             }
 
+            if (state is AuthSignUpSuccess) {
+              Navigator.pop(context); // close loading
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      CBottomNavigationBar(role: state.user.role),
+                ),
+              );
+            }
+
+            if (state is AuthSignUpError) {
+              Navigator.pop(context); // close loading
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                ),
+              );
+            }
             // TODO: implement listener
           },
           builder: (context, state) {

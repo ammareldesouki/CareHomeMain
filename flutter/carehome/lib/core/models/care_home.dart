@@ -1,8 +1,20 @@
-class TimeSlot {
-  final String time;
-  bool? isAvailable;
 
-  TimeSlot({required this.time, this.isAvailable =true });
+
+
+class CareHomeData {
+  final String name;
+  final double latitude;
+  final double longitude;
+  final int salaryPerHour;
+  final List<AppointmentDay> appointments;
+
+  CareHomeData({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    required this.salaryPerHour,
+    required this.appointments,
+  });
 }
 
 class AppointmentDay {
@@ -17,18 +29,9 @@ class AppointmentDay {
   });
 }
 
-class CareHomeData {
-  final String name;
-  final String branch;
-  final double distanceFromMe;
-  final double salaryPerHour;
-  final List<AppointmentDay> appointments;
+class TimeSlot {
+  final String time;
+  final bool isAvailable;
 
-  CareHomeData({
-    required this.name,
-    required this.branch,
-    required this.distanceFromMe,
-    required this.salaryPerHour,
-    required this.appointments,
-  });
+  TimeSlot({required this.time, this.isAvailable = true});
 }

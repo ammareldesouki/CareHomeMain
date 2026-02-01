@@ -1,15 +1,35 @@
 import 'package:carehome/core/constants/colors.dart';
 import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../psw/offer/presentation/pages/offer_details.dart';
 import 'appointmentday_card.dart';
 
 class CareHomeCard extends StatelessWidget {
   final CareHomeData careHomeData;
+  final double distance;
+  final String address;
 
-  const CareHomeCard({super.key, required this.careHomeData});
 
+  const CareHomeCard(
+      {super.key, required this.careHomeData, required this.distance, required this.address});
+
+  // double getDistance(CareHomeData home) {
+  //   return Geolocator.distanceBetween(
+  //     currentPosition!.latitude,
+  //     currentPosition!.longitude,
+  //     home.latitude,
+  //     home.longitude,
+  //   ) / 1000;
+  // }
+  //
+  // Future<String> getAddress(double lat, double lng) async {
+  //   final places = await placemarkFromCoordinates(lat, lng);
+  //   final p = places.first;
+  //   return "${p.locality}, ${p.street}";
+  // }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -75,7 +95,7 @@ class CareHomeCard extends StatelessWidget {
                               size: 14, color: Colors.blue.withOpacity(0.8)),
                           const SizedBox(width: 4),
                           Text(
-                            "${careHomeData.distanceFromMe} km",
+                            "${distance.toStringAsFixed(2)} km",
                             style: TextStyle(
                               color: Colors.blue.withOpacity(0.8),
                               fontWeight: FontWeight.bold,
@@ -94,9 +114,11 @@ class CareHomeCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.business, size: 16, color: Colors.grey),
                     const SizedBox(width: 6),
-                    Text(
-                      careHomeData.branch,
-                      style: const TextStyle(color: Colors.grey),
+                    Expanded(
+                      child: Text(
+                        address,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ),
                   ],
                 ),

@@ -3,8 +3,8 @@ import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
-import '../../../../core/constants/colors.dart';
 import '../widgets/offer_card_map.dart';
 
 class MapScreen extends StatefulWidget {
@@ -17,12 +17,12 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late final PageController _pageController;
-  int _currentIndex = 0;
-
+  late PageController _pageController;
   GoogleMapController? mapController;
+
   LatLng? currentPosition;
   Set<Marker> markers = {};
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -31,124 +31,123 @@ class _MapScreenState extends State<MapScreen> {
     _getLocationOnStart();
   }
 
-  // 🔑 1. Request permission + get location
   Future<void> _getLocationOnStart() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
-      return;
-    }
+    if (!serviceEnabled) return;
 
-    LocationPermission permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.deniedForever) return;
 
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
+    Position position = await Geolocator.getCurrentPosition();
+    print("My location  $position");
+    // currentPosition = LatLng(position.latitude, position.longitude);
+    currentPosition = LatLng(24.130668405966667, 47.26767978071245);
 
-    if (permission == LocationPermission.deniedForever) {
-      return;
-    }
 
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    currentPosition = LatLng(position.latitude, position.longitude);
-
+    /// current location marker
     markers.add(
       Marker(
-        markerId: const MarkerId('current_location'),
+        markerId: const MarkerId('me'),
         position: currentPosition!,
-        infoWindow: const InfoWindow(title: 'Your Location'),
+        infoWindow: const InfoWindow(title: 'You'),
       ),
     );
 
-    setState(() {});
 
-    // Move camera if map already created
-    if (mapController != null) {
-      _moveCamera();
+    print("My location  $currentPosition");
+
+    /// care homes markers
+    for (var home in widget.carehomeList) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(home.name),
+          position: LatLng(home.latitude, home.longitude),
+          infoWindow: InfoWindow(title: home.name),
+        ),
+      );
     }
+
+    setState(() {});
   }
 
-  // 🎥 Move camera
-  void _moveCamera() {
-    mapController!.animateCamera(
-      CameraUpdate.newLatLngZoom(currentPosition!, 16),
+  double getDistance(CareHomeData home) {
+    return Geolocator.distanceBetween(
+      currentPosition!.latitude,
+      currentPosition!.longitude,
+      home.latitude,
+      home.longitude,
+    ) / 1000;
+  }
+
+  Future<String> getAddress(double lat, double lng) async {
+    final places = await placemarkFromCoordinates(lat, lng);
+    final p = places.first;
+    return "${p.locality}, ${p.street}";
+  }
+
+  void moveCamera(CareHomeData home) {
+    mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(home.latitude, home.longitude),
+        16,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (currentPosition == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      body: currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                /// 🗺️ MAP
-                GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: currentPosition!,
-                    zoom: 16,
-                  ),
-                  markers: markers,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  onMapCreated: (controller) {
-                    mapController = controller;
-                    _moveCamera();
-                  },
-                ),
-
-                /// 🔙 Back button
-                Positioned(
-                  top: 50,
-                  left: 10,
-                  child: InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: CircleAvatar(
-                      backgroundColor: TColors.primary,
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-
-                /// 🪪 CARE HOME CURSOR SCROLL (CAROUSEL)
-                Positioned(
-                  bottom: 50,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: 200,
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: widget.carehomeList.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        return AnimatedPadding(
-                          duration: const Duration(milliseconds: 300),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: index == _currentIndex ? 0 : 12,
-                          ),
-                          child: OfferCardMap(
-                            careHomeData: widget.carehomeList[index],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: currentPosition!,
+              zoom: 15,
             ),
+            markers: markers,
+            myLocationEnabled: true,
+            onMapCreated: (c) => mapController = c,
+          ),
+
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 180,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.carehomeList.length,
+                onPageChanged: (index) {
+                  _currentIndex = index;
+                  moveCamera(widget.carehomeList[index]);
+                },
+                itemBuilder: (context, index) {
+                  final home = widget.carehomeList[index];
+                  final distance = getDistance(home);
+
+                  return FutureBuilder(
+                    future: getAddress(home.latitude, home.longitude),
+                    builder: (context, snapshot) {
+                      return OfferCardMap(
+                        careHomeData: home,
+                        distance: distance,
+                        address: snapshot.data ?? "Loading...",
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

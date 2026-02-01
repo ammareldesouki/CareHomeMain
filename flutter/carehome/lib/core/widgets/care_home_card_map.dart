@@ -36,7 +36,7 @@ class CareHomeCardMap extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(careHomeData.branch),
+                      Text(careHomeData.name),
 
 
                       Container(
@@ -52,7 +52,7 @@ class CareHomeCardMap extends StatelessWidget {
 
                             children: [
                               Icon(Icons.location_city),
-                              Text(careHomeData.distanceFromMe.toString()),
+                              Text(careHomeData.name.toString()),
                             ],
                           )
                       ),

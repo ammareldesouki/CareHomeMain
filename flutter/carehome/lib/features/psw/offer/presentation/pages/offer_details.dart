@@ -25,7 +25,7 @@ class OfferDetails extends StatelessWidget {
           children: [
             Text("Care Home "),
             Text(careHomeData.name),
-            Text(careHomeData.branch),
+            Text(careHomeData.name),
           ],
         ),
       ),

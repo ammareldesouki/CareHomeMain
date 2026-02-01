@@ -1,296 +1,79 @@
+import '../../../core/models/care_home.dart';
 import '../../features/careHome/application/data/models/application_model.dart';
-import '../models/care_home.dart';
 
 final List<CareHomeData> CareHomeDatasFakeData = [
-
   CareHomeData(
     name: 'Sunrise Care Home',
-    branch: 'Riyadh - North',
-    distanceFromMe: 2.3,
+    latitude: 24.1315,
+    longitude: 47.2690,
     salaryPerHour: 55,
-    appointments: [
-      AppointmentDay(
-        day: 'Monday',
-        date: '2026-01-20',
-        timeSlots: [
-          TimeSlot(time: '10:00 AM - 12:00 PM',isAvailable: true),
-          TimeSlot(time: '12:00 PM - 4:00 PM',isAvailable: false),
-          TimeSlot(time: '8:00 PM - 10:00 PM',isAvailable: false),
-        ],
-      ),
-    ],
+    appointments: [],
   ),
-
   CareHomeData(
     name: 'Golden Age Residence',
-    branch: 'Riyadh - East',
-    distanceFromMe: 5.6,
+    latitude: 24.1280,
+    longitude: 47.2650,
     salaryPerHour: 60,
     appointments: [
-      AppointmentDay(
-        day: 'Tuesday',
-        date: '2026-01-21',
+      AppointmentDay(day: 'Monday',
+        date: '2026-01-20',
         timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM',isAvailable: false),
-          TimeSlot(time: '2:00 PM - 6:00 PM', isAvailable: false),
-        ],
-      ),
+          TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
+          TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
+          TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false),
+        ],),
     ],
   ),
-
   CareHomeData(
     name: 'Peaceful Life Care',
-    branch: 'Riyadh - West',
-    distanceFromMe: 1.8,
+      latitude: 24.1350,
+      longitude: 47.2705,
     salaryPerHour: 50,
-    appointments: [
-      AppointmentDay(
-        day: 'Wednesday',
-        date: '2026-01-22',
-        timeSlots: [
-          TimeSlot(time: '8:00 AM - 12:00 PM',isAvailable: true),
-          TimeSlot(time: '1:00 PM - 5:00 PM',isAvailable: false),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Hope Senior Living',
-    branch: 'Riyadh - South',
-    distanceFromMe: 6.1,
-    salaryPerHour: 58,
-    appointments: [
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-23',
-        timeSlots: [
-          TimeSlot(time: '7:00 AM - 11:00 AM',isAvailable: false),
-          TimeSlot(time: '12:00 PM - 4:00 PM',isAvailable: false),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Comfort Haven',
-    branch: 'Riyadh - Central',
-    distanceFromMe: 3.0,
-    salaryPerHour: 62,
-    appointments: [
-      AppointmentDay(
-        day: 'Friday',
-        date: '2026-01-24',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM',isAvailable: true),
-          TimeSlot(time: '2:00 PM - 6:00 PM',isAvailable: false),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Evergreen Care',
-    branch: 'Riyadh - North',
-    distanceFromMe: 4.5,
-    salaryPerHour: 57,
-    appointments: [
-      AppointmentDay(
-        day: 'Saturday',
-        date: '2026-01-25',
-        timeSlots: [
-          TimeSlot(time: '10:00 AM - 2:00 PM'),
-          TimeSlot(time: '3:00 PM - 7:00 PM'),
-        ],
-      ),
-
-
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-30',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Serenity House',
-
-    branch: 'Riyadh - East',
-    distanceFromMe: 7.2,
-    salaryPerHour: 65,
-    appointments: [
-      AppointmentDay(
-        day: 'Sunday',
-        date: '2026-01-26',
-        timeSlots: [
-          TimeSlot(time: '8:00 AM - 12:00 PM'),
-          TimeSlot(time: '1:00 PM - 5:00 PM', isAvailable: false),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Bright Future Home',
-    branch: 'Riyadh - West',
-    distanceFromMe: 2.9,
-    salaryPerHour: 53,
-    appointments: [
-      AppointmentDay(
-        day: 'Monday',
-        date: '2026-01-27',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 12:00 PM'),
-          TimeSlot(time: '1:00 PM - 4:00 PM'),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Harmony Living',
-    branch: 'Riyadh - South',
-    distanceFromMe: 6.8,
-    salaryPerHour: 59,
-    appointments: [
-      AppointmentDay(
-        day: 'Tuesday',
-        date: '2026-01-28',
-        timeSlots: [
-          TimeSlot(time: '10:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-    ],
-  ),
-
+      appointments: [
+        AppointmentDay(day: 'Monday',
+            date: '2026-01-20',
+            timeSlots: [
+              TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
+              TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
+              TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false)
+            ]),
+        AppointmentDay(day: 'Monday',
+          date: '2026-01-20',
+          timeSlots: [
+            TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
+            TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
+            TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false),
+          ],
+        ),
+      ]),
   CareHomeData(
     name: 'Silver Years Center',
-    branch: 'Riyadh - Central',
-    distanceFromMe: 1.5,
+    latitude: 24.1290,
+    longitude: 47.2630,
     salaryPerHour: 70,
-    appointments: [
-      AppointmentDay(
-        day: 'Wednesday',
-        date: '2026-01-29',
-        timeSlots: [
-          TimeSlot(time: '8:00 AM - 12:00 PM'),
-          TimeSlot(time: '1:00 PM - 5:00 PM'),
-        ],
-      ),
-
-      AppointmentDay(
-        day: 'Sunday',
-        date: '2026-01-29',
-        timeSlots: [
-          TimeSlot(time: '8:00 AM - 12:00 PM'),
-          TimeSlot(time: '1:00 PM - 5:00 PM'),
-        ],
-      ),
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-29',
-        timeSlots: [
-          TimeSlot(time: '8:00 AM - 12:00 PM'),
-          TimeSlot(time: '1:00 PM - 5:00 PM'),
-        ],
-      ),
-    ],
-  ),
-
-  CareHomeData(
-    name: 'Gentle Touch Care',
-    branch: 'Riyadh - North',
-    distanceFromMe: 3.7,
-    salaryPerHour: 56,
-    appointments: [
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-30',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-30',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-30',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-      AppointmentDay(
-        day: 'Thursday',
-        date: '2026-01-30',
-        timeSlots: [
-          TimeSlot(time: '9:00 AM - 1:00 PM'),
-          TimeSlot(time: '2:00 PM - 6:00 PM'),
-        ],
-      ),
-
-
-    ],
-  ),
-
-  CareHomeData(
-    name: 'New Life Residence',
-    branch: 'Riyadh - East',
-    distanceFromMe: 5.1,
-    salaryPerHour: 61,
-    appointments: [
-      AppointmentDay(
-        day: 'Friday',
-        date: '2026-01-31',
-        timeSlots: [
-          TimeSlot(time: '10:00 AM - 2:00 PM'),
-          TimeSlot(time: '3:00 PM - 7:00 PM'),
-        ],
-      ),
-    ],
+    appointments: [],
   ),
 ];
 
 final List<ApplicationModel> applications = [
-  ApplicationModel(
-    name: 'Sarah Johnson',
+  ApplicationModel(name: 'Sarah Johnson',
     email: 'sarah.j@email.com',
     position: 'Evening Care Assistant – Sunrise Care Home',
     appliedDate: '2026-01-20',
-    status: 'pending',
-  ),
-  ApplicationModel(
-    name: 'Michael Brown',
+    status: 'pending',),
+  ApplicationModel(name: 'Michael Brown',
     email: 'michael.b@email.com',
     position: 'Morning Care Assistant – Harmony Living',
     appliedDate: '2026-01-18',
-    status: 'accepted',
-  ),
-  ApplicationModel(
-    name: 'Emily Davis',
+    status: 'accepted',),
+  ApplicationModel(name: 'Emily Davis',
     email: 'emily.d@email.com',
     position: 'Night Care Assistant – Golden Age',
     appliedDate: '2026-01-10',
-    status: 'expired',
-  ),
-  ApplicationModel(
-    name: 'John Smith',
+    status: 'expired',),
+  ApplicationModel(name: 'John Smith',
     email: 'john.s@email.com',
     position: 'Care Assistant – Sunrise Care Home',
     appliedDate: '2026-01-22',
-    status: 'pending',
-  ),
+    status: 'pending',),
 ];
