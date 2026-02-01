@@ -8,8 +8,13 @@ class RegisterEvent extends AuthEvent {}
 class ForgetPasswordEvent extends AuthEvent {}
 
 class SignInEvent extends AuthEvent {
-  final String email;
-  final String password;
+  SignInRequest user;
 
-  SignInEvent(this.email, this.password);
+  SignInEvent(this.user);
+}
+
+class SignUpEvent extends AuthEvent {
+  SignupRequest user;
+
+  SignUpEvent(this.user);
 }

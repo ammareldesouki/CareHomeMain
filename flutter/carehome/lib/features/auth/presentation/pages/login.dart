@@ -1,4 +1,6 @@
+import 'package:carehome/features/auth/presentation/manager/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/image_strings.dart';
@@ -6,6 +8,7 @@ import '../../../../core/route/route_name.dart';
 import '../../../../core/utils/validator.dart';
 import '../../../../core/widgets/elvated_button.dart';
 import '../../../layout/bottom_navegation_bar.dart';
+import '../../data/models/singIn_request.dart';
 import '../widgets/custome_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,26 +30,37 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _onLoginPressed() {
-    if (formKey.currentState!.validate()) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Validation Successful")),
-      );
-
-      if (emailController.text == "carehome@gmail.com")
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => CBottomNavigationBar(roleId: 2,),));
-      else
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => CBottomNavigationBar(roleId: 1,),));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: BlocProvider(
+        create: (context) => AuthBloc(),
+
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthSignInLoading) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Looding.....")),
+              );
+            }
+
+            if (state is AuthSignInError) {
+              print(" erorrrr");
+              // show snackbar
+            }
+            if (state is AuthSignInSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Validation Successful")),
+              );
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) =>
+                    CBottomNavigationBar(role: state.user.role,),));
+            }
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            return SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -113,7 +127,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
 
                 TElevatedButton(
-                  onPressed:   _onLoginPressed,
+                  onPressed: () {
+                    var data = SignInRequest(
+                        email: emailController.text,
+                        password: passwordController.text);
+                    context.read<AuthBloc>().add(SignInEvent(data));
+                  },
                text:   "Sign In",
                   ),
 
@@ -135,6 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
+        ),
+            );
+          },
         ),
       ),
     );

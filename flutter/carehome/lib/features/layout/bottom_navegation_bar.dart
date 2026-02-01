@@ -16,9 +16,9 @@ import '../map/presentation/pages/map.dart';
 
 
 class CBottomNavigationBar extends StatefulWidget {
-  final int roleId;
+  final String role;
 
-  const CBottomNavigationBar({super.key, required this.roleId});
+  const CBottomNavigationBar({super.key, required this.role});
 
   @override
   State<CBottomNavigationBar> createState() => _CBottomNavigationBarState();
@@ -28,7 +28,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
   int _screenIndex = 0;
 
   Widget _getScreen(int index) {
-    if (widget.roleId == 1) {
+    if (widget.role == "PSW") {
       switch (index) {
         case 0:
           return HomeScreen();
@@ -65,7 +65,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return
-      widget.roleId == 1 ?
+      widget.role == "PSW" ?
       Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
@@ -122,7 +122,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                           activeIcon: const Icon(
                             Icons.location_searching_outlined,
                           ),
-                        )BottomNavigationBarItem(
+                  ), BottomNavigationBarItem(
                     icon: const Icon(Icons.bookmark,),
                     label:"home",
                     activeIcon: const Icon(Icons.bookmark),

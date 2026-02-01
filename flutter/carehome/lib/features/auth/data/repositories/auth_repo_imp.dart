@@ -1,3 +1,6 @@
+import 'package:carehome/features/auth/data/models/signup_request.dart';
+import 'package:carehome/features/auth/data/models/singIn_request.dart';
+import 'package:carehome/features/auth/domain/entities/signUp_response.dart';
 import 'package:carehome/features/auth/domain/repositories/auth_repo_interface.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -6,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/local_storge_key.dart';
 import '../../../../core/failure/failure.dart';
 import '../../../../core/failure/server_failure.dart';
+import '../../domain/entities/signin_response.dart';
 import '../../domain/entities/user_entity.dart';
 import '../data_sources/auth_remote_datasource.dart';
 
@@ -21,15 +25,14 @@ class AuthRepoImpl implements AuthRepoInterFace {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signIn(
-      { required email, required password}) async {
+  Future<Either<Failure, SignInResponse>> signIn(SignInRequest user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    final response = await remote.login(email, password);
+    final response = await remote.login(user);
     try {
       print("------------${response.toString()}");
       if (response.statusCode == 200) {
-        var data = UserEntity.fromJson(response.data);
+        var data = SignInResponse.fromJson(response.data);
         prefs.setString(LocalKeys.AuthToken, data.token);
 
         return Right(data);
@@ -61,19 +64,14 @@ class AuthRepoImpl implements AuthRepoInterFace {
   }
   @override
   @override
-  Future<Either<Failure, UserEntity>> signUp({ required name,
-    required email,
-    required password,
-    required phone,
-    required role,}) async {
-    print("SignUp request: $email  $password $name $phone $role");
+  Future<Either<Failure, SignUpResponse>> signUp(SignupRequest user) async {
+    print("SignUp request: $user");
     try {
-      final response = await remote.register(
-          name, email, password, phone, role);
+      final response = await remote.register(user);
 
       if (response.statusCode == 200) {
         print("SignUp response: ${response.data}");
-        var data = UserEntity.fromJson(response.data);
+        var data = SignUpResponse.fromJson(response.data);
         return Right(data);
       } else {
         return Left(
