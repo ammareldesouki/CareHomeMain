@@ -37,9 +37,18 @@ class CareHomeCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => OfferDetails(careHomeData: careHomeData,)));
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) {
+              return OfferDetailsBottomSheet(
+                careHomeData: careHomeData,
+              );
+            },
+          );
         },
+
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -68,8 +77,26 @@ class CareHomeCard extends StatelessWidget {
 
                 /// Title + Distance
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  spacing: 4,
                   children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(16)
+                        ),
+
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 13.0, vertical: 6),
+                          child: Text(
+                            "\$${careHomeData.salaryPerHour}/H", style: Theme
+                              .of(context)
+                              .textTheme!
+                              .bodyMedium!
+                              .copyWith(color: Colors.blue.withOpacity(0.8)),)
+                          ,
+                        )),
+
                     Expanded(
                       child: Text(
                         careHomeData.name,
@@ -120,6 +147,7 @@ class CareHomeCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ),
+
                   ],
                 ),
 

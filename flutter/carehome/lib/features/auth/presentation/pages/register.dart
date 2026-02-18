@@ -1,4 +1,5 @@
 import 'package:carehome/features/auth/presentation/manager/auth_bloc.dart';
+import 'package:carehome/features/auth/presentation/pages/upload_screen.dart';
 import 'package:carehome/features/layout/bottom_navegation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +55,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) =>
-                      CBottomNavigationBar(role: state.user.role),
+                      UploadIdScreen()
+                  // CBottomNavigationBar(role: state.user.role),
                 ),
               );
             }
@@ -174,21 +176,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             TElevatedButton(
                               onPressed: () {
-                                if (formKey.currentState!.validate()) {
-                                  final request = SignupRequest(
-                                    fullName: nameController.text,
-                                    email: emailController.text,
-                                    password: passwordController.text,
-                                    phoneNumber: phoneController.text,
-                                    dateOfBirth: "2000-01-01",
-                                    // مؤقتًا
-                                    role: selectedRole,
-                                  );
-
-                                  context.read<AuthBloc>().add(
-                                    SignUpEvent(request),
-                                  );
-                                }
+                                // if (formKey.currentState!.validate()) {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UploadIdScreen(),));
+                                // final request = SignupRequest(
+                                //   fullName: nameController.text,
+                                //   email: emailController.text,
+                                //   password: passwordController.text,
+                                //   phoneNumber: phoneController.text,
+                                //   dateOfBirth: "2000-01-01",
+                                //   // مؤقتًا
+                                //   role: selectedRole,
+                                // );
+                                //
+                                // context.read<AuthBloc>().add(
+                                //   SignUpEvent(request),
+                                // );
+                                // }
                               },
                               text: "Sign Up",
                             ),

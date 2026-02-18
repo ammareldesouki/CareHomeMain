@@ -18,9 +18,9 @@ final List<CareHomeData> CareHomeDatasFakeData = [
       AppointmentDay(day: 'Monday',
         date: '2026-01-20',
         timeSlots: [
-          TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
-          TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
-          TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false),
+          TimeSlot(from: '10:00 AM ', to: ' 12:00 PM', isAvailable: true),
+          TimeSlot(from: '12:00 PM ', to: ' 4:00 PM', isAvailable: false),
+          TimeSlot(from: '8:00 PM ', to: '10:00 PM', isAvailable: false),
         ],),
     ],
   ),
@@ -33,16 +33,16 @@ final List<CareHomeData> CareHomeDatasFakeData = [
         AppointmentDay(day: 'Monday',
             date: '2026-01-20',
             timeSlots: [
-              TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
-              TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
-              TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false)
+              TimeSlot(from: '10:00 AM ', to: '12:00 PM', isAvailable: true),
+              TimeSlot(from: '12:00 PM ', to: ' 4:00 PM', isAvailable: false),
+              TimeSlot(from: '8:00 PM ', to: '10:00 PM', isAvailable: false)
             ]),
         AppointmentDay(day: 'Monday',
           date: '2026-01-20',
           timeSlots: [
-            TimeSlot(time: '10:00 AM - 12:00 PM', isAvailable: true),
-            TimeSlot(time: '12:00 PM - 4:00 PM', isAvailable: false),
-            TimeSlot(time: '8:00 PM - 10:00 PM', isAvailable: false),
+            TimeSlot(from: '10:00 AM ', to: ' 12:00 PM', isAvailable: true),
+            TimeSlot(from: '12:00 PM ', to: ' 4:00 PM', isAvailable: false),
+            TimeSlot(from: '8:00 PM ', to: ' 10:00 PM', isAvailable: false),
           ],
         ),
       ]),
