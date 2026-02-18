@@ -5,6 +5,7 @@ import '../../features/auth/presentation/pages/forget_password.dart';
 import '../../features/auth/presentation/pages/login.dart';
 import '../../features/auth/presentation/pages/register.dart';
 import '../../features/layout/bottom_navegation_bar.dart';
+import '../../features/on_boarding/presentation/pages/on_boarding.dart';
 import '../../features/splash/splash.dart';
 import 'route_name.dart';
 
@@ -17,6 +18,12 @@ class AppRouter {
           builder: (_) => SplashScreen(),
           settings: settings,
         );
+      case RouteNames.onBoarding:
+        return MaterialPageRoute(
+          builder: (_) => OnboardingScreen(),
+          settings: settings,
+        );
+
       // case RouteNames.layout:
       //   return MaterialPageRoute(
       //     builder: (_) => CBottomNavigationBar(role: 2,),

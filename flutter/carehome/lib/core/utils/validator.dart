@@ -66,10 +66,8 @@ class Validator {
       return 'this field is required';
     } else if (int.tryParse(val.trim()) == null) {
       return 'enter numbers only';
-    } else if (val.trim().length != 13) {
+    } else if (val.trim().length != 11) {
       return 'enter value must equal 13 digit and Start with +20';
-    } else if (!val.trim().startsWith("+20")) {
-      return 'must start with +20';
     } else {
       return null;
     }

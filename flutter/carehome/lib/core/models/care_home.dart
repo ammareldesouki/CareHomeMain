@@ -30,8 +30,9 @@ class AppointmentDay {
 }
 
 class TimeSlot {
-  final String time;
+  final String from;
+  final String to;
   final bool isAvailable;
 
-  TimeSlot({required this.time, this.isAvailable = true});
+  TimeSlot({required this.from, required this.to, this.isAvailable = true});
 }

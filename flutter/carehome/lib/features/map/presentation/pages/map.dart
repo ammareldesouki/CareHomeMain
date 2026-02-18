@@ -40,8 +40,8 @@ class _MapScreenState extends State<MapScreen> {
 
     Position position = await Geolocator.getCurrentPosition();
     print("My location  $position");
-    // currentPosition = LatLng(position.latitude, position.longitude);
-    currentPosition = LatLng(24.130668405966667, 47.26767978071245);
+    currentPosition = LatLng(position.latitude, position.longitude);
+    // currentPosition = LatLng(24.130668405966667, 47.26767978071245);
 
 
     /// current location marker

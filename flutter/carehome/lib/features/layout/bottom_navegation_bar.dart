@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/colors.dart';
 import '../../core/data/fakedata.dart';
+import '../auth/presentation/pages/upload_screen.dart';
 import '../careHome/application/presentation/pages/application_screen.dart';
 import '../home/presentation/pages/home.dart';
 import '../map/presentation/pages/map.dart';
@@ -37,7 +38,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
         case 2:
           return ForgetPasswordScreen();
         case 3 :
-          return SplashScreen();
+          return UploadIdScreen();
         case 4:
           return AccountScreen();
         default:

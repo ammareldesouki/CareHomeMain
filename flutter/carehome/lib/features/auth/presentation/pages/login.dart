@@ -142,14 +142,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 TElevatedButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
-                      var data = SignInRequest(
-                          email: emailController.text,
-                          password: passwordController.text);
-                      context.read<AuthBloc>().add(SignInEvent(data));
-                    }
+                      //   var data = SignInRequest(
+                      //       email: emailController.text,
+                      //       password: passwordController.text);
+                      //   context.read<AuthBloc>().add(SignInEvent(data));
 
+                      if (emailController.text == "carehome@gmail.com") {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (context) =>
+                                CBottomNavigationBar(role: "CareHome")));
+                      } else
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) =>
+                              CBottomNavigationBar(role: "PSW"),));
+                    };
                   },
-               text:   "Sign In",
+                  text: "Sign In",
                   ),
 
                 Row(
