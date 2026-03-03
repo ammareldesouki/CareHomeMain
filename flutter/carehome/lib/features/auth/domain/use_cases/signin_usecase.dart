@@ -1,17 +1,16 @@
-import 'package:carehome/features/auth/data/models/singIn_request.dart';
-import 'package:carehome/features/auth/domain/entities/signin_response.dart';
-import 'package:carehome/features/auth/domain/entities/user_entity.dart';
-import 'package:carehome/features/auth/domain/repositories/auth_repo_interface.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/failure/failure.dart';
+import '../../../../../core/failure/failure.dart';
+
+import '../../data/models/singIn_request.dart';
+import '../entities/user_entity.dart';
+import '../repositories/auth_repo_interface.dart';
 
 class SignInUseCase {
-  final AuthRepoInterFace authRepo;
+  final AuthRepository repository;
 
-  SignInUseCase(this.authRepo);
+  SignInUseCase(this.repository);
 
-  Future<Either<Failure, SignInResponse>> call(SignInRequest user) {
-    return authRepo.signIn(user);
-  }
+  Future<Either<Failure, UserEntity>> call(SignInRequest request) =>
+      repository.signIn(request);
 }

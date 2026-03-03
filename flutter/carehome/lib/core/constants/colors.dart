@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TColors {
-
-  static const Color lightBackground= Color(0xffF0F2F5);
+  static const Color lightBackground = Colors.white;
   static const Color darkBackground= Color(0xff241F0F);
   static const Color primary = Color(0xff57a6db);
-  static const Color PrimaryTextColor= Colors.white;
+  static const Color PrimaryTextColor = Color(0xff57a6db);
   static const Color SecondryTextColor=Colors.black;
 
   static const Color secondary = Color(0xFFFFE24B);

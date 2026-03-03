@@ -28,14 +28,19 @@ class _HomeScreenState extends State<HomeScreen> {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.deniedForever) return;
 
-    Position position = await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
     /// real or fixed
-    currentPosition = LatLng(
-      24.130668405966667,
-      47.26767978071245,
-    );
+    // currentPosition = LatLng(
+    //   24.130668405966667,
+    //   47.26767978071245,
+    // );
 
+    currentPosition = LatLng(
+      position.latitude,
+      position.longitude,
+    );
     setState(() {});
   }
 

@@ -1,4 +1,5 @@
 import 'package:carehome/core/constants/colors.dart';
+import 'package:carehome/core/data/fakedata.dart';
 import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -42,8 +43,8 @@ class CareHomeCard extends StatelessWidget {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (_) {
-              return OfferDetailsBottomSheet(
-                careHomeData: careHomeData,
+              return PswOfferDetailsScreen(
+                offer: fakeOffers.first,
               );
             },
           );

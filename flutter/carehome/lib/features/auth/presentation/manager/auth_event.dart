@@ -1,20 +1,43 @@
 part of 'auth_bloc.dart';
 
-@immutable
-sealed class AuthEvent {}
+abstract class AuthEvent {}
 
-class RegisterEvent extends AuthEvent {}
-
-class ForgetPasswordEvent extends AuthEvent {}
-
+// ── Sign In ──────────────────────────────────────────────────────────────────
 class SignInEvent extends AuthEvent {
-  SignInRequest user;
+  final SignInRequest request;
 
-  SignInEvent(this.user);
+  SignInEvent(this.request);
 }
 
-class SignUpEvent extends AuthEvent {
-  SignupRequest user;
+// ── PSW Sign Up ──────────────────────────────────────────────────────────────
+class PswSignUpEvent extends AuthEvent {
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String password;
+  final String phoneNumber;
+  final String dateOfBirth;
+  final String gender;
+  final String apartmentNumber;
+  final String street;
+  final String city;
+  final String state;
+  final String postalCode;
+  final String country;
 
-  SignUpEvent(this.user);
+  PswSignUpEvent({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.password,
+    required this.phoneNumber,
+    required this.dateOfBirth,
+    required this.gender,
+    required this.apartmentNumber,
+    required this.street,
+    required this.city,
+    required this.state,
+    required this.postalCode,
+    required this.country,
+  });
 }
