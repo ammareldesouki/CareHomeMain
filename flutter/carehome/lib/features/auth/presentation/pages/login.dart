@@ -30,28 +30,26 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-        create: (context) => AuthBloc(),
-
+        create: (_) => AuthBloc(),
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
+            // ── loading ────────────────────────────────────────────────────
             if (state is AuthSignInLoading) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (_) =>
-                const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                    const Center(child: CircularProgressIndicator()),
               );
             }
 
+            // ── success → navigate based on role ──────────────────────────
             if (state is AuthSignInSuccess) {
-              Navigator.pop(context); // close loading
+              Navigator.pop(context); // close loading dialog
 
               Navigator.pushReplacement(
                 context,
@@ -62,123 +60,134 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             }
 
+            // ── error ─────────────────────────────────────────────────────
             if (state is AuthSignInError) {
-              Navigator.pop(context); // close loading
+              Navigator.pop(context); // close loading dialog
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                ),
-              );
+              ScaffoldMessenger.of(context).showSnackBar((SnackBar(content: Text(state.error)));
             }
           },
           builder: (context, state) {
             return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image(
-                  image: AssetImage(TImages.logoRemove),
-                  height: MediaQuery.sizeOf(context).height * 0.2,
-                ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Image(
+                          image: AssetImage(TImages.logoRemove),
+                          height: MediaQuery
+                              .sizeOf(context)
+                              .height * 0.2,
+                        ),
 
-                /// Email
-                TCustomeFormField(
-                  controller: emailController,
-                  hint: "email",
-                  validation: Validator.validateEmail,
-                  hintTextStyle: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.email_outlined,
-                    color: Colors.grey,
-                  ),
-                ),
+                        // ── Email ──────────────────────────────────────
+                        TCustomeFormField(
+                          controller: emailController,
+                          hint: 'Email',
+                          validation: Validator.validateEmail,
+                          hintTextStyle: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.email_outlined,
+                            color: Colors.grey,
+                          ),
+                        ),
 
-                /// Password
-                TCustomeFormField(
-                  controller: passwordController,
-                  hint: "password",
-                  isObscured: true,
-                  validation: Validator.validatePassword,
-                  hintTextStyle: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.lock_outline,
-                    color: Colors.grey,
-                  ),
-                ),
+                        // ── Password ───────────────────────────────────
+                        TCustomeFormField(
+                          controller: passwordController,
+                          hint: 'Password',
+                          isObscured: true,
+                          validation: Validator.validatePassword,
+                          hintTextStyle: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.lock_outline,
+                            color: Colors.grey,
+                          ),
+                        ),
 
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        RouteNames.forgetPassword,
-                      );
-                    },
-                    child: Text(
-                      "Forget Password",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(color: TColors.secondaryTextColor),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () =>
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.forgetPassword,
+                                ),
+                            child: Text(
+                              'Forget Password',
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                  color: TColors.secondaryTextColor),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Sign In button ─────────────────────────────
+                        TElevatedButton(
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              context.read<AuthBloc>().add(
+                                SignInEvent(
+                                  SignInRequest(
+                                    email: emailController.text.trim(),
+                                    password:
+                                    passwordController.text.trim(),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          text: 'Sign In',
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account ?",
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium,
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.pushNamed(
+                                    context,
+                                    RouteNames.swithchRule,
+                                  ),
+                              child: Text(
+                                'Sign Up',
+                                style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(color: TColors.primary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
-                TElevatedButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      //   var data = SignInRequest(
-                      //       email: emailController.text,
-                      //       password: passwordController.text);
-                      //   context.read<AuthBloc>().add(SignInEvent(data));
-
-                      if (emailController.text == "carehome@gmail.com") {
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                            builder: (context) =>
-                                CBottomNavigationBar(role: "CareHome")));
-                      } else
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) =>
-                              CBottomNavigationBar(role: "PSW"),));
-                    };
-                  },
-                  text: "Sign In",
-                  ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account ?",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, RouteNames.register);
-                      },
-                      child: const Text("Sign Up"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+              ),
             );
           },
         ),

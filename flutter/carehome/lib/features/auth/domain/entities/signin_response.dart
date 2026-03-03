@@ -5,7 +5,7 @@ class SignInResponse {
   final String role;
   final String userId;
 
-  SignInResponse({
+  const SignInResponse({
     required this.token,
     required this.expiresAtUtc,
     required this.email,
@@ -13,13 +13,11 @@ class SignInResponse {
     required this.userId,
   });
 
-  factory SignInResponse.fromJson(Map<String, dynamic> json) {
-    return SignInResponse(
-      token: json['token'],
-      expiresAtUtc: json['expiresAtUtc'],
-      email: json['email'],
-      role: json['role'],
-      userId: json['userId'],
-    );
-  }
+  factory SignInResponse.fromMap(Map<String, dynamic> map) => SignInResponse(
+    token: map['token'] ?? '',
+    expiresAtUtc: map['expiresAtUtc'] ?? '',
+    email: map['email'] ?? '',
+    role: map['role'] ?? '',
+    userId: map['userId'] ?? '',
+  );
 }

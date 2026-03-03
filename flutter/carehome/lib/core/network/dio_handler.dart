@@ -5,50 +5,53 @@ import 'package:dio/dio.dart';
 import '../constants/api.dart';
 
 class NetworkDioHandler {
-  final String baseUrl;
+  // ── Singleton ──────────────────────────────────────────────────────────────
+  static NetworkDioHandler? _instance;
 
-  late Dio dio = Dio(
-    BaseOptions(
-      baseUrl: this.baseUrl,
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  factory NetworkDioHandler() {
+    _instance ??= NetworkDioHandler._internal(ApiConstat.baseUrl);
+    return _instance!;
+  }
 
-  NetworkDioHandler(this.baseUrl) {
+  NetworkDioHandler._internal(this.baseUrl) {
+    dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 10),
+      ),
+    );
+
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          // Do something before request is sent.
-          // If you want to resolve the request with custom data,
-          // you can resolve a `Response` using `handler.resolve(response)`.
-          // If you want to reject the request with a error message,
-          // you can reject with a `DioException` using `handler.reject(dioError)`.
-          log("📩 Api Request :    ${options.path}");
-
+          log("📩 Api Request : ${options.baseUrl}${options.path}");
+          log("📦 Request Data: ${options.data}");
           return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
-          // Do something with response data.
-          // If you want to reject the request with a error message,
-          //
-          // log(
-          //   "✅ Api Success Response : ${response.requestOptions.baseUrl}   ${response.requestOptions.path}",
-          // );
           log("✅ Api Success Response : ${response.data}");
-
           return handler.next(response);
         },
         onError: (DioException error, ErrorInterceptorHandler handler) {
-          // Do something with response error.
-          // If you want to resolve the request with some custom data,
-          // you can resolve a `Response` object using `handler.resolve(response)`.
-
-          log("❌ Api Success Response :    ${error.requestOptions.path}");
-          log("❌ Api Success Response :    ${error.response?.data}");
-
+          log("❌ Api Error Path    : ${error.requestOptions.path}");
+          log("❌ Api Error Response: ${error.response?.data}");
           return handler.next(error);
         },
       ),
     );
+  }
+
+  final String baseUrl;
+  late Dio dio;
+
+  /// Call this once (e.g. in main.dart) if you need to attach a Bearer token
+  /// after login.
+  void setAuthToken(String token) {
+    dio.options.headers['Authorization'] = 'Bearer $token';
+  }
+
+  void clearAuthToken() {
+    dio.options.headers.remove('Authorization');
   }
 }

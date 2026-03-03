@@ -23,6 +23,7 @@ class TCustomeFormField extends StatefulWidget {
     this.prefixIcon,
     this.borderBackgroundColor,
     this.suffixIcon,
+    this.onChanged,
   });
 
   final TextEditingController? controller;
@@ -44,6 +45,7 @@ class TCustomeFormField extends StatefulWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validation;
   final void Function()? onTap;
+  final void Function(String)? onChanged;
 
   @override
   State<TCustomeFormField> createState() => _TCustomeFormFieldState();
@@ -66,7 +68,7 @@ class _TCustomeFormFieldState extends State<TCustomeFormField> {
         child: TextFormField(
           maxLines: 1,
           controller: widget.controller,
-
+          onChanged: widget.onChanged,
           style: TextStyle(color: Colors.black),
           obscureText: hidden,
           keyboardType: widget.textInputType,

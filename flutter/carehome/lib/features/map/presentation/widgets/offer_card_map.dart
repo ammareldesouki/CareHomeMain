@@ -1,3 +1,4 @@
+import 'package:carehome/core/data/fakedata.dart';
 import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 
@@ -24,8 +25,8 @@ class OfferCardMap extends StatelessWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (_) {
-            return OfferDetailsBottomSheet(
-              careHomeData: careHomeData,
+            return PswOfferDetailsScreen(
+              offer: fakeOffers.first,
             );
           },
         );

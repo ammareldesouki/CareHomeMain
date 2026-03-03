@@ -1,11 +1,10 @@
 
 class ApiConstat {
-  static const String baseUrl = "http://13.60.80.187:5000/api";
-  static const String authBaseUrl =
-      "https://etqan-academy.com/wp-json/jwt-auth/v1";
+  static const String baseUrl = "http://3.99.158.214:5000/";
 }
 
 class EndPoints {
-  static const String AuhtLogin = "/auth/login";
-  static const String Rigester = "/auth/register";
+  static const String PwRegister = "api/auth/register/psw";
+  static const String login = "/api/auth/login";
+  static const String completeProfile = "/api/CompleteProfile/complete-profile";
 }

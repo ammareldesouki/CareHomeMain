@@ -1,12 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- ================= PERMISSIONS ================= -->
+
+    <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Gallery Permissions -->
+
+    <!-- Android 13+ -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
+    <!-- Android 12 وأقل -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
-    <!-- ✅ PERMISSIONS لازم تكون هنا -->
+    <!-- لو هتحفظ صور في الجاليري (Android 10 وأقل) -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+
+    <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!-- ================= APPLICATION ================= -->
 
     <application
         android:label="carehome"
@@ -16,7 +34,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDoM03bZPnDKNZA_xApoIPyZNRLh7I2Z4E"/>
+            android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE" />
 
         <activity
             android:name=".MainActivity"
@@ -36,6 +54,7 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
         <meta-data
@@ -43,6 +62,8 @@
             android:value="2" />
 
     </application>
+
+    <!-- ================= QUERIES ================= -->
 
     <queries>
         <intent>
