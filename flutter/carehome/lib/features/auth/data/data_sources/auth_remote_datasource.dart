@@ -1,55 +1,33 @@
-import 'package:carehome/core/constants/api.dart';
-import 'package:carehome/core/network/dio_handler.dart';
-import 'package:carehome/features/auth/data/models/signup_request.dart';
-import 'package:carehome/features/auth/data/models/singIn_request.dart';
-import 'package:carehome/features/auth/data/models/user_model.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as api show post;
+
+import '../../../../../core/constants/api.dart';
+import '../../../../../core/failure/server_failure.dart';
+import '../../../../../core/network/dio_handler.dart';
+import '../../domain/entities/signin_response.dart';
+import '../models/singIn_request.dart';
+
 
 abstract class AuthRemoteDataSource {
-  Future<Response> login(SignInRequest user);
-
-  Future<Response> register(SignupRequest user
-  );
-
-  Future<void> forgetPassword(String email);
+  Future<SignInResponse> signIn(SignInRequest request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final NetworkDioHandler networkDioHandler;
-
-  AuthRemoteDataSourceImpl(this.networkDioHandler);
+  final Dio _dio = NetworkDioHandler().dio;
 
   @override
-  Future<Response> login(SignInRequest user) async {
-    return networkDioHandler.dio.post(
-      EndPoints.AuhtLogin,
-      data: {'email': user.email, 'password': user.password},
-    );
-  }
-
-  @override
-  Future<void> forgetPassword(String email) async {
-    final response = await Dio().post(
-      'http://10.0.2.2:8000/api/login',
-      data: {'email': email},
-    );
-  }
-
-  @override
-  Future<Response> register(SignupRequest user
-  ) async {
-    return networkDioHandler.dio.post(
-      EndPoints.Rigester,
-      data: {
-        'email': user.email,
-        'password': user.password,
-        'fullName': user.fullName,
-        'phoneNumber': user.phoneNumber,
-        'role': user.role,
-        'dateOfBirth': user.dateOfBirth
-      },
-    );
-
+  Future<SignInResponse> signIn(SignInRequest request) async {
+    try {
+      final response = await _dio.post(
+        EndPoints.login,
+        data: request.toMap(),
+      );
+      return SignInResponse.fromMap(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      if (data is Map<String, dynamic>) {
+        throw ServerFailure.fromMap(data);
+      }
+      throw ServerFailure(message: e.message ?? 'Unknown error');
+    }
   }
 }

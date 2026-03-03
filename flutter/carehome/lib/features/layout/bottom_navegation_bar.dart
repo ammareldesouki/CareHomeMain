@@ -1,9 +1,10 @@
 import 'package:carehome/features/account/presentation/pages/account.dart';
 import 'package:carehome/features/auth/presentation/pages/forget_password.dart';
 import 'package:carehome/features/auth/presentation/pages/login.dart';
-import 'package:carehome/features/auth/presentation/pages/register.dart';
+import 'package:carehome/features/careHome/account/presentation/pages/account.dart';
 import 'package:carehome/features/careHome/branshes/presentation/pages/branches.dart';
 import 'package:carehome/features/careHome/offers/presentation/pages/offers.dart';
+import 'package:carehome/features/psw/application/presentation/pages/application_screen.dart';
 import 'package:carehome/features/splash/splash.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ import '../auth/presentation/pages/upload_screen.dart';
 import '../careHome/application/presentation/pages/application_screen.dart';
 import '../home/presentation/pages/home.dart';
 import '../map/presentation/pages/map.dart';
+import '../psw/account/presentation/pages/account.dart';
 
 
 
@@ -36,26 +38,26 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
         case 1:
           return MapScreen(carehomeList: CareHomeDatasFakeData);
         case 2:
-          return ForgetPasswordScreen();
-        case 3 :
-          return UploadIdScreen();
-        case 4:
-          return AccountScreen();
+          return PswAppliedScreen();
+      // case 3 :
+      //   return UploadIdScreen();
+        case 3:
+          return PswAccountScreen();
         default:
           return const SizedBox.shrink();
       }
     } else {
       switch (index) {
+      // case 0:
+      //   return Branches();
+      // case 1:
+      //   return MapScreen(carehomeList: CareHomeDatasFakeData);
         case 0:
-          return Branches();
-        case 1:
-          return MapScreen(carehomeList: CareHomeDatasFakeData);
-        case 2:
           return OfferScreen();
-        case 3 :
+        case 1 :
           return ApplictionScreen();
-        case 4:
-          return AccountScreen();
+        case 2:
+          return CAReAccountScreen();
         default:
           return const SizedBox.shrink();
       }
@@ -103,11 +105,12 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                 selectedItemColor: TColors.primarIconColor,
                 unselectedItemColor: TColors.secondryIconColor,
                 selectedLabelStyle: TextStyle(
+
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
                       unselectedLabelStyle: TextStyle(
-                        fontSize: 14,
+                        fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
 
@@ -124,16 +127,15 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                             Icons.location_searching_outlined,
                           ),
                   ), BottomNavigationBarItem(
-                    icon: const Icon(Icons.bookmark,),
-                    label:"home",
-                    activeIcon: const Icon(Icons.bookmark),
-                  ),
-
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.shopping_cart),
-                    label:"home",
-                    activeIcon: const Icon(Icons.shopping_cart),
-                  ),
+                          icon: Icon(Icons.badge_outlined),
+                          activeIcon: Icon(Icons.badge),
+                          label: "Applied Jobs",
+                        ),
+                        // BottomNavigationBarItem(
+                        //   icon: const Icon(Icons.shopping_cart),
+                        //   label:"home",
+                        //   activeIcon: const Icon(Icons.shopping_cart),
+                        // ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.account_circle),
                     label:"Account",
@@ -190,18 +192,18 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
                     fontWeight: FontWeight.w500,
                   ),
                   items: [
-                    BottomNavigationBarItem(
-                      icon: const Icon(Icons.location_city),
-                      label: "Branches",
-
-
-                      activeIcon: const Icon(Icons.location_city),
-                    ),
-                    BottomNavigationBarItem(
-                      icon: const Icon(Icons.location_searching_outlined),
-                      label: "Maps",
-                      activeIcon: const Icon(Icons.location_searching_outlined),
-                    ),
+                    // BottomNavigationBarItem(
+                    //   icon: const Icon(Icons.location_city),
+                    //   label: "Branches",
+                    //
+                    //
+                    //   activeIcon: const Icon(Icons.location_city),
+                    // ),
+                    // BottomNavigationBarItem(
+                    //   icon: const Icon(Icons.location_searching_outlined),
+                    //   label: "Maps",
+                    //   activeIcon: const Icon(Icons.location_searching_outlined),
+                    // ),
                     BottomNavigationBarItem(
                       icon: Icon(Icons.work),
 

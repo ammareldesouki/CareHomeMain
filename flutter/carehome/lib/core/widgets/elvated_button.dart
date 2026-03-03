@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 
 class TElevatedButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed; // ✅ nullable
 
   const TElevatedButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed, // ✅ no longer required
   });
 
   @override
@@ -16,9 +15,14 @@ class TElevatedButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-
         onPressed: onPressed,
-        child: Text(text,style: Theme.of(context).textTheme!.bodyMedium,),
+        child: Text(
+          text,
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium,
+        ),
       ),
     );
   }
