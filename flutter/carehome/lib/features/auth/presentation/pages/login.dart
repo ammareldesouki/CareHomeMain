@@ -64,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
             if (state is AuthSignInError) {
               Navigator.pop(context); // close loading dialog
 
-              ScaffoldMessenger.of(context).showSnackBar((SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  (SnackBar(content: Text(state.error))));
             }
           },
           builder: (context, state) {

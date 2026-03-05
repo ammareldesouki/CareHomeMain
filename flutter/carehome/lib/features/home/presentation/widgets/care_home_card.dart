@@ -1,67 +1,50 @@
-import 'package:carehome/core/constants/colors.dart';
-import 'package:carehome/core/data/fakedata.dart';
-import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../psw/application/presentation/manager/psw_application_bloc.dart';
+import '../../../psw/offer/domain/entities/offer_entity.dart';
+import '../../../psw/offer/presentation/manager/offers_bloc.dart';
 import '../../../psw/offer/presentation/pages/offer_details.dart';
-import 'appointmentday_card.dart';
-
-class CareHomeCard extends StatelessWidget {
-  final CareHomeData careHomeData;
-  final double distance;
-  final String address;
 
 
-  const CareHomeCard(
-      {super.key, required this.careHomeData, required this.distance, required this.address});
+class OfferListCard extends StatelessWidget {
+  final OfferListItemEntity offer;
+  final double? distance;
 
-  // double getDistance(CareHomeData home) {
-  //   return Geolocator.distanceBetween(
-  //     currentPosition!.latitude,
-  //     currentPosition!.longitude,
-  //     home.latitude,
-  //     home.longitude,
-  //   ) / 1000;
-  // }
-  //
-  // Future<String> getAddress(double lat, double lng) async {
-  //   final places = await placemarkFromCoordinates(lat, lng);
-  //   final p = places.first;
-  //   return "${p.locality}, ${p.street}";
-  // }
+  const OfferListCard({super.key, required this.offer, this.distance});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
+          // Fetch detail then show bottom sheet
+          context.read<OffersBloc>().add(FetchOfferDetailEvent(offer.id));
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (_) {
-              return PswOfferDetailsScreen(
-                offer: fakeOffers.first,
-              );
-            },
+            builder: (_) =>
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: context.read<OffersBloc>()),
+                    BlocProvider.value(
+                        value: context.read<PswApplicationBloc>()),
+                  ],
+                  child: const OfferDetailSheet(),
+                ),
           );
         },
-
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-
-            /// Blue line on the left (like the image)
             border: const Border(
               left: BorderSide(color: Colors.blue, width: 5),
             ),
-
-            /// Soft shadow
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -71,102 +54,79 @@ class CareHomeCard extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                /// Title + Distance
+                // ── Rate + Title + Distance ─────────────────────────────────
                 Row(
-                  spacing: 4,
                   children: [
                     Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(16)
-                        ),
-
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 13.0, vertical: 6),
-                          child: Text(
-                            "\$${careHomeData.salaryPerHour}/H", style: Theme
-                              .of(context)
-                              .textTheme!
-                              .bodyMedium!
-                              .copyWith(color: Colors.blue.withOpacity(0.8)),)
-                          ,
-                        )),
-
-                    Expanded(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 5),
                       child: Text(
-                        careHomeData.name,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        '\$${offer.hourlyRate.toStringAsFixed(0)}/H',
+                        style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
-
-                    /// Distance Badge
-                    Container(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        offer.title,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.location_on,
-                              size: 14, color: Colors.blue.withOpacity(0.8)),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${distance.toStringAsFixed(2)} km",
-                            style: TextStyle(
-                              color: Colors.blue.withOpacity(0.8),
-                              fontWeight: FontWeight.bold,
+                    ),
+                    if (distance != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 14, color: Colors.blue.shade600),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${distance!.toStringAsFixed(1)} km',
+                              style: TextStyle(
+                                  color: Colors.blue.shade600,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    )
                   ],
                 ),
 
+                const SizedBox(height: 8),
 
-
-                /// Branch
+                // ── Address ──────────────────────────────────────────────────
                 Row(
                   children: [
-                    const Icon(Icons.business, size: 16, color: Colors.grey),
+                    const Icon(Icons.location_on_outlined,
+                        size: 15, color: Colors.grey),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        address,
-                        style: const TextStyle(color: Colors.grey),
+                        offer.address,
+                        style: const TextStyle(
+                            color: Colors.grey, fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
                   ],
-                ),
-
-
-                const Divider(),
-
-                /// Appointments
-                SizedBox(
-                  height: 60,
-                  child: ListView.separated(
-                    itemCount: careHomeData.appointments.length,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final appointment = careHomeData.appointments[index];
-                      return AppointmentCard(appointment: appointment);
-                    },
-                  ),
                 ),
               ],
             ),

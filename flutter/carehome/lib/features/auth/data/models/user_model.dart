@@ -12,6 +12,7 @@ class UserModel extends UserEntity {
       role: json["role"],
       userId: json["Id"],
 
+
     );
   }
 

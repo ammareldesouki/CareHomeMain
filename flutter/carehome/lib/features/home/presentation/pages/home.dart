@@ -1,93 +1,144 @@
-import 'package:carehome/features/home/presentation/widgets/care_home_card.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/data/fakedata.dart' as AppFakeData;
-import '../../../../core/models/care_home.dart';
+import '../../../psw/offer/presentation/manager/offers_bloc.dart';
+import '../widgets/care_home_card.dart';
+
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  LatLng? currentPosition;
-
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
-  void initState() {
-    super.initState();
-    _getLocationOnStart();
-  }
-
-  Future<void> _getLocationOnStart() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
-
-    LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.deniedForever) return;
-
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    /// real or fixed
-    // currentPosition = LatLng(
-    //   24.130668405966667,
-    //   47.26767978071245,
-    // );
-
-    currentPosition = LatLng(
-      position.latitude,
-      position.longitude,
-    );
-    setState(() {});
-  }
-
-  double getDistance(CareHomeData home) {
-    return Geolocator.distanceBetween(
-      currentPosition!.latitude,
-      currentPosition!.longitude,
-      home.latitude,
-      home.longitude,
-    ) / 1000;
-  }
-
-  Future<String> getAddress(double lat, double lng) async {
-    final places = await placemarkFromCoordinates(lat, lng);
-    final p = places.first;
-    return "${p.locality}, ${p.street}";
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    if (currentPosition == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    super.build(context);
 
-    return Scaffold(
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: AppFakeData.CareHomeDatasFakeData.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final home = AppFakeData.CareHomeDatasFakeData[index];
-          final distance = getDistance(home);
+    return BlocBuilder<OffersBloc, OffersState>(
+      // CRITICAL: only rebuild when list fields change — never on detail fetch
+      buildWhen: (prev, curr) =>
+      prev.listLoading != curr.listLoading ||
+          prev.offers != curr.offers ||
+          prev.listError != curr.listError,
+      builder: (context, state) {
+        // ── Loading first time ───────────────────────────────────────────────
+        if (state.listLoading && state.offers.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return FutureBuilder(
-            future: getAddress(home.latitude, home.longitude),
-            builder: (context, snapshot) {
-              return CareHomeCard(
-                careHomeData: home,
-                distance: distance,
-                address: snapshot.data ?? "Loading...",
-              );
-            },
+        // ── Error with no cached data ────────────────────────────────────────
+        if (state.listError != null && state.offers.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                      Icons.wifi_off_rounded, size: 56, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(state.listError!, textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey.shade600)),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () =>
+                        context.read<OffersBloc>().add(FetchOffersEvent()),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
           );
-        },
-      ),
+        }
+
+        // ── Empty ────────────────────────────────────────────────────────────
+        if (state.offers.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.search_off_rounded, size: 56,
+                    color: Colors.grey.shade300),
+                const SizedBox(height: 12),
+                Text('No offers available',
+                    style: TextStyle(
+                        color: Colors.grey.shade400, fontSize: 15)),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      context.read<OffersBloc>().add(FetchOffersEvent()),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // ── Loaded list ──────────────────────────────────────────────────────
+        return RefreshIndicator(
+          onRefresh: () async =>
+              context.read<OffersBloc>().add(FetchOffersEvent()),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 100,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),),
+                        child: Column(
+                          children: [
+                            Text('Available Offers',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5)),
+                            const SizedBox(height: 4),
+                            Text('${state.offers.length} offers near you',
+                                style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) =>
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: OfferListCard(
+                              offer: state.offers[index], distance: null),
+                        ),
+                    childCount: state.offers.length,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

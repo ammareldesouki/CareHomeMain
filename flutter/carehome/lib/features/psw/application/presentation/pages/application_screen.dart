@@ -1,124 +1,200 @@
-// lib/features/psw/presentation/screens/psw_applied_screen.dart
-
+import 'package:carehome/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/data/fakedata.dart';
-import '../../../account/data/models/model.dart';
+import '../../domain/entities/psw_application_entity.dart';
+import '../manager/psw_application_bloc.dart';
+
 
 class PswAppliedScreen extends StatelessWidget {
   const PswAppliedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF4F6FB),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Header ─────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Column(
+    // PswApplicationBloc is hoisted from CBottomNavigationBar
+    return const _PswAppliedBody();
+  }
+}
+
+class _PswAppliedBody extends StatelessWidget {
+  const _PswAppliedBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<PswApplicationBloc, PswApplicationState>(
+      listener: (context, state) {
+        if (state is PswApplicationMutationSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+        if (state is PswApplicationMutationError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+      },
+      child: DefaultTabController(
+        length: 5,
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF4F6FB),
+          body: SafeArea(
+            child: BlocBuilder<PswApplicationBloc, PswApplicationState>(
+              buildWhen: (_, s) =>
+              s is PswApplicationsLoading ||
+                  s is PswApplicationsLoaded ||
+                  s is PswApplicationsError,
+              builder: (context, state) {
+                final all = state is PswApplicationsLoaded
+                    ? state.applications
+                    : <PswApplicationEntity>[];
+
+                int _count(int code) =>
+                    all
+                        .where((a) => a.statusCode == code)
+                        .length;
+
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'My Applications',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${appliedJobs.length} total applications',
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // ── Summary chips ─────────────────────────────────────
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
+                    // ── Header ───────────────────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _SummaryChip(
-                            label: 'Pending',
-                            count: appliedJobs
-                                .where((j) => j.status == 'pending')
-                                .length,
-                            color: Colors.orange,
+                          const Text(
+                            'My Applications',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
                           ),
-                          const SizedBox(width: 8),
-                          _SummaryChip(
-                            label: 'Accepted',
-                            count: appliedJobs
-                                .where((j) => j.status == 'accepted')
-                                .length,
-                            color: Colors.green,
+                          const SizedBox(height: 4),
+                          Text(
+                            '${all.length} total applications',
+                            style:
+                            TextStyle(color: Colors.grey.shade500),
                           ),
-                          const SizedBox(width: 8),
-                          _SummaryChip(
-                            label: 'Rejected',
-                            count: appliedJobs
-                                .where((j) => j.status == 'rejected')
-                                .length,
-                            color: Colors.red,
+                          const SizedBox(height: 16),
+
+                          // ── Summary chips ────────────────────────────
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _SummaryChip(
+                                    label: 'Pending',
+                                    count: _count(1),
+                                    color: Colors.orange),
+                                const SizedBox(width: 8),
+                                _SummaryChip(
+                                    label: 'Accepted',
+                                    count: _count(3),
+                                    color: Colors.green),
+                                const SizedBox(width: 8),
+                                _SummaryChip(
+                                    label: 'Rejected',
+                                    count: _count(2),
+                                    color: Colors.red),
+                                const SizedBox(width: 8),
+                                _SummaryChip(
+                                    label: 'Cancelled',
+                                    count: _count(4),
+                                    color: Colors.grey),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // ── Tab bar ──────────────────────────────────
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: const TabBar(
+                              indicator: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(10)),
+                              ),
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              dividerColor: Colors.transparent,
+                              labelColor: Colors.black87,
+                              unselectedLabelColor: Colors.grey,
+                              labelStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10),
+                              tabs: [
+                                Tab(text: 'All'),
+                                Tab(text: 'Pending'),
+                                Tab(text: 'Accepted'),
+                                Tab(text: 'Rejected'),
+                                Tab(text: 'Cancelled'),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
 
-                    // ── Tab bar ───────────────────────────────────────────
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: const TabBar(
-                        indicator: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                    // ── Loading / Error ──────────────────────────────────
+                    if (state is PswApplicationsLoading)
+                      const Expanded(
+                          child:
+                          Center(child: CircularProgressIndicator())),
+
+                    if (state is PswApplicationsError)
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.error_outline,
+                                  size: 48, color: Colors.red),
+                              const SizedBox(height: 12),
+                              Text(state.message,
+                                  textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    context
+                                        .read<PswApplicationBloc>()
+                                        .add(FetchMyApplicationsEvent()),
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
                         ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        labelColor: Colors.black87,
-                        unselectedLabelColor: Colors.grey,
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                        tabs: [
-                          Tab(text: 'All'),
-                          Tab(text: 'Pending'),
-                          Tab(text: 'Accepted'),
-                          Tab(text: 'Rejected'),
-                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              const SizedBox(height: 8),
-
-              // ── Tab Views ─────────────────────────────────────────────
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _AppliedList(status: null),
-                    _AppliedList(status: 'pending'),
-                    _AppliedList(status: 'accepted'),
-                    _AppliedList(status: 'rejected'),
+                    // ── Tab views ────────────────────────────────────────
+                    if (state is PswApplicationsLoaded)
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            _AppList(all: all, filter: null),
+                            _AppList(all: all, filter: 1),
+                            _AppList(all: all, filter: 3),
+                            _AppList(all: all, filter: 2),
+                            _AppList(all: all, filter: 4),
+                          ],
+                        ),
+                      ),
                   ],
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -126,136 +202,94 @@ class PswAppliedScreen extends StatelessWidget {
   }
 }
 
-class _SummaryChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final Color color;
+// ── Tab list ──────────────────────────────────────────────────────────────────
 
-  const _SummaryChip({
-    required this.label,
-    required this.count,
-    required this.color,
-  });
+class _AppList extends StatelessWidget {
+  final List<PswApplicationEntity> all;
+  final int? filter; // null = all
+
+  const _AppList({required this.all, required this.filter});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            '$count $label',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Applied List ─────────────────────────────────────────────────────────────
-
-class _AppliedList extends StatelessWidget {
-  final String? status;
-
-  const _AppliedList({this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final list = status == null
-        ? appliedJobs
-        : appliedJobs.where((j) => j.status == status).toList();
+    final list =
+    filter == null ? all : all.where((a) => a.statusCode == filter).toList();
 
     if (list.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, size: 56, color: Colors.grey.shade300),
+            Icon(Icons.inbox_outlined,
+                size: 56, color: Colors.grey.shade300),
             const SizedBox(height: 12),
             Text(
-              'No ${status ?? ''} applications',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 15),
+              'No applications found',
+              style:
+              TextStyle(color: Colors.grey.shade400, fontSize: 15),
             ),
           ],
         ),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      itemCount: list.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (ctx, i) => AppliedJobCard(job: list[i]),
+    return RefreshIndicator(
+      onRefresh: () async =>
+          context
+              .read<PswApplicationBloc>()
+              .add(FetchMyApplicationsEvent()),
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        itemCount: list.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (ctx, i) => _ApplicationCard(app: list[i]),
+      ),
     );
   }
 }
 
-// ─── Applied Job Card ─────────────────────────────────────────────────────────
+// ── Application card ──────────────────────────────────────────────────────────
 
-class AppliedJobCard extends StatelessWidget {
-  final AppliedJob job;
+class _ApplicationCard extends StatelessWidget {
+  final PswApplicationEntity app;
 
-  const AppliedJobCard({super.key, required this.job});
+  const _ApplicationCard({required this.app});
 
-  Color get _statusColor {
-    switch (job.status) {
-      case 'accepted':
+  Color get _color {
+    switch (app.statusCode) {
+      case 3:
         return Colors.green;
-      case 'rejected':
+      case 2:
         return Colors.red;
+      case 4:
+        return Colors.grey;
       default:
         return Colors.orange;
     }
   }
 
-  IconData get _statusIcon {
-    switch (job.status) {
-      case 'accepted':
-        return Icons.check_circle_outline_rounded;
-      case 'rejected':
+  IconData get _icon {
+    switch (app.statusCode) {
+      case 2:
         return Icons.cancel_outlined;
+      case 3:
+        return Icons.check_circle_outline_rounded;
+      case 4:
+        return Icons.block_outlined;
       default:
         return Icons.hourglass_empty_rounded;
     }
   }
 
-  String get _statusLabel {
-    switch (job.status) {
-      case 'accepted':
-        return 'Accepted';
-      case 'rejected':
-        return 'Rejected';
-      default:
-        return 'Pending';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final sc = _statusColor;
+    final sc = _color;
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border(left: BorderSide(color: sc, width: 4)),
+        border: Border(left: BorderSide(color: TColors.primary, width: 4)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -269,23 +303,19 @@ class AppliedJobCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Title + Status ────────────────────────────────────────────
+            // ── Title + status ────────────────────────────────────────────
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    job.offerTitle,
+                    app.offerTitle,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                        fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
+                      horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: sc.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -293,15 +323,14 @@ class AppliedJobCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(_statusIcon, size: 13, color: sc),
+                      Icon(_icon, size: 13, color: sc),
                       const SizedBox(width: 4),
                       Text(
-                        _statusLabel,
+                        app.statusLabel,
                         style: TextStyle(
-                          color: sc,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
+                            color: sc,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
                       ),
                     ],
                   ),
@@ -310,30 +339,29 @@ class AppliedJobCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 4),
-            Text(
-              job.careHomeName,
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-            ),
+            Text(app.careHomeName,
+                style: TextStyle(
+                    color: Colors.grey.shade500, fontSize: 13)),
 
             const SizedBox(height: 14),
             Divider(color: Colors.grey.shade100),
             const SizedBox(height: 10),
 
-            // ── Details grid ─────────────────────────────────────────────
+            // ── Details ───────────────────────────────────────────────────
             Row(
               children: [
                 Expanded(
                   child: _DetailItem(
-                    icon: Icons.apartment_outlined,
-                    label: 'Branch',
-                    value: job.branch,
+                    icon: Icons.location_on_outlined,
+                    label: 'Address',
+                    value: app.address,
                   ),
                 ),
                 Expanded(
                   child: _DetailItem(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Date',
-                    value: job.date.split(',').last.trim(),
+                    icon: Icons.attach_money,
+                    label: 'Rate',
+                    value: '\$${app.hourlyRate.toStringAsFixed(0)}/hr',
                   ),
                 ),
               ],
@@ -343,90 +371,175 @@ class AppliedJobCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _DetailItem(
-                    icon: Icons.access_time_outlined,
-                    label: 'Time',
-                    value: '${job.timeFrom} – ${job.timeTo}',
+                    icon: Icons.calendar_today_outlined,
+                    label: 'Date',
+                    value: app.shiftDate,
                   ),
                 ),
                 Expanded(
                   child: _DetailItem(
-                    icon: Icons.send_outlined,
-                    label: 'Applied',
-                    value: job.appliedDate,
+                    icon: Icons.access_time_outlined,
+                    label: 'Time',
+                    value: '${app.startTime} – ${app.endTime}',
                   ),
                 ),
               ],
             ),
 
-            // ── Accepted extra banner ─────────────────────────────────────
-            if (job.status == 'accepted') ...[
+            // ── Status banners ────────────────────────────────────────────
+            if (app.statusCode == 2) ...[
               const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.shade100),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.celebration_outlined,
-                      color: Colors.green.shade700,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Congratulations! Your application was accepted. The care home will contact you shortly.',
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              _Banner(
+                icon: Icons.celebration_outlined,
+                message:
+                'Unfortunately this application Has been Rejected , Keep Applying',
+                color: TColors.primary,
+              ),
+            ],
+            if (app.statusCode == 3) ...[
+              const SizedBox(height: 14),
+              _Banner(
+                icon: Icons.info_outline_rounded,
+                message:
+                'Congratulations! Your application Has been accepted.',
+                color: TColors.primary,
               ),
             ],
 
-            // ── Rejected extra banner ─────────────────────────────────────
-            if (job.status == 'rejected') ...[
+            // ── Cancel button (only for pending) ──────────────────────────
+            if (app.statusCode == 1) ...[
               const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.shade100),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: Colors.red.shade600,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Unfortunately this application was not successful. Keep applying!',
-                        style: TextStyle(
-                          color: Colors.red.shade600,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+              Align(
+                alignment: Alignment.centerRight,
+                child: OutlinedButton.icon(
+                  onPressed: () => _confirmCancel(context),
+                  icon: const Icon(Icons.cancel_outlined,
+                      size: 16, color: Colors.red),
+                  label: const Text('Cancel Application',
+                      style: TextStyle(color: Colors.red)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
+                  ),
                 ),
               ),
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  void _confirmCancel(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) =>
+          AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)),
+            title: const Text('Cancel Application'),
+            content:
+            const Text('Are you sure you want to cancel this application?'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('No')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red),
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.read<PswApplicationBloc>().add(
+                      CancelApplicationEvent(app.jobRequestItemId));
+                },
+                child: const Text('Yes, Cancel',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+    );
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+class _SummaryChip extends StatelessWidget {
+  final String label;
+  final int count;
+  final Color color;
+
+  const _SummaryChip(
+      {required this.label, required this.count, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration:
+            BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '$count $label',
+            style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Banner extends StatelessWidget {
+  final IconData icon;
+  final String message;
+  final Color color;
+
+  const _Banner({required this.icon,
+    required this.message,
+    required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -437,11 +550,8 @@ class _DetailItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _DetailItem(
+      {required this.icon, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -454,21 +564,15 @@ class _DetailItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade400,
+                      fontWeight: FontWeight.w500)),
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis),
             ],
           ),
         ),

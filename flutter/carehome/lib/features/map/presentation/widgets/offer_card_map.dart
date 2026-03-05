@@ -1,36 +1,25 @@
-import 'package:carehome/core/data/fakedata.dart';
-import 'package:carehome/core/models/care_home.dart';
 import 'package:flutter/material.dart';
 
-import '../../../psw/offer/presentation/pages/offer_details.dart';
-
 class OfferCardMap extends StatelessWidget {
-  final CareHomeData careHomeData;
-  final double distance;
-  final String address;
+  final String title;
+  final String subtitle; // address
+  final double? hourlyRate; // null for legacy cards
+  final double? distance; // null until known
+  final VoidCallback onTap;
 
   const OfferCardMap({
     super.key,
-    required this.careHomeData,
-    required this.distance,
-    required this.address,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.hourlyRate,
+    this.distance,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (_) {
-            return PswOfferDetailsScreen(
-              offer: fakeOffers.first,
-            );
-          },
-        );
-      },
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Container(
@@ -38,30 +27,100 @@ class OfferCardMap extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
-              BoxShadow(
-                blurRadius: 8,
-                color: Colors.black12,
-              ),
+              BoxShadow(blurRadius: 8, color: Colors.black12),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  careHomeData.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Title + rate badge ───────────────────────────────────────
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
+                  if (hourlyRate != null) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '\$${hourlyRate!.toStringAsFixed(0)}/H',
+                        style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+
+              const SizedBox(height: 6),
+
+              // ── Address ──────────────────────────────────────────────────
+              Row(
+                children: [
+                  Icon(Icons.location_on_outlined,
+                      size: 14, color: Colors.grey.shade500),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      subtitle,
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.grey.shade600),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+
+              // ── Distance ─────────────────────────────────────────────────
+              if (distance != null) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.straighten,
+                        size: 14, color: Colors.grey.shade500),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${distance!.toStringAsFixed(2)} km away',
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.grey.shade600),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text("📍 $address"),
-                const SizedBox(height: 6),
-                Text("📏 ${distance.toStringAsFixed(2)} KM away"),
               ],
-            ),
+
+              const SizedBox(height: 8),
+
+              // ── Tap hint ─────────────────────────────────────────────────
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Tap to view details',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.blue.shade400,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_forward_ios,
+                      size: 10, color: Colors.blue.shade400),
+                ],
+              ),
+            ],
           ),
         ),
       ),

@@ -1,11 +1,8 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
-
 import '../constants/api.dart';
 
 class NetworkDioHandler {
-  // ── Singleton ──────────────────────────────────────────────────────────────
   static NetworkDioHandler? _instance;
 
   factory NetworkDioHandler() {
@@ -21,37 +18,49 @@ class NetworkDioHandler {
         connectTimeout: const Duration(seconds: 10),
       ),
     );
-
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-          log("📩 Api Request : ${options.baseUrl}${options.path}");
-          log("📦 Request Data: ${options.data}");
-          return handler.next(options);
-        },
-        onResponse: (Response response, ResponseInterceptorHandler handler) {
-          log("✅ Api Success Response : ${response.data}");
-          return handler.next(response);
-        },
-        onError: (DioException error, ErrorInterceptorHandler handler) {
-          log("❌ Api Error Path    : ${error.requestOptions.path}");
-          log("❌ Api Error Response: ${error.response?.data}");
-          return handler.next(error);
-        },
-      ),
-    );
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        log("📩 Api Request : ${options.baseUrl}${options.path}");
+        log("📦 Request Data: ${options.data}");
+        return handler.next(options);
+      },
+      onResponse: (response, handler) {
+        log("✅ Api Success Response : ${response.data}");
+        return handler.next(response);
+      },
+      onError: (error, handler) {
+        log("❌ Api Error Path    : ${error.requestOptions.path}");
+        log("❌ Api Error Response: ${error.response?.data}");
+        return handler.next(error);
+      },
+    ));
   }
 
   final String baseUrl;
   late Dio dio;
 
-  /// Call this once (e.g. in main.dart) if you need to attach a Bearer token
-  /// after login.
+  String? currentUserId;
+  String? currentRole;
+  bool currentWorkStatus = false; // ← workStatus from login response
+
   void setAuthToken(String token) {
     dio.options.headers['Authorization'] = 'Bearer $token';
   }
 
+  void setCurrentUser({
+    required String userId,
+    required String role,
+    bool workStatus = false,
+  }) {
+    currentUserId = userId;
+    currentRole = role;
+    currentWorkStatus = workStatus;
+  }
+
   void clearAuthToken() {
     dio.options.headers.remove('Authorization');
+    currentUserId = null;
+    currentRole = null;
+    currentWorkStatus = false;
   }
 }

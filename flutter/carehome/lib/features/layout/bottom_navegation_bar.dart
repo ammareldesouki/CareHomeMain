@@ -1,26 +1,19 @@
-import 'package:carehome/features/account/presentation/pages/account.dart';
-import 'package:carehome/features/auth/presentation/pages/forget_password.dart';
-import 'package:carehome/features/auth/presentation/pages/login.dart';
 import 'package:carehome/features/careHome/account/presentation/pages/account.dart';
-import 'package:carehome/features/careHome/branshes/presentation/pages/branches.dart';
-import 'package:carehome/features/careHome/offers/presentation/pages/offers.dart';
-import 'package:carehome/features/psw/application/presentation/pages/application_screen.dart';
-import 'package:carehome/features/splash/splash.dart';
+import 'package:carehome/features/psw/application/presentation/manager/psw_application_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/colors.dart';
-import '../../core/data/fakedata.dart';
-import '../auth/presentation/pages/upload_screen.dart';
 import '../careHome/application/presentation/pages/application_screen.dart';
+import '../careHome/offers/presentation/pages/offers.dart';
 import '../home/presentation/pages/home.dart';
 import '../map/presentation/pages/map.dart';
 import '../psw/account/presentation/pages/account.dart';
-
-
+import '../psw/application/presentation/pages/application_screen.dart';
+import '../psw/offer/presentation/manager/offers_bloc.dart';
 
 class CBottomNavigationBar extends StatefulWidget {
   final String role;
-
   const CBottomNavigationBar({super.key, required this.role});
 
   @override
@@ -28,210 +21,129 @@ class CBottomNavigationBar extends StatefulWidget {
 }
 
 class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
-  int _screenIndex = 0;
-
-  Widget _getScreen(int index) {
-    if (widget.role == "PSW") {
-      switch (index) {
-        case 0:
-          return HomeScreen();
-        case 1:
-          return MapScreen(carehomeList: CareHomeDatasFakeData);
-        case 2:
-          return PswAppliedScreen();
-      // case 3 :
-      //   return UploadIdScreen();
-        case 3:
-          return PswAccountScreen();
-        default:
-          return const SizedBox.shrink();
-      }
-    } else {
-      switch (index) {
-      // case 0:
-      //   return Branches();
-      // case 1:
-      //   return MapScreen(carehomeList: CareHomeDatasFakeData);
-        case 0:
-          return OfferScreen();
-        case 1 :
-          return ApplictionScreen();
-        case 2:
-          return CAReAccountScreen();
-        default:
-          return const SizedBox.shrink();
-      }
-
-    }
-  }
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
-    return
-      widget.role == "PSW" ?
-      Directionality(
-      textDirection: TextDirection.ltr,
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.only(bottom: 70.0),
-          child: _getScreen(_screenIndex),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: BottomNavigationBar(
-                      showSelectedLabels: true,
-                      showUnselectedLabels: true,
-
-                      currentIndex: _screenIndex,
-                onTap: (index) => setState(() => _screenIndex = index),
-                backgroundColor: TColors.lightBackground,
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-                selectedItemColor: TColors.primarIconColor,
-                unselectedItemColor: TColors.secondryIconColor,
-                selectedLabelStyle: TextStyle(
-
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-                      unselectedLabelStyle: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-
-                      items: [
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.search),
-                    label:"Search",
-                    activeIcon: const Icon(Icons.search),
-                  ),
-                  BottomNavigationBarItem(
-                          icon: const Icon(Icons.location_searching_outlined),
-                          label: "Maps",
-                          activeIcon: const Icon(
-                            Icons.location_searching_outlined,
-                          ),
-                  ), BottomNavigationBarItem(
-                          icon: Icon(Icons.badge_outlined),
-                          activeIcon: Icon(Icons.badge),
-                          label: "Applied Jobs",
-                        ),
-                        // BottomNavigationBarItem(
-                        //   icon: const Icon(Icons.shopping_cart),
-                        //   label:"home",
-                        //   activeIcon: const Icon(Icons.shopping_cart),
-                        // ),
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.account_circle),
-                    label:"Account",
-                    activeIcon: const Icon(Icons.account_circle),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      ) : Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-          body: Padding(
-            padding: EdgeInsets.only(bottom: 70.0),
-            child: _getScreen(_screenIndex),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation
-              .centerDocked,
-          floatingActionButton: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: BottomNavigationBar(
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-
-                  currentIndex: _screenIndex,
-                  onTap: (index) => setState(() => _screenIndex = index),
-                  backgroundColor: TColors.lightBackground,
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  selectedItemColor: TColors.primarIconColor,
-                  unselectedItemColor: TColors.secondryIconColor,
-                  selectedLabelStyle: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  unselectedLabelStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  items: [
-                    // BottomNavigationBarItem(
-                    //   icon: const Icon(Icons.location_city),
-                    //   label: "Branches",
-                    //
-                    //
-                    //   activeIcon: const Icon(Icons.location_city),
-                    // ),
-                    // BottomNavigationBarItem(
-                    //   icon: const Icon(Icons.location_searching_outlined),
-                    //   label: "Maps",
-                    //   activeIcon: const Icon(Icons.location_searching_outlined),
-                    // ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.work),
-
-                      label: "Offers",
-                      activeIcon: Icon(Icons.work),
-
-                    ),
-
-                    BottomNavigationBarItem(
-                      icon: const Icon(Icons.people,),
-                      label: "Request",
-                      activeIcon: const Icon(Icons.people),
-                    ),
-
-                    BottomNavigationBarItem(
-                      icon: const Icon(Icons.account_circle),
-                      label: "Account",
-                      activeIcon: const Icon(Icons.account_circle),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
+    if (widget.role == 'PSW') return _buildPsw();
+    return _buildCareHome();
   }
 
+  // ── PSW layout ─────────────────────────────────────────────────────────────
+  Widget _buildPsw() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (_) =>
+            OffersBloc()
+              ..add(FetchOffersEvent())),
+        BlocProvider(
+            create: (_) =>
+            PswApplicationBloc()
+              ..add(FetchMyApplicationsEvent())),
+      ],
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF4F6FB),
+        // IndexedStack keeps every screen alive — tab switches are instant
+        // and state (scroll position, map markers, bloc data) is preserved
+        body: SafeArea(
+          bottom: false,
+          child: IndexedStack(
+            index: _index,
+            children: const [
+              HomeScreen(), // pure content widget — no inner Scaffold
+              MapScreen(), // pure content widget — no inner Scaffold
+              PswAppliedScreen(),
+              PswAccountScreen(),
+            ],
+          ),
+        ),
+        bottomNavigationBar: _navBar(
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.search_rounded),
+                activeIcon: Icon(Icons.search_rounded),
+                label: 'Search'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.map_outlined),
+                activeIcon: Icon(Icons.map_rounded),
+                label: 'Map'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.badge_outlined),
+                activeIcon: Icon(Icons.badge_rounded),
+                label: 'Applied'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline_rounded),
+                activeIcon: Icon(Icons.person_rounded),
+                label: 'Account'),
+          ],
+        ),
+      ),
+    );
+  }
 
+  // ── CareHome layout ────────────────────────────────────────────────────────
+  Widget _buildCareHome() {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4F6FB),
+      body: SafeArea(
+        bottom: false,
+        child: IndexedStack(
+          index: _index,
+          children: const [
+            OfferScreen(),
+            ApplictionScreen(),
+            PswAccountScreen(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _navBar(
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.work_outline_rounded),
+              activeIcon: Icon(Icons.work_rounded),
+              label: 'Offers'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people_outline_rounded),
+              activeIcon: Icon(Icons.people_rounded),
+              label: 'Requests'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline_rounded),
+              activeIcon: Icon(Icons.person_rounded),
+              label: 'Account'),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared nav bar ─────────────────────────────────────────────────────────
+  Widget _navBar({required List<BottomNavigationBarItem> items}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4)),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _index,
+        onTap: (i) => setState(() => _index = i),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: TColors.primarIconColor,
+        unselectedItemColor: TColors.secondryIconColor,
+        selectedLabelStyle:
+        const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle:
+        const TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        items: items,
+      ),
+    );
+  }
 }

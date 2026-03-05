@@ -17,7 +17,6 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
-    // ── dependencies ────────────────────────────────────────────────────────
     final signInUseCase = SignInUseCase(
       AuthRepositoryImpl(remoteDataSource: AuthRemoteDataSourceImpl()),
     );
@@ -31,9 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // ── Sign In ──────────────────────────────────────────────────────────────
     on<SignInEvent>((event, emit) async {
       emit(AuthSignInLoading());
-
       final result = await signInUseCase(event.request);
-
       result.fold(
         (failure) {
           final msg = failure is ServerFailure
@@ -42,8 +39,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthSignInError(msg));
         },
         (user) {
-          // Attach token to singleton Dio so all future calls are authorized
           NetworkDioHandler().setAuthToken(user.token);
+          // ✅ Store userId + role so any screen can read it from the singleton
+          NetworkDioHandler().setCurrentUser(
+            userId: user.userId,
+            role: user.role,
+          );
           emit(AuthSignInSuccess(user));
         },
       );
@@ -52,7 +53,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // ── PSW Sign Up ──────────────────────────────────────────────────────────
     on<PswSignUpEvent>((event, emit) async {
       emit(AuthSignUpLoading());
-
       final request = PswRegisterRequest(
         firstName: event.firstName,
         lastName: event.lastName,
@@ -70,9 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           country: event.country,
         ),
       );
-
       final result = await registerPswUseCase(request);
-
       result.fold(
         (failure) {
           final msg = failure is ServerFailure
@@ -82,6 +80,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
         (entity) {
           NetworkDioHandler().setAuthToken(entity.token);
+          NetworkDioHandler().setCurrentUser(
+            userId: entity.userId,
+            role: 'PSW',
+          );
           emit(AuthSignUpSuccess(token: entity.token, userId: entity.userId));
         },
       );

@@ -1,31 +1,145 @@
-// lib/features/careHome/offers/data/models/offer_model.dart
+// ── Create / Update offer request ─────────────────────────────────────────────
+class ShiftRequest {
+  final String date; // "2026-03-04"
+  final String startTime; // "09:00:00"
+  final String endTime; // "17:00:00"
 
-class OfferShift {
-  final String date;
-  final String from;
-  final String to;
+  const ShiftRequest({
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+  });
 
-  OfferShift({required this.date, required this.from, required this.to});
+  Map<String, dynamic> toMap() => {
+    'date': date,
+    'startTime': startTime,
+    'endTime': endTime,
+  };
 }
 
-class OfferModel {
+class CreateOfferRequest {
+  final String title;
+  final String description;
+  final String address;
+  final double latitude;
+  final double longitude;
+  final double hourlyRate;
+  final List<ShiftRequest> shifts;
+
+  const CreateOfferRequest({
+    required this.title,
+    required this.description,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
+    required this.hourlyRate,
+    required this.shifts,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'title': title,
+    'description': description,
+    'address': address,
+    'latitude': latitude,
+    'longitude': longitude,
+    'hourlyRate': hourlyRate,
+    'shifts': shifts.map((s) => s.toMap()).toList(),
+  };
+}
+
+// Same shape as create but includes shiftId for existing shifts
+class UpdateOfferRequest extends CreateOfferRequest {
+  const UpdateOfferRequest({
+    required super.title,
+    required super.description,
+    required super.address,
+    required super.latitude,
+    required super.longitude,
+    required super.hourlyRate,
+    required super.shifts,
+  });
+}
+
+// ── List item (GET /api/Offers?careHomeId=) ───────────────────────────────────
+class CareHomeOfferListItem {
   final String id;
   final String title;
-  final String branch;
-  final double lat;
-  final double lng;
-  final List<OfferShift> shifts;
-  bool isActive;
-  final int applicationsCount;
+  final String address;
+  final double hourlyRate;
 
-  OfferModel({
+  const CareHomeOfferListItem({
     required this.id,
     required this.title,
-    required this.branch,
-    required this.lat,
-    required this.lng,
-    required this.shifts,
-    this.isActive = true,
-    this.applicationsCount = 0,
+    required this.address,
+    required this.hourlyRate,
   });
+
+  factory CareHomeOfferListItem.fromMap(Map<String, dynamic> map) =>
+      CareHomeOfferListItem(
+        id: map['id'] ?? '',
+        title: map['title'] ?? '',
+        address: map['address'] ?? '',
+        hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
+      );
+}
+
+// ── Detail (GET /api/Offers/{id}) ─────────────────────────────────────────────
+class CareHomeShift {
+  final String shiftId;
+  final String date;
+  final String startTime;
+  final String endTime;
+  final bool isAvailable;
+
+  const CareHomeShift({
+    required this.shiftId,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+    required this.isAvailable,
+  });
+
+  factory CareHomeShift.fromMap(Map<String, dynamic> map) => CareHomeShift(
+    shiftId: map['shiftId'] ?? '',
+    date: map['date'] ?? '',
+    startTime: map['startTime'] ?? '',
+    endTime: map['endTime'] ?? '',
+    isAvailable: map['isAvailable'] ?? false,
+  );
+}
+
+class CareHomeOfferDetail {
+  final String id;
+  final String title;
+  final String description;
+  final String address;
+  final double latitude;
+  final double longitude;
+  final double hourlyRate;
+  final List<CareHomeShift> shifts;
+
+  const CareHomeOfferDetail({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
+    required this.hourlyRate,
+    required this.shifts,
+  });
+
+  factory CareHomeOfferDetail.fromMap(Map<String, dynamic> map) =>
+      CareHomeOfferDetail(
+        id: map['id'] ?? '',
+        title: map['title'] ?? '',
+        description: map['description'] ?? '',
+        address: map['address'] ?? '',
+        latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
+        longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
+        hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
+        shifts: (map['shifts'] as List<dynamic>? ?? [])
+            .map((s) => CareHomeShift.fromMap(s as Map<String, dynamic>))
+            .toList(),
+      );
 }

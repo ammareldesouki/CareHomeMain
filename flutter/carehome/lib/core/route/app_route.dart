@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../features/careHome/registration/presentation/pages/organization_register_screen.dart';
 import '../../features/auth/presentation/pages/login.dart';
 import '../../features/auth/presentation/pages/choose-account-type.dart';
-import '../../features/careHome/registration/presentation/pages/psw_preference_screen.dart';
 import '../../features/on_boarding/presentation/pages/on_boarding.dart';
 import '../../features/psw/registration/presentation/pages/psw_verification_screen.dart';
 import '../../features/splash/splash.dart';
@@ -47,11 +46,6 @@ class AppRouter {
       case RouteNames.pswVerification:
         return MaterialPageRoute(
           builder: (_) => const PswVerificationScreen(),
-          settings: settings,
-        );
-      case RouteNames.pswPreference:
-        return MaterialPageRoute(
-          builder: (_) => const PswPreferenceScreen(),
           settings: settings,
         );
       default:

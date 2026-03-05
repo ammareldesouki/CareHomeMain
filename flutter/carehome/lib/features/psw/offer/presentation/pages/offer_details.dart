@@ -1,110 +1,121 @@
-// lib/features/psw/presentation/screens/psw_offer_details_screen.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/data/fakedata.dart';
-import '../../../../careHome/offers/data/models/offer_model.dart';
-import '../../../account/data/models/model.dart';
+import '../../../../../core/network/dio_handler.dart';
+import '../../../application/presentation/manager/psw_application_bloc.dart';
+import '../../domain/entities/offer_entity.dart';
+import '../manager/offers_bloc.dart';
 
-class PswOfferDetailsScreen extends StatefulWidget {
-  final OfferModel offer;
-
-  const PswOfferDetailsScreen({super.key, required this.offer});
-
-  @override
-  State<PswOfferDetailsScreen> createState() => _PswOfferDetailsScreenState();
-}
-
-class _PswOfferDetailsScreenState extends State<PswOfferDetailsScreen> {
-  bool get _alreadyApplied =>
-      appliedJobs.any((j) => j.offerTitle == widget.offer.title);
-
-  void _applyNow() {
-    if (_alreadyApplied) return;
-    setState(() {
-      appliedJobs.add(AppliedJob(
-        id: 'aj_${DateTime
-            .now()
-            .millisecondsSinceEpoch}',
-        offerTitle: widget.offer.title,
-        careHomeName: widget.offer.branch
-            .split('–')
-            .first
-            .trim(),
-        branch: widget.offer.branch.contains('–')
-            ? widget.offer.branch
-            .split('–')
-            .last
-            .trim()
-            : widget.offer.branch,
-        date: widget.offer.shifts.first.date,
-        timeFrom: widget.offer.shifts.first.from,
-        timeTo: widget.offer.shifts.first.to,
-        hourlyRate: 15.0,
-        appliedDate:
-        '${DateTime
-            .now()
-            .year}-${DateTime
-            .now()
-            .month
-            .toString()
-            .padLeft(2, '0')}-${DateTime
-            .now()
-            .day
-            .toString()
-            .padLeft(2, '0')}',
-        status: 'pending',
-      ));
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: const [
-            Icon(Icons.check_circle_outline, color: Colors.white),
-            SizedBox(width: 10),
-            Text('Application submitted successfully!'),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-  }
+class OfferDetailSheet extends StatelessWidget {
+  const OfferDetailSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final offer = widget.offer;
-    final accent = const Color(0xFF1A73E8);
+    return DraggableScrollableSheet(
+      initialChildSize: 0.92,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, controller) =>
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFFF4F6FB),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: BlocBuilder<OffersBloc, OffersState>(
+              buildWhen: (prev, curr) =>
+              prev.detailLoading != curr.detailLoading ||
+                  prev.detail != curr.detail ||
+                  prev.detailError != curr.detailError,
+              builder: (context, state) {
+                if (state.detailLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state.detailError != null) {
+                  return Center(
+                    child: Text(state.detailError!,
+                        style: const TextStyle(color: Colors.red)),
+                  );
+                }
+                if (state.detail != null) {
+                  return _OfferDetailBody(
+                    controller: controller,
+                    detail: state.detail!,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+          ),
+    );
+  }
+}
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
-      body: CustomScrollView(
+class _OfferDetailBody extends StatefulWidget {
+  final ScrollController controller;
+  final OfferDetailEntity detail;
+
+  const _OfferDetailBody({
+    required this.controller,
+    required this.detail,
+  });
+
+  @override
+  State<_OfferDetailBody> createState() => _OfferDetailBodyState();
+}
+
+class _OfferDetailBodyState extends State<_OfferDetailBody> {
+  final Set<String> _selectedShiftIds = {};
+
+  static const accent = Color(0xFF1A73E8);
+
+  @override
+  Widget build(BuildContext context) {
+    final offer = widget.detail;
+    final workStatus = NetworkDioHandler().currentWorkStatus;
+    final available = offer.shifts.where((s) => s.isAvailable).toList();
+
+    return BlocListener<PswApplicationBloc, PswApplicationState>(
+      listener: (context, state) {
+        if (state is PswApplicationMutationSuccess) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+        if (state is PswApplicationMutationError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+      },
+      child: CustomScrollView(
+        controller: widget.controller,
         slivers: [
-          // ── App Bar ────────────────────────────────────────────────────
+          // ── App Bar ───────────────────────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 180,
             pinned: true,
             backgroundColor: accent,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+              icon: const Icon(Icons.close, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [accent, const Color(0xFF0D47A1)],
+                    colors: [accent, Color(0xFF0D47A1)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding:
-                    const EdgeInsets.fromLTRB(20, 56, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(20, 56, 20, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -117,28 +128,27 @@ class _PswOfferDetailsScreenState extends State<PswOfferDetailsScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            offer.isActive ? 'Active' : 'Inactive',
+                            '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 12),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(offer.title,
-                            style: const TextStyle(
+                            style: Theme
+                                .of(context)
+                                .textTheme!
+                                .bodyLarge!
+                                .copyWith(
                                 color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.5)),
+                            )),
                         const SizedBox(height: 4),
-                        Text(
-                          offer.branch
-                              .split('–')
-                              .first
-                              .trim(),
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 15),
-                        ),
+                        Text(offer.address,
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.85),
+                                fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ),
@@ -147,33 +157,78 @@ class _PswOfferDetailsScreenState extends State<PswOfferDetailsScreen> {
             ),
           ),
 
-          // ── Body ───────────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Quick Info Row ──────────────────────────────────────
+                  // ── workStatus warning ──────────────────────────────────
+                  if (!workStatus) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded,
+                              color: Colors.orange.shade700, size: 20),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'You cannot apply until the admin approves your account.',
+                              style: TextStyle(
+                                  color: Colors.orange.shade800,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // ── Quick badges ────────────────────────────────────────
                   Row(
                     children: [
                       _QuickBadge(
-                          icon: Icons.people_outline,
-                          label:
-                          '${offer.applicationsCount} Applied'),
+                        icon: Icons.schedule_rounded,
+                        label:
+                        '${offer.shifts.length} Shift${offer.shifts.length != 1
+                            ? 's'
+                            : ''}',
+                      ),
                       const SizedBox(width: 10),
                       _QuickBadge(
-                          icon: Icons.calendar_today_outlined,
-                          label: '${offer.shifts.length} Shift${offer.shifts
-                              .length > 1 ? 's' : ''}'),
+                        icon: Icons.check_circle_outline,
+                        label: '${available.length} Available',
+                      ),
                       const SizedBox(width: 10),
-                      _QuickBadge(
-                          icon: Icons.location_on_outlined,
-                          label: 'On-site'),
+                      const _QuickBadge(
+                          icon: Icons.location_on_outlined, label: 'On-site'),
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
+
+                  // ── Description ─────────────────────────────────────────
+                  if (offer.description.isNotEmpty) ...[
+                    _SectionCard(
+                      title: 'About this offer',
+                      icon: Icons.info_outline_rounded,
+                      child: Text(offer.description,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade700,
+                              height: 1.5)),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
 
                   // ── Location ────────────────────────────────────────────
                   _SectionCard(
@@ -182,174 +237,197 @@ class _PswOfferDetailsScreenState extends State<PswOfferDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(offer.branch,
+                        Text(offer.address,
                             style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600)),
+                                fontSize: 15, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(Icons.location_on_outlined,
-                                size: 15,
-                                color: Colors.grey.shade500),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${offer.lat.toStringAsFixed(4)}, ${offer.lng
-                                  .toStringAsFixed(4)}',
-                              style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontSize: 13),
-                            ),
-                          ],
-                        ),
+                        Row(children: [
+                          Icon(Icons.location_on_outlined,
+                              size: 15, color: Colors.grey.shade500),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${offer.latitude.toStringAsFixed(4)}, ${offer
+                                .longitude.toStringAsFixed(4)}',
+                            style: TextStyle(
+                                color: Colors.grey.shade500, fontSize: 13),
+                          ),
+                        ]),
                       ],
                     ),
                   ),
 
                   const SizedBox(height: 14),
 
-                  // ── Shifts ──────────────────────────────────────────────
+                  // ── Shifts (selectable when workStatus true) ─────────────
                   _SectionCard(
-                    title: 'Shifts',
+                    title: workStatus ? 'Select Shifts to Apply' : 'Shifts',
                     icon: Icons.schedule_rounded,
                     child: Column(
                       children: offer.shifts
                           .asMap()
                           .entries
-                          .map((e) {
-                        final i = e.key;
-                        final s = e.value;
-                        return Container(
-                          margin: EdgeInsets.only(
-                              top: i == 0 ? 0 : 10),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: accent.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: accent.withOpacity(0.12)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: accent,
-                                  borderRadius:
-                                  BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text('${i + 1}',
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight:
-                                          FontWeight.bold)),
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(s.date,
+                          .map((entry) {
+                        final i = entry.key;
+                        final s = entry.value;
+                        final isSelected =
+                        _selectedShiftIds.contains(s.shiftId);
+
+                        return GestureDetector(
+                          onTap: workStatus && s.isAvailable
+                              ? () =>
+                              setState(() =>
+                              isSelected
+                                  ? _selectedShiftIds.remove(s.shiftId)
+                                  : _selectedShiftIds.add(s.shiftId))
+                              : null,
+                          child: Container(
+                            margin: EdgeInsets.only(top: i == 0 ? 0 : 10),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? accent.withOpacity(0.1)
+                                  : s.isAvailable
+                                  ? Colors.blue.shade50
+                                  : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                              border: isSelected
+                                  ? Border.all(color: accent, width: 1.5)
+                                  : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32, height: 32,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? accent
+                                        : s.isAvailable
+                                        ? accent
+                                        : Colors.grey,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: isSelected
+                                        ? const Icon(Icons.check,
+                                        color: Colors.white, size: 16)
+                                        : Text('${i + 1}',
                                         style: const TextStyle(
-                                            fontWeight:
-                                            FontWeight.w600,
-                                            fontSize: 14)),
-                                    const SizedBox(height: 3),
-                                    Row(
-                                      children: [
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(s.date,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14)),
+                                      const SizedBox(height: 3),
+                                      Row(children: [
                                         Icon(Icons.access_time,
                                             size: 13,
-                                            color:
-                                            Colors.grey.shade500),
+                                            color: Colors.grey.shade500),
                                         const SizedBox(width: 4),
-                                        Text('${s.from} – ${s.to}',
+                                        Text('${s.startTime} – ${s.endTime}',
                                             style: TextStyle(
-                                                color: Colors
-                                                    .grey.shade600,
+                                                color: Colors.grey.shade600,
                                                 fontSize: 13)),
-                                      ],
-                                    ),
-                                  ],
+                                      ]),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: s.isAvailable
+                                        ? Colors.green.shade100
+                                        : Colors.red.shade100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    s.isAvailable ? 'Available' : 'Taken',
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: s.isAvailable
+                                            ? Colors.green.shade700
+                                            : Colors.red.shade700,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 24),
 
-                  // ── Requirements (static flavor) ─────────────────────────
-                  _SectionCard(
-                    title: 'Requirements',
-                    icon: Icons.checklist_rounded,
-                    child: Column(
-                      children: [
-                        _ReqItem('Valid DBS certificate'),
-                        _ReqItem(
-                            'NVQ Level 2 or above in Health & Social Care'),
-                        _ReqItem('At least 1 year of care experience'),
-                        _ReqItem('Right to work in the UK'),
-                      ],
-                    ),
+                  // ── Apply button ─────────────────────────────────────────
+                  BlocBuilder<PswApplicationBloc, PswApplicationState>(
+                    builder: (context, appState) {
+                      final isLoading =
+                      appState is PswApplicationMutationLoading;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: workStatus &&
+                              !isLoading &&
+                              _selectedShiftIds.isNotEmpty
+                              ? () =>
+                              context.read<PswApplicationBloc>().add(
+                                ApplyForOfferEvent(
+                                  offerId: offer.id,
+                                  shiftIds: _selectedShiftIds.toList(),
+                                ),
+                              )
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accent,
+                            disabledBackgroundColor: Colors.grey.shade300,
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                                color: Colors.white, strokeWidth: 2),
+                          )
+                              : Text(
+                            !workStatus
+                                ? 'Account Pending Approval'
+                                : _selectedShiftIds.isEmpty
+                                ? 'Select Shifts to Apply'
+                                : 'Apply for ${_selectedShiftIds
+                                .length} Shift${_selectedShiftIds.length > 1
+                                ? 's'
+                                : ''}',
+                            style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white),
+                          ),
+                        ),
+                      );
+                    },
                   ),
 
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
         ],
-      ),
-
-      // ── Sticky Apply Button ─────────────────────────────────────────────
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: _alreadyApplied
-              ? Container(
-            height: 56,
-            decoration: BoxDecoration(
-              color: Colors.green.shade50,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.green.shade200),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle_outline,
-                    color: Colors.green.shade700),
-                const SizedBox(width: 8),
-                Text('Already Applied',
-                    style: TextStyle(
-                        color: Colors.green.shade700,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16)),
-              ],
-            ),
-          )
-              : ElevatedButton(
-            onPressed: _applyNow,
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(56),
-              backgroundColor: accent,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              elevation: 0,
-            ),
-            child: const Text('Apply Now',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700)),
-          ),
-        ),
       ),
     );
   }
@@ -358,15 +436,13 @@ class _PswOfferDetailsScreenState extends State<PswOfferDetailsScreen> {
 class _QuickBadge extends StatelessWidget {
   final IconData icon;
   final String label;
-
   const _QuickBadge({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding:
-        const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -394,7 +470,6 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-
   const _SectionCard(
       {required this.title, required this.icon, required this.child});
 
@@ -411,53 +486,15 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: const Color(0xFF1A73E8)),
-              const SizedBox(width: 8),
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w700)),
-            ],
-          ),
+          Row(children: [
+            Icon(icon, size: 18, color: const Color(0xFF1A73E8)),
+            const SizedBox(width: 8),
+            Text(title,
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w700)),
+          ]),
           const SizedBox(height: 14),
           child,
-        ],
-      ),
-    );
-  }
-}
-
-class _ReqItem extends StatelessWidget {
-  final String text;
-
-  const _ReqItem(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 2),
-            width: 18,
-            height: 18,
-            decoration: BoxDecoration(
-              color: Colors.green.shade50,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.green.shade200),
-            ),
-            child: Icon(Icons.check,
-                size: 11, color: Colors.green.shade700),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(text,
-                style: TextStyle(
-                    fontSize: 14, color: Colors.grey.shade700)),
-          ),
         ],
       ),
     );

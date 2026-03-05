@@ -50,11 +50,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 final address = await _getAddress(selectedLatLng!);
 
                 Navigator.pop(context, {
-                  "lat": selectedLatLng!.latitude,
-                  "lng": selectedLatLng!.longitude,
-                  "address": address,
-                });
-              },
+            "lat": selectedLatLng!.latitude,
+            "lng": selectedLatLng!.longitude,
+            "address": address,
+          });
+        },
       ),
     );
   }

@@ -355,7 +355,7 @@ class _PswAccountScreenState extends State<PswAccountScreen> {
                           _ActionTile(
                             icon: Icons.description,
                             label: 'Documentations',
-                            color: Colors.purpleAccent,
+                            color: Colors.blue,
                             onTap: () => Navigator.pushNamed(
                               context,
                               RouteNames.pswVerification,
@@ -372,7 +372,7 @@ class _PswAccountScreenState extends State<PswAccountScreen> {
                           _ActionTile(
                             icon: Icons.notifications_outlined,
                             label: 'Notifications',
-                            color: Colors.orange,
+                            color: Colors.blue,
                             onTap: () {},
                           ),
                           Divider(height: 1, color: Colors.grey.shade100),

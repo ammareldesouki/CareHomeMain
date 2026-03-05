@@ -2,6 +2,7 @@ import 'package:carehome/features/careHome/application/presentation/widgets/appl
 import 'package:flutter/material.dart';
 
 import '../../../../../core/data/fakedata.dart';
+import 'application_card.dart';
 
 class ApplicationList extends StatelessWidget {
   final String status;

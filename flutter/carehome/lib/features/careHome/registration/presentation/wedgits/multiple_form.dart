@@ -1,12 +1,12 @@
-import 'package:carehome/features/careHome/registration/wedgits/common_field.dart';
+import 'package:carehome/core/utils/validator.dart';
+import 'package:carehome/features/careHome/registration/presentation/wedgits/common_field.dart';
 import 'package:carehome/features/auth/presentation/widgets/custome_form_field.dart';
-import 'package:carehome/features/careHome/registration/presentation/manager/carehome_registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/colors.dart';
-import '../../../../core/utils/validator.dart';
+import '../../../../../core/constants/colors.dart';
+import '../manager/care_home_registration_bloc.dart';
 
 class MultipleCareHomeForm extends StatefulWidget {
   const MultipleCareHomeForm({super.key});
@@ -16,6 +16,12 @@ class MultipleCareHomeForm extends StatefulWidget {
 }
 
 class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
+  final TextEditingController streetController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController postalCodeController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
 
   void _dispatch(String field, String value) {
@@ -35,9 +41,7 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
       source: ImageSource.gallery,
       imageQuality: 80,
     );
-    if (image != null) {
-      _uploadDoc(documentKey, image.path);
-    }
+    if (image != null) _uploadDoc(documentKey, image.path);
   }
 
   Widget _uploadButton(String label, String documentKey) {
@@ -93,15 +97,18 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
       builder: (context, state) {
         return Column(
           children: [
+            // ── Business License ────────────────────────────────────────────
             const SizedBox(height: 15),
             sectionTitle("BUSINESS LICENSE"),
+            const SizedBox(height: 12),
             TCustomeFormField(
               hint: "Business License Number",
-              // validation: Validator.validateFullName,
-              onChanged: (val) => _dispatch('Business License Number', val),
+              onChanged: (val) => _dispatch('businessLicenseNumber', val),
             ),
-            const SizedBox(height: 12),
 
+            const SizedBox(height: 20),
+
+            // ── Legal Entity Information ────────────────────────────────────
             sectionTitle("LEGAL ENTITY INFORMATION"),
             const SizedBox(height: 15),
             TCustomeFormField(
@@ -109,14 +116,58 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               validation: Validator.validateFullName,
               onChanged: (val) => _dispatch('legalEntityName', val),
             ),
+            // TCustomeFormField(
+            //   hint: "Legal Entity Address",
+            //   validation: Validator.validateFullName,
+            //   onChanged: (val) => _dispatch('legalEntityAddress', val),
+            // ),
+
+            // Address controllers — onChanged added so BLoC collects them
             TCustomeFormField(
-              hint: "Legal Entity Address",
-              validation: Validator.validateFullName,
-              onChanged: (val) => _dispatch('legalEntityAddress', val),
+              controller: streetController,
+              hint: 'Street Address',
+              validation: (v) =>
+              (v?.isEmpty ?? true) ? 'Please enter your street address' : null,
+              prefixIcon: const Icon(Icons.add_road, color: Colors.grey),
+              onChanged: (val) => _dispatch('street', val),
+            ),
+            TCustomeFormField(
+              controller: cityController,
+              hint: 'City',
+              validation: (v) =>
+              (v?.isEmpty ?? true) ? 'Please enter your city' : null,
+              prefixIcon: const Icon(Icons.location_city, color: Colors.grey),
+              onChanged: (val) => _dispatch('city', val),
+            ),
+            TCustomeFormField(
+              controller: stateController,
+              hint: 'State / Province',
+              validation: (v) =>
+              (v?.isEmpty ?? true) ? 'Please enter your state' : null,
+              prefixIcon: const Icon(Icons.map, color: Colors.grey),
+              onChanged: (val) => _dispatch('state', val),
+            ),
+            TCustomeFormField(
+              controller: postalCodeController,
+              hint: 'Postal Code',
+              validation: (v) =>
+              (v?.isEmpty ?? true) ? 'Please enter your postal code' : null,
+              prefixIcon: const Icon(
+                  Icons.markunread_mailbox_outlined, color: Colors.grey),
+              onChanged: (val) => _dispatch('postalCode', val),
+            ),
+            TCustomeFormField(
+              controller: countryController,
+              hint: 'Country',
+              validation: (v) =>
+              (v?.isEmpty ?? true) ? 'Please enter your country' : null,
+              prefixIcon: const Icon(Icons.flag_outlined, color: Colors.grey),
+              onChanged: (val) => _dispatch('country', val),
             ),
 
             const SizedBox(height: 20),
 
+            // ── Registered Office Address ───────────────────────────────────
             sectionTitle("ENTER REGISTERED OFFICE ADDRESS"),
             const SizedBox(height: 15),
             TCustomeFormField(
@@ -126,7 +177,6 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
             ),
             TCustomeFormField(
               hint: "Postcode",
-              validation: Validator.validateCanadianPostalCode,
               onChanged: (val) => _dispatch('postcode', val),
             ),
 
@@ -149,6 +199,7 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
 
             const SizedBox(height: 25),
 
+            // ── Vaccination Policy ──────────────────────────────────────────
             sectionTitle("VACCINATION POLICY"),
             const SizedBox(height: 15),
             SwitchListTile(
@@ -158,9 +209,7 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               onChanged: (value) {
                 context.read<CareHomeRegistrationBloc>().add(
                   ToggleVaccinationPolicyEvent(
-                    policyType: 'covid',
-                    value: value,
-                  ),
+                      policyType: 'covid', value: value),
                 );
               },
             ),
@@ -177,6 +226,7 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
 
             const SizedBox(height: 25),
 
+            // ── Key Contact Person ──────────────────────────────────────────
             sectionTitle("KEY CONTACT PERSON"),
             const SizedBox(height: 15),
             TCustomeFormField(
@@ -190,32 +240,15 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               onChanged: (val) => _dispatch('contactLastName', val),
             ),
             TCustomeFormField(
-              hint: "Email Address",
-              validation: Validator.validateEmail,
-              onChanged: (val) => _dispatch('contactEmail', val),
-            ),
-            TCustomeFormField(
               hint: "Phone Number",
               validation: Validator.validatePhoneNumber,
               onChanged: (val) => _dispatch('contactPhone', val),
             ),
-
-            const SizedBox(height: 25),
-
-            sectionTitle("INSURANCE"),
-            const SizedBox(height: 12),
-            _uploadButton('Upload Insurance Document', 'insurance'),
-
-            const SizedBox(height: 25),
-
-            sectionTitle("ACCOUNT ACCESS"),
-            const SizedBox(height: 15),
             TCustomeFormField(
               hint: "Email",
               validation: Validator.validateEmail,
               onChanged: (val) => _dispatch('accountEmail', val),
             ),
-
             TCustomeFormField(
               hint: "Password",
               isObscured: true,
@@ -226,6 +259,7 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               hint: "Confirm Password",
               isObscured: true,
               validation: Validator.validatePassword,
+              // No dispatch — local confirm-only field
             ),
           ],
         );

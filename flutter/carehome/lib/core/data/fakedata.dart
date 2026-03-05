@@ -27,15 +27,6 @@ class CareHomeAccount {
   });
 }
 
-CareHomeAccount careHomeAccount = CareHomeAccount(
-  name: 'Sunrise Care Home',
-  email: 'admin@sunrisecare.com',
-  phone: '+44 20 7946 0958',
-  address: '12 Sunrise Avenue, London, UK',
-  registrationNumber: 'CQC-2024-00123',
-  managerName: 'Dr. Olivia Bennett',
-);
-
 final List<CareHomeData> CareHomeDatasFakeData = [
   CareHomeData(
     name: 'Sunrise Care Home',
@@ -91,59 +82,6 @@ final List<CareHomeData> CareHomeDatasFakeData = [
 ];
 
 
-// ─── Offers ──────────────────────────────────────────────────────────────────
-List<OfferModel> fakeOffers = [
-  OfferModel(
-    id: '1',
-    title: 'Evening Care Assistant',
-    branch: 'Sunrise Care Home – Main Branch',
-    lat: 51.5074,
-    lng: -0.1278,
-    isActive: true,
-    applicationsCount: 3,
-    shifts: [
-      OfferShift(date: 'Saturday, 2026-01-25', from: '18:00', to: '22:00'),
-      OfferShift(date: 'Sunday, 2026-01-26', from: '17:00', to: '21:00'),
-    ],
-  ),
-  OfferModel(
-    id: '2',
-    title: 'Night Shift Nurse',
-    branch: 'Sunrise Care Home – West Wing',
-    lat: 51.5080,
-    lng: -0.1290,
-    isActive: true,
-    applicationsCount: 5,
-    shifts: [
-      OfferShift(date: 'Monday, 2026-01-27', from: '22:00', to: '06:00'),
-    ],
-  ),
-  OfferModel(
-    id: '3',
-    title: 'Morning Care Assistant',
-    branch: 'Sunrise Care Home – East Wing',
-    lat: 51.5065,
-    lng: -0.1265,
-    isActive: false,
-    applicationsCount: 1,
-    shifts: [
-      OfferShift(date: 'Tuesday, 2026-01-21', from: '07:00', to: '13:00'),
-    ],
-  ),
-  OfferModel(
-    id: '4',
-    title: 'Weekend Support Worker',
-    branch: 'Sunrise Care Home – Garden Unit',
-    lat: 51.5090,
-    lng: -0.1300,
-    isActive: false,
-    applicationsCount: 0,
-    shifts: [
-      OfferShift(date: 'Saturday, 2026-01-18', from: '09:00', to: '15:00'),
-      OfferShift(date: 'Sunday, 2026-01-19', from: '09:00', to: '15:00'),
-    ],
-  ),
-];
 
 // ─── Applications ─────────────────────────────────────────────────────────────
 final List<ApplicationModel> applications = [
@@ -202,83 +140,6 @@ PswProfile pswProfile = PswProfile(
 );
 
 // ─── Available Offers (from care homes) ──────────────────────────────────────
-final List<OfferModel> availableOffers = [
-  OfferModel(
-    id: 'o1',
-    title: 'Evening Care Assistant',
-    branch: 'Sunrise Care Home – Main Branch',
-    lat: 51.5074,
-    lng: -0.1278,
-    isActive: true,
-    applicationsCount: 3,
-    shifts: [
-      OfferShift(date: 'Saturday, 2026-03-07', from: '18:00', to: '22:00'),
-      OfferShift(date: 'Sunday, 2026-03-08', from: '17:00', to: '21:00'),
-    ],
-  ),
-  OfferModel(
-    id: 'o2',
-    title: 'Night Shift Nurse',
-    branch: 'Golden Age Residence – West Wing',
-    lat: 51.5080,
-    lng: -0.1290,
-    isActive: true,
-    applicationsCount: 5,
-    shifts: [
-      OfferShift(date: 'Monday, 2026-03-09', from: '22:00', to: '06:00'),
-    ],
-  ),
-  OfferModel(
-    id: 'o3',
-    title: 'Morning Support Worker',
-    branch: 'Peaceful Life Care – East Wing',
-    lat: 51.5065,
-    lng: -0.1265,
-    isActive: true,
-    applicationsCount: 2,
-    shifts: [
-      OfferShift(date: 'Wednesday, 2026-03-11', from: '07:00', to: '13:00'),
-      OfferShift(date: 'Thursday, 2026-03-12', from: '07:00', to: '13:00'),
-    ],
-  ),
-  OfferModel(
-    id: 'o4',
-    title: 'Weekend Carer',
-    branch: 'Silver Years Center – Garden Unit',
-    lat: 51.5090,
-    lng: -0.1300,
-    isActive: true,
-    applicationsCount: 1,
-    shifts: [
-      OfferShift(date: 'Saturday, 2026-03-14', from: '09:00', to: '17:00'),
-      OfferShift(date: 'Sunday, 2026-03-15', from: '09:00', to: '17:00'),
-    ],
-  ),
-  OfferModel(
-    id: 'o5',
-    title: 'Dementia Care Specialist',
-    branch: 'Harmony Living – Memory Unit',
-    lat: 51.5100,
-    lng: -0.1310,
-    isActive: true,
-    applicationsCount: 4,
-    shifts: [
-      OfferShift(date: 'Tuesday, 2026-03-10', from: '14:00', to: '20:00'),
-    ],
-  ),
-  OfferModel(
-    id: 'o6',
-    title: 'Day Shift Carer',
-    branch: 'Bluebell Care Home',
-    lat: 51.5055,
-    lng: -0.1255,
-    isActive: true,
-    applicationsCount: 0,
-    shifts: [
-      OfferShift(date: 'Friday, 2026-03-13', from: '08:00', to: '16:00'),
-    ],
-  ),
-];
 
 // ─── Applied Jobs ─────────────────────────────────────────────────────────────
 List<AppliedJob> appliedJobs = [

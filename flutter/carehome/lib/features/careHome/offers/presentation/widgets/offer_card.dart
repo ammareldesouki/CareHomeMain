@@ -1,30 +1,35 @@
 // lib/features/careHome/offers/presentation/widgets/offer_card.dart
-
-import 'package:carehome/features/careHome/offers/presentation/pages/offer_detailes.dart';
 import 'package:flutter/material.dart';
-import '../../data/models/offer_model.dart';
-class OfferCard extends StatelessWidget {
-  final OfferModel offer;
-  final VoidCallback onChanged;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-  const OfferCard({super.key, required this.offer, required this.onChanged});
+import 'package:carehome/features/careHome/application/presentation/pages/application_screen.dart';
+
+import '../../data/models/offer_model.dart';
+import '../manager/care_home_offers_bloc.dart';
+import '../pages/offer_detailes.dart';
+import 'edite_offer_dilong.dart';
+
+class OfferCard extends StatelessWidget {
+  final CareHomeOfferListItem offer;
+
+  const OfferCard({super.key, required this.offer});
 
   @override
   Widget build(BuildContext context) {
-    final isActive = offer.isActive;
-    final statusColor = isActive ? Colors.green : Colors.red;
-    final statusBg = isActive
-        ? Colors.green.withOpacity(0.1)
-        : Colors.red.withOpacity(0.1);
-    final statusLabel = isActive ? 'Active' : 'Inactive';
-
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () async {
+        // Fetch full detail then open dialog
+        context
+            .read<CareHomeOffersBloc>()
+            .add(FetchCareHomeOfferDetailEvent(offer.id));
         await showDialog(
           context: context,
           builder: (_) =>
-              OfferDetailsDialog(offer: offer, onChanged: onChanged),
+              BlocProvider.value(
+                value: context.read<CareHomeOffersBloc>(),
+                child: const OfferDetailsDialog(),
+              ),
         );
       },
       child: Container(
@@ -44,7 +49,7 @@ class OfferCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ──────────────────────────────────────────────────────
+            // ── Header: title + rate ───────────────────────────────────
             Row(
               children: [
                 Expanded(
@@ -55,16 +60,16 @@ class OfferCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(
-                    color: statusBg,
+                    color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Text(
-                    statusLabel,
+                    '\$${offer.hourlyRate.toStringAsFixed(0)}/H',
                     style: TextStyle(
-                        color: statusColor,
+                        color: Colors.blue.shade700,
                         fontWeight: FontWeight.w600,
                         fontSize: 13),
                   ),
@@ -72,94 +77,58 @@ class OfferCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 12),
-
-            // ── Branch ───────────────────────────────────────────────────────
-            _InfoRow(icon: Icons.apartment_rounded, text: offer.branch),
             const SizedBox(height: 10),
 
-            // ── First shift ──────────────────────────────────────────────────
-            if (offer.shifts.isNotEmpty) ...[
-              _InfoRow(
-                  icon: Icons.calendar_today_rounded,
-                  text: offer.shifts.first.date),
-              const SizedBox(height: 10),
-              _InfoRow(
-                  icon: Icons.access_time_filled_rounded,
-                  text:
-                  '${offer.shifts.first.from} – ${offer.shifts.first.to}'),
-            ],
-
-            if (offer.shifts.length > 1) ...[
-              const SizedBox(height: 6),
-              Text(
-                '+${offer.shifts.length - 1} more shift${offer.shifts.length -
-                    1 > 1 ? 's' : ''}',
-                style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.blue.shade600,
-                    fontWeight: FontWeight.w500),
-              ),
-            ],
+            // ── Address ────────────────────────────────────────────────
+            _InfoRow(
+                icon: Icons.location_on_outlined, text: offer.address),
 
             const SizedBox(height: 14),
             Divider(color: Colors.grey.shade100),
             const SizedBox(height: 10),
 
-            // ── Footer ───────────────────────────────────────────────────────
+            // ── Footer actions ─────────────────────────────────────────
             Row(
               children: [
                 _ChipButton(
-                  icon: Icons.group_outlined,
-                  label: '${offer.applicationsCount} Applications',
+                  icon: Icons.edit_outlined,
+                  label: 'Edit',
                   color: Colors.blue,
-                ),
-                const Spacer(),
-                _ChipButton(
-                  icon: isActive ? Icons.toggle_on_rounded : Icons
-                      .toggle_off_rounded,
-                  label: isActive ? 'Deactivate' : 'Activate',
-                  color: isActive ? Colors.orange : Colors.green,
                   onTap: () {
-                    offer.isActive = !offer.isActive;
-                    onChanged();
+                    context
+                        .read<CareHomeOffersBloc>()
+                        .add(FetchCareHomeOfferDetailEvent(offer.id));
+                    showDialog(
+                      context: context,
+                      builder: (_) =>
+                          BlocProvider.value(
+                            value: context.read<CareHomeOffersBloc>(),
+                            child: EditOfferDialog(offerId: offer.id),
+                          ),
+                    );
                   },
                 ),
                 const SizedBox(width: 8),
                 _ChipButton(
+                  icon: Icons.people_outline_rounded,
+                  label: 'Applications',
+                  color: Colors.teal,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ApplictionScreen(offerId: offer.id),
+                      ),
+                    );
+                  },
+                ),
+                const Spacer(),
+                _ChipButton(
                   icon: Icons.delete_outline_rounded,
                   label: 'Delete',
                   color: Colors.red,
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) =>
-                          AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            title: const Text('Delete Offer'),
-                            content: Text(
-                                'Are you sure you want to delete "${offer
-                                    .title}"?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel')),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  // trigger removal from parent
-                                  onChanged();
-                                },
-                                child: const Text('Delete',
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                    );
-                  },
+                  onTap: () => _confirmDelete(context),
                 ),
               ],
             ),
@@ -168,9 +137,40 @@ class OfferCard extends StatelessWidget {
       ),
     );
   }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) =>
+          AlertDialog(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text('Delete Offer'),
+            content:
+            Text('Are you sure you want to delete "${offer.title}"?'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel')),
+              ElevatedButton(
+                style:
+                ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () {
+                  Navigator.pop(context);
+                  context
+                      .read<CareHomeOffersBloc>()
+                      .add(DeleteOfferEvent(offer.id));
+                },
+                child: const Text('Delete',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ],
+      ),
+    );
+  }
 }
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;
@@ -185,8 +185,9 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
             child: Text(text,
-                style:
-                TextStyle(fontSize: 14, color: Colors.grey.shade700))),
+                style: TextStyle(
+                    fontSize: 14, color: Colors.grey.shade700),
+                overflow: TextOverflow.ellipsis)),
       ],
     );
   }
@@ -208,7 +209,8 @@ class _ChipButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding:
+        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: color.withOpacity(0.08),
           borderRadius: BorderRadius.circular(20),
