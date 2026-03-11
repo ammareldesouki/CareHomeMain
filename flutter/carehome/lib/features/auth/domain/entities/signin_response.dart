@@ -12,7 +12,7 @@ class SignInResponse {
     required this.email,
     required this.role,
     required this.userId,
-    this.workStatus = false,
+    required this.workStatus,
   });
 
   factory SignInResponse.fromMap(Map<String, dynamic> map) => SignInResponse(

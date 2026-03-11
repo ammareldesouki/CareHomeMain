@@ -263,11 +263,21 @@ class _AddOfferDialogState extends State<AddOfferDialog> {
                 children: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel')),
+                      child: Text('Cancel', style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium,)),
                   const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: _submit,
-                    child: const Text('Add Offer'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Add Offer', style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: Colors.white),),
+                    ),
                   ),
                 ],
               ),

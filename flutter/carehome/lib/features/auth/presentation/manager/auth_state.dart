@@ -19,6 +19,10 @@ class AuthSignInError extends AuthState {
   AuthSignInError(this.error);
 }
 
+final class AuthLoading extends AuthState {}
+
+final class AuthLoggedOut extends AuthState {}
+
 // ── Sign Up states ───────────────────────────────────────────────────────────
 class AuthSignUpLoading extends AuthState {}
 

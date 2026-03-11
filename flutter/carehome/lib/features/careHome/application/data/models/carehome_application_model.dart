@@ -17,7 +17,7 @@ class CareHomeShiftApplicationModel extends CareHomeShiftApplicationEntity {
       date: map['date'] ?? '',
       startTime: map['startTime'] ?? '',
       endTime: map['endTime'] ?? '',
-      status: map['status'] ?? 1,
+      status: map['status'],
     );
   }
 }

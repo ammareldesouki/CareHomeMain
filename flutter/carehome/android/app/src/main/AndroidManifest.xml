@@ -2,6 +2,9 @@
 
     <!-- ================= PERMISSIONS ================= -->
 
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
     <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -27,14 +30,14 @@
     <!-- ================= APPLICATION ================= -->
 
     <application
-        android:label="carehome"
+        android:label="Relief"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE" />
+            android:value="AIzaSyDoM03bZPnDKNZA_xApoIPyZNRLh7I2Z4E" />
 
         <activity
             android:name=".MainActivity"

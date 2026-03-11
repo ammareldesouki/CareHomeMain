@@ -7,7 +7,7 @@ class TElevatedButton extends StatelessWidget {
   const TElevatedButton({
     super.key,
     required this.text,
-    this.onPressed, // ✅ no longer required
+    required this.onPressed, // ✅ no longer required
   });
 
   @override
@@ -21,7 +21,8 @@ class TElevatedButton extends StatelessWidget {
           style: Theme
               .of(context)
               .textTheme
-              .bodyMedium,
+              .bodyMedium!
+              .copyWith(color: Colors.white),
         ),
       ),
     );

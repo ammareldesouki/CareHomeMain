@@ -24,11 +24,9 @@ class _MapScreenState extends State<MapScreen>
   late PageController _pageController;
   GoogleMapController? _mapController;
 
-  // null = still locating, non-null = ready
   LatLng? _myPosition;
   bool _locationDenied = false;
 
-  // Markers cached in state — survive tab switches
   final Map<String, Marker> _markers = {};
 
   @override
@@ -70,14 +68,30 @@ class _MapScreenState extends State<MapScreen>
         );
       });
     } catch (_) {
-      // Use a default position so the map still renders
       setState(() => _myPosition = const LatLng(0, 0));
     }
   }
 
+  /// Re-locates and animates camera to current position
+  Future<void> _goToMyLocation() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      final me = LatLng(pos.latitude, pos.longitude);
+      _animateTo(me);
+      setState(() {
+        _myPosition = me;
+        _markers['__me__'] = Marker(
+          markerId: const MarkerId('__me__'),
+          position: me,
+          infoWindow: const InfoWindow(title: 'You'),
+        );
+      });
+    } catch (_) {}
+  }
+
   void _addOfferMarker(OfferDetailEntity detail, int index) {
     if (_markers.containsKey(detail.id)) {
-      // Already exists — just move camera
       _animateTo(LatLng(detail.latitude, detail.longitude));
       return;
     }
@@ -103,9 +117,7 @@ class _MapScreenState extends State<MapScreen>
   }
 
   void _openSheet(BuildContext ctx, String offerId, int index) {
-    // Dispatch detail fetch BEFORE opening sheet
     ctx.read<OffersBloc>().add(FetchOfferDetailEvent(offerId));
-
     showModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
@@ -125,7 +137,6 @@ class _MapScreenState extends State<MapScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
-    // ── Location denied ────────────────────────────────────────────────────
     if (_locationDenied) {
       return const Center(
         child: Padding(
@@ -135,44 +146,69 @@ class _MapScreenState extends State<MapScreen>
             children: [
               Icon(Icons.location_off, size: 56, color: Colors.grey),
               SizedBox(height: 12),
-              Text('Location permission denied.\nPlease enable it in settings.',
-                  textAlign: TextAlign.center),
+              Text(
+                'Location permission denied.\nPlease enable it in settings.',
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
       );
     }
 
-    // ── Still locating ─────────────────────────────────────────────────────
     if (_myPosition == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // ── Map ready ─────────────────────────────────────────────────────────
     return BlocBuilder<OffersBloc, OffersState>(
-      // CRITICAL: rebuild ONLY when the offer list changes, NEVER on detail
       buildWhen: (prev, curr) =>
-      prev.offers != curr.offers ||
-          prev.listLoading != curr.listLoading,
+      prev.offers != curr.offers || prev.listLoading != curr.listLoading,
       builder: (context, state) {
         final offers = state.offers;
 
         return Stack(
           children: [
-            // ── Google Map ───────────────────────────────────────────────
+            // ── Google Map ─────────────────────────────────────────────
             GoogleMap(
               initialCameraPosition:
               CameraPosition(target: _myPosition!, zoom: 14),
               markers: Set.of(_markers.values),
               myLocationEnabled: true,
-              myLocationButtonEnabled: true,
+              myLocationButtonEnabled: false,
+              // ← disable default button
               onMapCreated: (c) => _mapController = c,
             ),
 
-            // ── Cards carousel ───────────────────────────────────────────
+            // ── Custom "My Location" button — top right ────────────────
+            Positioned(
+              top: MediaQuery
+                  .of(context)
+                  .padding
+                  .top + 16,
+              right: 16,
+              child: Material(
+                elevation: 4,
+                shape: const CircleBorder(),
+                color: Colors.white,
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: _goToMyLocation,
+                  child: const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.my_location,
+                      size: 24,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // ── Cards carousel ─────────────────────────────────────────
             if (offers.isNotEmpty)
               Positioned(
-                bottom: 40, // above bottom nav
+                bottom: 20,
                 left: 0,
                 right: 0,
                 child: SizedBox(
@@ -186,7 +222,6 @@ class _MapScreenState extends State<MapScreen>
                       if (marker != null) {
                         _animateTo(marker.position);
                       } else {
-                        // Need lat/lng — fetch detail to get it
                         context
                             .read<OffersBloc>()
                             .add(FetchOfferDetailEvent(offer.id));
@@ -195,7 +230,6 @@ class _MapScreenState extends State<MapScreen>
                     itemBuilder: (ctx, index) {
                       final offer = offers[index];
                       return BlocListener<OffersBloc, OffersState>(
-                        // Only fire when THIS offer's detail arrives
                         listenWhen: (prev, curr) =>
                         curr.detail?.id == offer.id &&
                             curr.detail != prev.detail,
@@ -216,7 +250,7 @@ class _MapScreenState extends State<MapScreen>
                 ),
               ),
 
-            // ── Empty ────────────────────────────────────────────────────
+            // ── Empty state ────────────────────────────────────────────
             if (offers.isEmpty && !state.listLoading)
               Positioned(
                 bottom: 10,
@@ -231,13 +265,15 @@ class _MapScreenState extends State<MapScreen>
                       BoxShadow(blurRadius: 8, color: Colors.black12)
                     ],
                   ),
-                  child: const Text('No offers available nearby',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey)),
+                  child: const Text(
+                    'No offers available nearby',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ),
 
-            // ── Loading spinner (refresh) ────────────────────────────────
+            // ── Loading spinner ────────────────────────────────────────
             if (state.listLoading)
               const Positioned(
                 top: 60,

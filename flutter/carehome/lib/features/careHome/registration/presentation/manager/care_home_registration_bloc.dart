@@ -120,6 +120,7 @@ class CareHomeRegistrationBloc
           NetworkDioHandler().setCurrentUser(
             userId: user.userId,
             role: user.role,
+            workStatus: user.workStatus,
           );
           emit(
             state.copyWith(

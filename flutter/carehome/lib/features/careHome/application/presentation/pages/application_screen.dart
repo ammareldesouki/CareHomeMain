@@ -23,7 +23,11 @@ class ApplictionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (offerId == null) {
-      return _NoOfferSelected();
+      //   CareHomeApplicationBloc()
+      //     ..add(FetchApplicationsByOfferEvent(offerId!)),
+      // child: _ApplicationBody(offerId: offerId!),
+
+
     }
 
     return BlocProvider(
@@ -31,6 +35,7 @@ class ApplictionScreen extends StatelessWidget {
       CareHomeApplicationBloc()
         ..add(FetchApplicationsByOfferEvent(offerId!)),
       child: _ApplicationBody(offerId: offerId!),
+
     );
   }
 }
@@ -41,47 +46,61 @@ class _NoOfferSelected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       backgroundColor: Colors.grey.shade50,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.2,
+
+
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),),
+            child: Padding(
+              padding: const EdgeInsets.all(20,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Applications',
                       style: Theme
                           .of(context)
                           .textTheme
                           .headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                          ?.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.w800)),
                   Text('Review & respond to applicants',
                       style: TextStyle(color: Colors.grey.shade500)),
                 ],
               ),
             ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.touch_app_outlined,
-                        size: 64, color: Colors.grey.shade300),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Tap an offer to view its applications',
-                      style: TextStyle(
-                          color: Colors.grey.shade400, fontSize: 15),
-                    ),
-                  ],
-                ),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.touch_app_outlined,
+                      size: 64, color: Colors.grey.shade300),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Tap an offer to view its applications',
+                    style: TextStyle(
+                        color: Colors.grey.shade400, fontSize: 15),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -117,43 +136,68 @@ class _ApplicationBody extends StatelessWidget {
         length: 3,
         child: Scaffold(
           backgroundColor: Colors.grey.shade50,
-          body: SafeArea(
-            child: BlocBuilder<CareHomeApplicationBloc,
-                CareHomeApplicationState>(
-              buildWhen: (_, s) =>
-              s is CareHomeApplicationsLoading ||
-                  s is CareHomeApplicationsLoaded ||
-                  s is CareHomeApplicationsError,
-              builder: (context, state) {
-                final all = state is CareHomeApplicationsLoaded
-                    ? state.applications
-                    : <CareHomeApplicationEntity>[];
+          body: BlocBuilder<CareHomeApplicationBloc,
+              CareHomeApplicationState>(
+            buildWhen: (_, s) =>
+            s is CareHomeApplicationsLoading ||
+                s is CareHomeApplicationsLoaded ||
+                s is CareHomeApplicationsError,
+            builder: (context, state) {
+              final all = state is CareHomeApplicationsLoaded
+                  ? state.applications
+                  : <CareHomeApplicationEntity>[];
 
-                int _count(int status) =>
-                    all
-                        .where((a) => a.overallStatus == status)
-                        .length;
+              int _count(String status) =>
+                  all
+                      .where((a) => a.overallStatus == status)
+                      .length;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Header ───────────────────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              return Column(
+
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  // ── Header ───────────────────────────────────────────
+
+                  Container(
+                    width: double.infinity,
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height * 0.3,
+
+
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                  'Applications',
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                      fontWeight: FontWeight.w800),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Applications',
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(color: Colors.white,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                    Text('Review & respond to applicants',
+                                        style: TextStyle(
+                                            color: Colors.grey.shade500)),
+                                  ],
                                 ),
                               ),
                               // Refresh button
@@ -163,14 +207,11 @@ class _ApplicationBody extends StatelessWidget {
                                         .read<CareHomeApplicationBloc>()
                                         .add(FetchApplicationsByOfferEvent(
                                         offerId)),
-                                icon: const Icon(Icons.refresh_rounded),
+                                icon: const Icon(
+                                  Icons.refresh_rounded, color: Colors.white,),
                               ),
                             ],
                           ),
-                          Text('Review & respond to applicants',
-                              style: TextStyle(
-                                  color: Colors.grey.shade500)),
-
                           const SizedBox(height: 12),
 
                           // ── Summary chips ───────────────────────────────
@@ -179,17 +220,17 @@ class _ApplicationBody extends StatelessWidget {
                             child: Row(children: [
                               _Chip(
                                   label: 'Pending',
-                                  count: _count(1),
+                                  count: _count("Pending"),
                                   color: Colors.orange),
                               const SizedBox(width: 8),
                               _Chip(
                                   label: 'Accepted',
-                                  count: _count(3),
+                                  count: _count("Accepted"),
                                   color: Colors.green),
                               const SizedBox(width: 8),
                               _Chip(
                                   label: 'Rejected',
-                                  count: _count(2),
+                                  count: _count("Rejected"),
                                   color: Colors.red),
                             ]),
                           ),
@@ -226,64 +267,65 @@ class _ApplicationBody extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 8),
 
-                    // ── Loading / Error ─────────────────────────────────
-                    if (state is CareHomeApplicationsLoading)
-                      const Expanded(
-                          child: Center(
-                              child: CircularProgressIndicator())),
+                  const SizedBox(height: 8),
 
-                    if (state is CareHomeApplicationsError)
-                      Expanded(
+                  // ── Loading / Error ─────────────────────────────────
+                  if (state is CareHomeApplicationsLoading)
+                    const Expanded(
                         child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.error_outline,
-                                  size: 48, color: Colors.red),
-                              const SizedBox(height: 12),
-                              Text(state.message,
-                                  textAlign: TextAlign.center),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () =>
-                                    context
-                                        .read<CareHomeApplicationBloc>()
-                                        .add(FetchApplicationsByOfferEvent(
-                                        offerId)),
-                                child: const Text('Retry'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            child: CircularProgressIndicator())),
 
-                    // ── Tab views ────────────────────────────────────────
-                    if (state is CareHomeApplicationsLoaded)
-                      Expanded(
-                        child: TabBarView(
+                  if (state is CareHomeApplicationsError)
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            _AppList(
-                                all: all,
-                                statusFilter: 1,
-                                offerId: offerId),
-                            _AppList(
-                                all: all,
-                                statusFilter: 3,
-                                offerId: offerId),
-                            _AppList(
-                                all: all,
-                                statusFilter: 2,
-                                offerId: offerId),
+                            const Icon(Icons.error_outline,
+                                size: 48, color: Colors.red),
+                            const SizedBox(height: 12),
+                            Text(state.message,
+                                textAlign: TextAlign.center),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () =>
+                                  context
+                                      .read<CareHomeApplicationBloc>()
+                                      .add(FetchApplicationsByOfferEvent(
+                                      offerId)),
+                              child: const Text('Retry'),
+                            ),
                           ],
                         ),
                       ),
-                  ],
-                );
-              },
-            ),
+                    ),
+
+                  // ── Tab views ────────────────────────────────────────
+                  if (state is CareHomeApplicationsLoaded)
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _AppList(
+                              all: all,
+                              statusFilter: "Pending",
+                              offerId: offerId),
+                          _AppList(
+                              all: all,
+                              statusFilter: "Accepted",
+                              offerId: offerId),
+                          _AppList(
+                              all: all,
+                              statusFilter: "RejectedByCareHome",
+                              offerId: offerId),
+                        ],
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -295,7 +337,7 @@ class _ApplicationBody extends StatelessWidget {
 
 class _AppList extends StatelessWidget {
   final List<CareHomeApplicationEntity> all;
-  final int statusFilter;
+  final String statusFilter;
   final String offerId;
 
   const _AppList({

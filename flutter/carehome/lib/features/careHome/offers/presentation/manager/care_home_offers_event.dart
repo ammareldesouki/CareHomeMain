@@ -38,3 +38,9 @@ class DeleteOfferEvent extends CareHomeOffersEvent {
 
   DeleteOfferEvent(this.offerId);
 }
+
+class FetchApplicationsEvent extends CareHomeOffersEvent {
+  final String offerId;
+
+  FetchApplicationsEvent(this.offerId);
+}

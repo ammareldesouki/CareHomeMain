@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../layout/bottom_navegation_bar.dart';
+import '../../../../core/utils/image_picker_helper.dart';
 
 class UploadIdScreen extends StatefulWidget {
   const UploadIdScreen({super.key});
@@ -16,42 +16,11 @@ class _UploadIdScreenState extends State<UploadIdScreen> {
   File? frontId;
   File? backId;
 
-  final ImagePicker _picker = ImagePicker();
-
-  /// 🔐 Permission handler
-  Future<bool> _requestPermission(ImageSource source) async {
-    Permission permission = source == ImageSource.camera
-        ? Permission.camera
-        : Permission.photos;
-
-    final status = await permission.request();
-
-    if (status.isGranted) return true;
-
-    if (status.isPermanentlyDenied) {
-      openAppSettings();
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Permission is required to continue')),
-    );
-
-    return false;
-  }
-
-  /// 📸 Pick image with permission
   Future<void> _pickImage(bool isFront, ImageSource source) async {
-    final allowed = await _requestPermission(source);
-    if (!allowed) return;
-
-    final XFile? image = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
-
-    if (image != null) {
+    final path = await ImagePickerHelper.pick(context, source);
+    if (path != null) {
       setState(() {
-        isFront ? frontId = File(image.path) : backId = File(image.path);
+        isFront ? frontId = File(path) : backId = File(path);
       });
     }
   }

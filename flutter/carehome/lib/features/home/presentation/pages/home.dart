@@ -90,26 +90,30 @@ class _HomeScreenState extends State<HomeScreen>
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),),
+                child: Column(
+
+                  children: [
+                    Container(
+                      width: double.infinity,
+
+                      height: 150,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text('Available Offers',
                                 style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
+                                    color: Colors.white,
                                     letterSpacing: -0.5)),
                             const SizedBox(height: 4),
                             Text('${state.offers.length} offers near you',
@@ -117,8 +121,8 @@ class _HomeScreenState extends State<HomeScreen>
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               SliverPadding(

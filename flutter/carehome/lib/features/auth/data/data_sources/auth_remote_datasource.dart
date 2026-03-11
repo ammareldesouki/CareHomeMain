@@ -9,6 +9,8 @@ import '../models/singIn_request.dart';
 
 abstract class AuthRemoteDataSource {
   Future<SignInResponse> signIn(SignInRequest request);
+
+  Future<void> logout();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -30,4 +32,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerFailure(message: e.message ?? 'Unknown error');
     }
   }
+
+  Future<void> logout() async {
+    try {
+      await _dio.post(EndPoints.logout);
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      if (data is Map<String, dynamic>) {
+        throw ServerFailure.fromMap(data);
+      }
+      throw ServerFailure(message: e.message ?? 'Logout failed');
+    }
+  }
 }
+

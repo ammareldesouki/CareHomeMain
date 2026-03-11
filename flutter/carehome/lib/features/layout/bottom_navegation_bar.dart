@@ -1,14 +1,16 @@
-import 'package:carehome/features/careHome/account/presentation/pages/account.dart';
 import 'package:carehome/features/psw/application/presentation/manager/psw_application_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../admin/presentation/pages/admin_dashboard.dart';
+
 import '../../../core/constants/colors.dart';
+import '../careHome/account/presentation/pages/carehome_account.dart';
 import '../careHome/application/presentation/pages/application_screen.dart';
 import '../careHome/offers/presentation/pages/offers.dart';
 import '../home/presentation/pages/home.dart';
 import '../map/presentation/pages/map.dart';
-import '../psw/account/presentation/pages/account.dart';
+import '../psw/account/presentation/pages/psw_account_screen.dart';
 import '../psw/application/presentation/pages/application_screen.dart';
 import '../psw/offer/presentation/manager/offers_bloc.dart';
 
@@ -26,6 +28,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     if (widget.role == 'PSW') return _buildPsw();
+    if (widget.role.toLowerCase() == 'admin') return const AdminDashboard();
     return _buildCareHome();
   }
 
@@ -44,19 +47,15 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
       ],
       child: Scaffold(
         backgroundColor: const Color(0xFFF4F6FB),
-        // IndexedStack keeps every screen alive — tab switches are instant
-        // and state (scroll position, map markers, bloc data) is preserved
-        body: SafeArea(
-          bottom: false,
-          child: IndexedStack(
-            index: _index,
-            children: const [
-              HomeScreen(), // pure content widget — no inner Scaffold
-              MapScreen(), // pure content widget — no inner Scaffold
-              PswAppliedScreen(),
-              PswAccountScreen(),
-            ],
-          ),
+
+        body: IndexedStack(
+          index: _index,
+          children: const [
+            HomeScreen(), // pure content widget — no inner Scaffold
+            MapScreen(), // pure content widget — no inner Scaffold
+            PswAppliedScreen(),
+            PswAccountScreen(),
+          ],
         ),
         bottomNavigationBar: _navBar(
           items: const [
@@ -86,16 +85,13 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
   Widget _buildCareHome() {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FB),
-      body: SafeArea(
-        bottom: false,
-        child: IndexedStack(
-          index: _index,
-          children: const [
-            OfferScreen(),
-            ApplictionScreen(),
-            PswAccountScreen(),
-          ],
-        ),
+      body: IndexedStack(
+        index: _index,
+        children: const [
+          OfferScreen(),
+          ApplictionScreen(),
+          CAReAccountScreen(),
+        ],
       ),
       bottomNavigationBar: _navBar(
         items: const [

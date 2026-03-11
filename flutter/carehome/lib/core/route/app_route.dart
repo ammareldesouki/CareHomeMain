@@ -2,7 +2,9 @@ import 'package:carehome/features/psw/registration/presentation/pages/register_f
     hide PswVerificationScreen;
 import 'package:flutter/material.dart';
 
+import '../../features/admin/presentation/pages/admin_dashboard.dart';
 import '../../features/careHome/registration/presentation/pages/organization_register_screen.dart';
+import '../../features/careHome/registration/presentation/pages/psw_preference_screen.dart';
 import '../../features/auth/presentation/pages/login.dart';
 import '../../features/auth/presentation/pages/choose-account-type.dart';
 import '../../features/on_boarding/presentation/pages/on_boarding.dart';
@@ -46,6 +48,16 @@ class AppRouter {
       case RouteNames.pswVerification:
         return MaterialPageRoute(
           builder: (_) => const PswVerificationScreen(),
+          settings: settings,
+        );
+      case RouteNames.pswPreference:
+        return MaterialPageRoute(
+          builder: (_) => const PswPreferenceScreen(),
+          settings: settings,
+        );
+      case RouteNames.adminDashboard:
+        return MaterialPageRoute(
+          builder: (_) => const AdminDashboard(),
           settings: settings,
         );
       default:

@@ -1,3 +1,4 @@
+import 'package:carehome/core/constants/api.dart';
 import 'package:dio/dio.dart';
 import '../../../../../core/failure/server_failure.dart';
 import '../../../../../core/network/dio_handler.dart';
@@ -23,7 +24,8 @@ class CareHomeApplicationRemoteDataSourceImpl
     String offerId,
   ) async {
     try {
-      final response = await _dio.get('/api/carehome/applications/$offerId');
+      final response = await _dio.get(
+          EndPoints.caregetApplicationsByOffer(offerId));
       final List data = response.data is List
           ? response.data
           : (response.data['items'] ?? response.data['data'] ?? []);
@@ -40,7 +42,7 @@ class CareHomeApplicationRemoteDataSourceImpl
   }) async {
     try {
       await _dio.post(
-        '/api/carehome/applications/accept',
+        EndPoints.careHomeAcceptApplication,
         data: {'shiftId': shiftId, 'jobRequestItemId': jobRequestItemId},
       );
     } on DioException catch (e) {
@@ -52,7 +54,7 @@ class CareHomeApplicationRemoteDataSourceImpl
   Future<void> rejectApplication(String jobRequestItemId) async {
     try {
       await _dio.post(
-        '/api/carehome/applications/reject',
+        EndPoints.careHomeRejectApplication,
         data: {'jobRequestItemId': jobRequestItemId},
       );
     } on DioException catch (e) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/failure/server_failure.dart';
@@ -27,6 +29,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ),
     );
 
+    final authDataSource = AuthRemoteDataSourceImpl();
+
+    // ── Logout ───────────────────────────────────────────────────────────────
+    on<LogoutEvent>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authDataSource.logout();
+      } catch (_) {
+        // Even if the API call fails, log the user out locally
+      }
+      NetworkDioHandler().clearAuthToken();
+      emit(AuthLoggedOut());
+    });
+
     // ── Sign In ──────────────────────────────────────────────────────────────
     on<SignInEvent>((event, emit) async {
       emit(AuthSignInLoading());
@@ -40,10 +56,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
         (user) {
           NetworkDioHandler().setAuthToken(user.token);
-          // ✅ Store userId + role so any screen can read it from the singleton
           NetworkDioHandler().setCurrentUser(
             userId: user.userId,
             role: user.role,
+            workStatus: user.workStatus,
           );
           emit(AuthSignInSuccess(user));
         },
@@ -83,6 +99,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           NetworkDioHandler().setCurrentUser(
             userId: entity.userId,
             role: 'PSW',
+            workStatus: false,
           );
           emit(AuthSignUpSuccess(token: entity.token, userId: entity.userId));
         },

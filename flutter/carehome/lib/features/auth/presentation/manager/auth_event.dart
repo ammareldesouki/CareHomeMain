@@ -2,12 +2,29 @@ part of 'auth_bloc.dart';
 
 abstract class AuthEvent {}
 
+// ── App start ────────────────────────────────────────────────────────────────
+/// Fired from SplashScreen — checks secure storage for a saved token.
+class CheckAuthStatusEvent extends AuthEvent {}
+
 // ── Sign In ──────────────────────────────────────────────────────────────────
 class SignInEvent extends AuthEvent {
   final SignInRequest request;
-
   SignInEvent(this.request);
 }
+
+// ── Biometric ────────────────────────────────────────────────────────────────
+/// Fires OS biometric prompt, then silently re-calls login API.
+class BiometricLoginEvent extends AuthEvent {}
+
+/// Saves the user's choice after the "Enable biometric?" dialog.
+class EnableBiometricEvent extends AuthEvent {
+  final bool enable;
+
+  EnableBiometricEvent(this.enable);
+}
+
+// ── Logout ───────────────────────────────────────────────────────────────────
+class LogoutEvent extends AuthEvent {}
 
 // ── PSW Sign Up ──────────────────────────────────────────────────────────────
 class PswSignUpEvent extends AuthEvent {

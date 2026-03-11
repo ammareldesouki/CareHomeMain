@@ -41,7 +41,7 @@ class NetworkDioHandler {
 
   String? currentUserId;
   String? currentRole;
-  bool currentWorkStatus = false; // ← workStatus from login response
+  bool? currentWorkStatus; // ← workStatus from login response
 
   void setAuthToken(String token) {
     dio.options.headers['Authorization'] = 'Bearer $token';
@@ -50,7 +50,7 @@ class NetworkDioHandler {
   void setCurrentUser({
     required String userId,
     required String role,
-    bool workStatus = false,
+    required bool? workStatus,
   }) {
     currentUserId = userId;
     currentRole = role;

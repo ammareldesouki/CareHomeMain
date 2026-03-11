@@ -5,7 +5,7 @@ class CareHomeShiftApplicationEntity {
   final String date;
   final String startTime;
   final String endTime;
-  final int status; // 1=pending, 2=rejected, 3=accepted
+  final String status; // 1=pending, 2=rejected, 3=accepted
 
   const CareHomeShiftApplicationEntity({
     required this.jobRequestItemId,
@@ -16,16 +16,6 @@ class CareHomeShiftApplicationEntity {
     required this.status,
   });
 
-  String get statusLabel {
-    switch (status) {
-      case 3:
-        return 'Accepted';
-      case 2:
-        return 'Rejected';
-      default:
-        return 'Pending';
-    }
-  }
 }
 
 class CareHomePswEntity {
@@ -62,17 +52,20 @@ class CareHomeApplicationEntity {
   });
 
   /// Overall status: pending if ANY shift is pending, otherwise accepted/rejected
-  int get overallStatus {
-    if (shifts.any((s) => s.status == 1)) return 1;
-    if (shifts.any((s) => s.status == 3)) return 3;
-    return 2;
+  String get overallStatus {
+    if (shifts.any((s) => s.status == "QualifiedByAdmin")) return "Pending";
+    if (shifts.any((s) => s.status == "RejectedByCareHome")) return "Rejected";
+    return "Accepted";
   }
 
   String get overallStatusLabel {
     switch (overallStatus) {
-      case 3:
+      case "QualifiedByAdmin":
+        return 'Pending';
+
+      case "Accepted":
         return 'Accepted';
-      case 2:
+      case "RejectedByCareHome":
         return 'Rejected';
       default:
         return 'Pending';

@@ -1,5 +1,5 @@
 import 'package:carehome/features/careHome/registration/presentation/manager/employer_type.dart';
-
+import 'package:carehome/features/careHome/registration/presentation/pages/psw_preference_screen.dart';
 import 'package:carehome/features/careHome/registration/presentation/pages/registration_contract_screen.dart';
 import 'package:carehome/features/careHome/registration/presentation/pages/terms_and_conditions_screen.dart';
 import 'package:carehome/features/layout/bottom_navegation_bar.dart';
@@ -52,20 +52,25 @@ class _OrganizationRegisterScreenState
         builder: (_) => RegistrationContractScreen(
           bloc: _registrationBloc,
           onSigned: () {
-            // Trigger the real API call with the chosen employer type
             _registrationBloc.add(SubmitRegistrationEvent(selectedType!));
-
-
+            if (selectedType == EmployerType.individual) {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                  const CBottomNavigationBar(role: 'CareHome'),
+                  builder: (_) => const PswPreferenceScreen(),
+                ),
+                    (route) => false,
+              );
+            } else {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CBottomNavigationBar(role: 'CareHome'),
                 ),
                     (route) => false,
               );
             }
-
+          },
         ),
       ),
     );

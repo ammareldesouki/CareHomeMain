@@ -91,7 +91,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     isLastPage ? "Finish" : "Next",
                     style: Theme.of(
                       context,
-                    ).textTheme.titleMedium!.copyWith(color: Colors.black),
+                    )
+                        .textTheme
+                        .titleMedium!,
                   ),
                 ),
                 SizedBox(height: 16),

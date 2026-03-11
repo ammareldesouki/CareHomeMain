@@ -15,4 +15,6 @@ abstract class RouteNames {
   static const String registerOrganization = '/registerOrganization';
   static const String pswVerification = '/pswVerification';
   static const String pswPreference = '/pswPreference';
+
+  static const String adminDashboard = '/admin';
 }

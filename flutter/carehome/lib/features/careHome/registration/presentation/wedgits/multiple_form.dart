@@ -3,9 +3,9 @@ import 'package:carehome/features/careHome/registration/presentation/wedgits/com
 import 'package:carehome/features/auth/presentation/widgets/custome_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/constants/colors.dart';
+import '../../../../../core/utils/image_picker_helper.dart';
 import '../manager/care_home_registration_bloc.dart';
 
 class MultipleCareHomeForm extends StatefulWidget {
@@ -22,8 +22,6 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
   final TextEditingController postalCodeController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
 
-  final ImagePicker _picker = ImagePicker();
-
   void _dispatch(String field, String value) {
     context.read<CareHomeRegistrationBloc>().add(
       UpdateFormFieldEvent(fieldName: field, value: value),
@@ -37,11 +35,8 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
   }
 
   Future<void> _pickDocument(String documentKey) async {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (image != null) _uploadDoc(documentKey, image.path);
+    final path = await ImagePickerHelper.showPickerSheet(context);
+    if (path != null) _uploadDoc(documentKey, path);
   }
 
   Widget _uploadButton(String label, String documentKey) {
@@ -105,6 +100,9 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               hint: "Business License Number",
               onChanged: (val) => _dispatch('businessLicenseNumber', val),
             ),
+            const SizedBox(height: 10),
+            _uploadButton(
+                "Upload Business License Document", "businessLicense"),
 
             const SizedBox(height: 20),
 
@@ -223,6 +221,13 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
                 );
               },
             ),
+
+            const SizedBox(height: 25),
+
+            // ── Insurance ───────────────────────────────────────────────────
+            sectionTitle("INSURANCE"),
+            const SizedBox(height: 15),
+            _uploadButton("Upload Insurance Certificate", "insurance"),
 
             const SizedBox(height: 25),
 
