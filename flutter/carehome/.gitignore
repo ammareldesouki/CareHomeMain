@@ -12,6 +12,12 @@
 .swiftpm/
 migrate_working_dir/
 
+
+
+.terraform/
+*.tfstate
+*.tfstate.*
+
 # IntelliJ related
 *.iml
 *.ipr
