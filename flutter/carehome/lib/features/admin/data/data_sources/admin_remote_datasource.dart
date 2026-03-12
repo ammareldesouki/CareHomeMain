@@ -67,7 +67,8 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   @override
   Future<List<AdminApplicationModel>> getPendingApplications() async {
     try {
-      final res = await _dio.get(EndPoints.adminApplicationPsw);
+      final res = await _dio.get(EndPoints.adminApplicationPsw,
+          queryParameters: {"status": "Pending"});
       final List data = res.data['data'] ?? res.data ?? [];
       return data.map((e) => AdminApplicationModel.fromMap(e)).toList();
     } on DioException catch (e) {

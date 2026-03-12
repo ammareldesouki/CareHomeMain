@@ -38,7 +38,7 @@ class EndPoints {
 
   static String verifyAdminReject(String pswId) =>
       'api/admin/verifications/$pswId/reject';
-  static const String adminApplicationPsw = 'api/admin/applications/pending';
+  static const String adminApplicationPsw = 'api/admin/applications';
 
   static String AdminapproveApplication(String requestId) =>
       "api/admin/applications/$requestId/approve";
