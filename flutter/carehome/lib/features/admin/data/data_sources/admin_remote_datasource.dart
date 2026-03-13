@@ -89,7 +89,11 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   @override
   Future<void> rejectApplication(String requestId) async {
     try {
-      await _dio.post(EndPoints.AdminrejectApplication(requestId));
+      await _dio.post(EndPoints.AdminrejectApplication(requestId), data: {
+        "reason": "You are not qualified"
+      }
+
+      );
     } on DioException catch (e) {
       throw ServerFailure.fromMap(e.response?.data ?? {});
     }

@@ -318,7 +318,7 @@ class _ApplicationBody extends StatelessWidget {
                               offerId: offerId),
                           _AppList(
                               all: all,
-                              statusFilter: "RejectedByCareHome",
+                              statusFilter: "Rejected",
                               offerId: offerId),
                         ],
                       ),

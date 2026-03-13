@@ -12,7 +12,7 @@ class EndPoints {
   //  ------------Psw EndPoind----------------
   static const String PwRegister = "api/auth/register/psw";
   static const String pswApplyoffer = "api/applications/apply";
-  static const String pswCancelApplication = "api/applications/cancel";
+  static const String pswCancelApplication = "api/psw/applications/cancel";
   static const String pswMyApplications = "api/psw/applications";
   static const String completeProfile = "api/psw/profile";
   static const String updateProfileDocument = '/api/profile/';

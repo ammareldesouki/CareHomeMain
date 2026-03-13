@@ -42,6 +42,12 @@ class CareHomeApplicationCard extends StatelessWidget {
         return Icons.cancel_outlined;
       case "RejectedByAdmin":
         return Icons.cancel_outlined;
+      case "Accepted":
+        return Icons.check_circle_outline;
+      case "Pending":
+        return Icons.hourglass_empty_rounded;
+      case "Canceled":
+        return Icons.cancel_outlined;
 
       default:
         return Icons.hourglass_empty_rounded;

@@ -1,0 +1,1 @@
+enum EmployerType { individual, multiple }

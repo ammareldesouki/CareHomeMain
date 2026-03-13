@@ -199,10 +199,14 @@ class _PswAppliedBody extends StatelessWidget {
                       child: TabBarView(
                         children: [
                           _AppList(all: all, filter: null),
-                          _AppList(all: all, filter: "Pending"),
+                          _AppList(all: all,
+                              filter: "Pending",
+                              SecondryFilter: "QualifiedByAdmin"),
                           _AppList(all: all, filter: "Accepted"),
+                          _AppList(all: all,
+                            filter: "RejectedByCareHome",
+                            SecondryFilter: "RejectedByAdmin",),
                           _AppList(all: all, filter: "Canceled"),
-                          _AppList(all: all, filter: "RejectedByCareHome"),
                         ],
                       ),
                     ),
@@ -220,14 +224,17 @@ class _PswAppliedBody extends StatelessWidget {
 
 class _AppList extends StatelessWidget {
   final List<PswApplicationEntity> all;
-  final String? filter; // null = all
+  final String? filter;
+  final String? SecondryFilter; // null = all
 
-  const _AppList({required this.all, required this.filter});
+  const _AppList(
+      {required this.all, required this.filter, this.SecondryFilter});
 
   @override
   Widget build(BuildContext context) {
     final list =
-    filter == null ? all : all.where((a) => a.statusCode == filter).toList();
+    filter == null ? all : all.where((a) =>
+    a.statusCode == filter || a.statusCode == SecondryFilter).toList();
 
     if (list.isEmpty) {
       return Center(
@@ -275,6 +282,15 @@ class _ApplicationCard extends StatelessWidget {
         return Colors.green;
       case "RejectedByCareHome":
         return Colors.red;
+      case "Pending":
+        return Colors.orange;
+      case "RejectedByAdmin":
+        return Colors.red;
+      case "QualifiedByAdmin":
+        return Colors.green;
+
+
+
       case "Canceled":
         return Colors.grey;
       default:
@@ -284,6 +300,10 @@ class _ApplicationCard extends StatelessWidget {
 
   IconData get _icon {
     switch (app.statusCode) {
+      case "Pending":
+        return Icons.hourglass_empty_rounded;
+      case "QualifiedByAdmin":
+        return Icons.check_circle_outline_rounded;
       case "RejectedByCareHome":
         return Icons.cancel_outlined;
       case "Accepted":
@@ -327,6 +347,60 @@ class _ApplicationCard extends StatelessWidget {
                         fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
+                app.statusCode == "QualifiedByAdmin" ?
+                Column(
+                  spacing: 10,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.hourglass_empty, size: 13,
+                              color: Colors.orange),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Pending",
+                            style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12),
+                          ),
+                        ],
+
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: sc.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_icon, size: 13, color: sc),
+                          const SizedBox(width: 4),
+                          Text(
+                            app.statusCode,
+                            style: TextStyle(
+                                color: sc,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12),
+                          ),
+                        ],
+
+                      ),
+                    ),
+                  ],
+                )
+                    :
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 5),
@@ -347,8 +421,10 @@ class _ApplicationCard extends StatelessWidget {
                             fontSize: 12),
                       ),
                     ],
+
                   ),
                 ),
+
               ],
             ),
 
@@ -404,7 +480,7 @@ class _ApplicationCard extends StatelessWidget {
             if (app.statusCode == "RejectedByCareHome") ...[
               const SizedBox(height: 14),
               _Banner(
-                icon: Icons.celebration_outlined,
+                icon: Icons.info_outline_rounded,
                 message:
                 'Unfortunately this application Has been Rejected , Keep Applying',
                 color: TColors.primary,
@@ -413,7 +489,8 @@ class _ApplicationCard extends StatelessWidget {
             if (app.statusCode == "Accepted") ...[
               const SizedBox(height: 14),
               _Banner(
-                icon: Icons.info_outline_rounded,
+
+                icon: Icons.celebration_outlined,
                 message:
                 'Congratulations! Your application Has been accepted.',
                 color: TColors.primary,
