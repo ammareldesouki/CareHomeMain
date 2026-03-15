@@ -155,7 +155,7 @@ class PswVerificationSection extends StatelessWidget {
   }
 
   Widget _buildVerificationBadge() {
-    if (profile.isVerified) {
+    if (profile.verificationStatus == "Approved") {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
@@ -231,15 +231,15 @@ class PswVerificationSection extends StatelessWidget {
           ),
           Container(width: 1, height: 36, color: Colors.grey.shade200),
           _statItem(
-            profile.isVerified ? 'Yes' : 'No',
+            profile.isProfileCompleted ? 'Yes' : 'No',
             'Profile\nVerified',
-            profile.isVerified ? Colors.green : Colors.grey,
+            profile.isProfileCompleted ? Colors.green : Colors.grey,
           ),
           Container(width: 1, height: 36, color: Colors.grey.shade200),
           _statItem(
-            profile.workStatus ? 'Active' : 'Inactive',
+            profile.isProfileCompleted ? 'Active' : 'Inactive',
             'Work\nStatus',
-            profile.workStatus ? Colors.green : Colors.red,
+            profile.isProfileCompleted ? Colors.green : Colors.red,
           ),
         ],
       ),

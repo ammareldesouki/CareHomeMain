@@ -22,19 +22,18 @@ class CareHomePswEntity {
   final String pswId;
   final String fullName;
   final int age;
-  final bool isVerified;
-  final bool workStatus;
-  final String proofIdentityType;
-  final String cvFileId;
+  final String verificationStatus;
+  final String email;
+  final String phoneNumber;
 
   const CareHomePswEntity({
     required this.pswId,
     required this.fullName,
     required this.age,
-    required this.isVerified,
-    required this.workStatus,
-    required this.proofIdentityType,
-    required this.cvFileId,
+    required this.verificationStatus,
+
+    required this.email,
+    required this.phoneNumber,
   });
 }
 

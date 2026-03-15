@@ -11,9 +11,8 @@ class PswProfileEntity {
   final String gender;
   final AddressEntity address;
   final String proofIdentityType;
-  final bool workStatus;
   final bool isProfileCompleted;
-  final bool isVerified;
+  final String verificationStatus;
   final String? role;
   final DocumentFileEntity? proofIdentityFile;
   final DocumentFileEntity? insuranceFile;
@@ -33,9 +32,7 @@ class PswProfileEntity {
     required this.gender,
     required this.address,
     this.proofIdentityType = '',
-    this.workStatus = false,
     this.isProfileCompleted = false,
-    this.isVerified = false,
     this.role,
     this.proofIdentityFile,
     this.insuranceFile,
@@ -44,6 +41,7 @@ class PswProfileEntity {
     this.immunizationRecordFile,
     this.criminalRecordFile,
     this.firstAidOrCPRFile,
+    this.verificationStatus = 'None',
   });
 
   String get fullName => '$firstName $lastName';

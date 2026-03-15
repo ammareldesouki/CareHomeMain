@@ -152,13 +152,13 @@ class AdminOfferDetailScreen extends StatelessWidget {
                             value:
                                 '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
                           ),
-                          if (offer.latitude != null && offer.longitude != null)
-                            _InfoRow(
-                              icon: Icons.map_outlined,
-                              label: 'Coordinates',
-                              value:
-                                  '${offer.latitude!.toStringAsFixed(5)}, ${offer.longitude!.toStringAsFixed(5)}',
-                            ),
+                          // if (offer.latitude != null && offer.longitude != null)
+                          //   _InfoRow(
+                          //     icon: Icons.map_outlined,
+                          //     label: 'Coordinates',
+                          //     value:
+                          //         '${offer.latitude!.toStringAsFixed(5)}, ${offer.longitude!.toStringAsFixed(5)}',
+                          //   ),
                         ],
                       ),
 
@@ -172,7 +172,7 @@ class AdminOfferDetailScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => AdminCareHomeProfileScreen(
-                              careHomeId: offer.id,
+                              careHomeId: offer.careHomeId,
                             ),
                           ),
                         ),

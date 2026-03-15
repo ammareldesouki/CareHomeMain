@@ -106,17 +106,19 @@ class CareHomeApplicationCard extends StatelessWidget {
                               fontWeight: FontWeight.w700)),
                       Row(
                         children: [
-                          if (psw.isVerified)
+                          if ( psw.verificationStatus == "Approved")
                             Icon(Icons.verified,
                                 size: 13,
                                 color: Colors.blue.shade600),
-                          if (psw.isVerified)
+                          if (psw.verificationStatus == "Approved")
                             const SizedBox(width: 3),
                           Text(
-                            psw.isVerified ? 'Verified' : 'Unverified',
+                            psw.verificationStatus == "Approved"
+                                ? 'Verified'
+                                : 'Unverified',
                             style: TextStyle(
                                 fontSize: 12,
-                                color: psw.isVerified
+                                color: psw.verificationStatus == "Approved"
                                     ? Colors.blue.shade600
                                     : Colors.grey),
                           ),
@@ -397,7 +399,7 @@ class CareHomeApplicationDetailsDialog extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (psw.isVerified) ...[
+                              if ( psw.verificationStatus == "Approved") ...[
                                 const Icon(Icons.verified,
                                     size: 15, color: Colors.white70),
                                 const SizedBox(width: 4),
@@ -435,12 +437,11 @@ class CareHomeApplicationDetailsDialog extends StatelessWidget {
 
                     // ── PSW Info ──────────────────────────────────────────
                     _InfoCard(children: [
-                      _InfoItem(Icons.badge_outlined, 'ID Type',
-                          psw.proofIdentityType),
-                      _InfoItem(
-                          Icons.work_outline_outlined,
-                          'Work Status',
-                          psw.workStatus ? 'Approved' : 'Pending Approval'),
+                      _InfoItem(Icons.call, "Email ",
+                          psw.email),
+                      _InfoItem(Icons.call, "Phone Numeber",
+                          psw.phoneNumber),
+
                       _InfoItem(
                           Icons.calendar_today_outlined,
                           'Applied At',

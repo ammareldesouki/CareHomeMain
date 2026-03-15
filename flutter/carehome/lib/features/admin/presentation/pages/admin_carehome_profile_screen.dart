@@ -37,9 +37,10 @@ class _AdminCareHomeProfileScreenState
   Future<void> _loadProfile() async {
     try {
       final dio = NetworkDioHandler().dio;
-      final res = await dio.get('${EndPoints.profile}/${widget.careHomeId}');
+      final res = await dio.get('api/admin/users/profile',
+          queryParameters: {"id": widget.careHomeId});
       setState(() {
-        _profile = Map<String, dynamic>.from(res.data ?? {});
+        _profile = Map<String, dynamic>.from(res.data["data"] ?? {});
         _loading = false;
       });
     } on DioException catch (e) {
@@ -90,7 +91,7 @@ class _AdminCareHomeProfileScreenState
                           backgroundColor: Colors.white.withOpacity(0.2),
                           child: Text(
                             _profile != null &&
-                                    (_profile!['name'] ?? '').isNotEmpty
+                                (_profile!['legalName'] ?? '').isNotEmpty
                                 ? (_profile!['name'] as String)[0].toUpperCase()
                                 : 'C',
                             style: const TextStyle(

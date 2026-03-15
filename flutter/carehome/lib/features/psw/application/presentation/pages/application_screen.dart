@@ -348,60 +348,56 @@ class _ApplicationCard extends StatelessWidget {
                   ),
                 ),
                 app.statusCode == "QualifiedByAdmin" ?
-                Column(
-                  spacing: 10,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.hourglass_empty, size: 13,
-                              color: Colors.orange),
-                          const SizedBox(width: 4),
-                          Text(
-                            "Pending",
-                            style: TextStyle(
-                                color: Colors.orange,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12),
-                          ),
-                        ],
-
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: sc.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(_icon, size: 13, color: sc),
-                          const SizedBox(width: 4),
-                          Text(
-                            app.statusCode,
-                            style: TextStyle(
-                                color: sc,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12),
-                          ),
-                        ],
-
-                      ),
-                    ),
-                  ],
-                )
-                    :
                 Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.hourglass_empty, size: 13,
+                          color: Colors.orange),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Pending",
+                        style: TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
+                      ),
+                    ],
+
+                  ),
+                )
+
+                    : app.statusCode == "RejectedByAdmin" ||
+                    app.statusCode == "RejectedByCareHome" ?
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: sc.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(_icon, size: 13, color: sc),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Rejected",
+                        style: TextStyle(
+                            color: sc,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12),
+                      ),
+                    ],
+
+                  ),
+                ) : Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
@@ -423,7 +419,7 @@ class _ApplicationCard extends StatelessWidget {
                     ],
 
                   ),
-                ),
+                )
 
               ],
             ),

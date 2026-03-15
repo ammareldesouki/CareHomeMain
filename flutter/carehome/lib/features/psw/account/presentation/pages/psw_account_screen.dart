@@ -208,7 +208,7 @@ class _PswAccountBody extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (profile.isVerified)
+                            if (profile.verificationStatus == "Approved")
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: const BoxDecoration(
@@ -253,12 +253,12 @@ class _PswAccountBody extends StatelessWidget {
                             _VertDivider(),
                             _StatItem(
                               label: 'Verified',
-                              value: profile.isVerified ? 'Yes' : 'No',
+                              value: profile.isProfileCompleted ? 'Yes' : 'No',
                             ),
                             _VertDivider(),
                             _StatItem(
                               label: 'Work Status',
-                              value: profile.workStatus ? 'Active' : 'Off',
+                              value: profile.verificationStatus,
                             ),
                             _VertDivider(),
                             _StatItem(

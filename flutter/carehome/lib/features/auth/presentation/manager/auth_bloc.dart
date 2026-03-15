@@ -99,7 +99,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           NetworkDioHandler().setCurrentUser(
             userId: entity.userId,
             role: 'PSW',
-            workStatus: false,
+            workStatus: "None",
           );
           emit(AuthSignUpSuccess(token: entity.token, userId: entity.userId));
         },

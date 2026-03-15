@@ -200,7 +200,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ── workStatus warning ──────────────────────────────────
-                  if (!workStatus!) ...[
+                  if (workStatus == "None" || workStatus == "Pending") ...[
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
@@ -298,12 +298,15 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
 
                   // ── Shifts ───────────────────────────────────────────────
                   _SectionCard(
-                    title: workStatus ? 'Select Shifts to Apply' : 'Shifts',
+                    title: workStatus == "Approved"
+                        ? 'Select Shifts to Apply'
+                        : 'Shifts',
                     icon: Icons.schedule_rounded,
                     child: Column(
                       children: [
                         // ── Select All / Deselect All ─────────────────────
-                        if (workStatus && available.isNotEmpty) ...[
+                        if (workStatus == "Approved" &&
+                            available.isNotEmpty) ...[
                           GestureDetector(
                             onTap: _toggleSelectAll,
                             child: AnimatedContainer(
@@ -400,7 +403,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                           _selectedShiftIds.contains(s.shiftId);
 
                           return GestureDetector(
-                            onTap: workStatus && s.isAvailable
+                            onTap: workStatus == "Approved" && s.isAvailable
                                 ? () => _toggleShift(s.shiftId)
                                 : null,
                             child: AnimatedContainer(
@@ -512,7 +515,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                       return SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: workStatus &&
+                          onPressed: workStatus == "Approved" &&
                               !isLoading &&
                               _selectedShiftIds.isNotEmpty
                               ? () =>
@@ -540,7 +543,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                 color: Colors.white, strokeWidth: 2),
                           )
                               : Text(
-                            !workStatus
+                            workStatus == "None" || workStatus == "Pending"
                                 ? 'Account Pending Approval'
                                 : _selectedShiftIds.isEmpty
                                 ? 'Select Shifts to Apply'

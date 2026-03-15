@@ -7,6 +7,9 @@ abstract class CareHomeApplicationRepository {
   Future<Either<Failure, List<CareHomeApplicationEntity>>>
   getApplicationsByOffer(String offerId);
 
+  //
+  // Future<Either<Failure, List<CareHomeApplicationEntity>>>
+  // getApplications();
   /// POST /api/carehome/applications/accept
   /// Body: { shiftId, jobRequestItemId }
   Future<Either<Failure, void>> acceptApplication({

@@ -11,6 +11,7 @@ class AdminPswVerificationEntity {
   final String immunizationRecordFileId;
   final String criminalRecordFileId;
   final String firstAidOrCprFileId;
+  final String verificationStatus;
 
   const AdminPswVerificationEntity({
     required this.pswId,
@@ -25,5 +26,6 @@ class AdminPswVerificationEntity {
     required this.immunizationRecordFileId,
     required this.criminalRecordFileId,
     required this.firstAidOrCprFileId,
+    required this.verificationStatus,
   });
 }

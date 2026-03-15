@@ -4,7 +4,7 @@ class SignInResponse {
   final String email;
   final String role;
   final String userId;
-  final bool workStatus;
+  final String workStatus;
 
   const SignInResponse({
     required this.token,
@@ -21,6 +21,6 @@ class SignInResponse {
     email: map['email'] ?? '',
     role: map['role'] ?? '',
     userId: map['userId'] ?? '',
-    workStatus: map['workStatus'] ?? false,
+    workStatus: map['verficationStatus'] ?? "",
   );
 }

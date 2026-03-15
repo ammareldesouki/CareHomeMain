@@ -16,6 +16,7 @@ class AdminPswVerificationModel extends AdminPswVerificationEntity {
     required super.criminalRecordFileId,
     required super.firstAidOrCprFileId,
     required super.submittedAt,
+    required super.verificationStatus,
   });
 
   factory AdminPswVerificationModel.fromMap(Map<String, dynamic> map) {
@@ -39,6 +40,7 @@ class AdminPswVerificationModel extends AdminPswVerificationEntity {
       criminalRecordFileId: map['criminalRecordFileId'] ?? '',
       firstAidOrCprFileId:
           map['firstAidOrCPRFileId'] ?? map['firstAidOrCprFileId'] ?? '',
+      verificationStatus: map['verificationStatus'] ?? 'None',
     );
   }
 }
@@ -52,12 +54,15 @@ class AdminOfferModel extends AdminOfferEntity {
     required super.careHomeName,
     super.latitude,
     super.longitude,
+    required super.careHomeId,
   });
 
   factory AdminOfferModel.fromMap(Map<String, dynamic> map) {
     return AdminOfferModel(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
+      careHomeId: map['careHomeId'] ?? '',
+
       address: map['address'] ?? '',
       hourlyRate: (map['hourlyRate'] ?? 0).toDouble(),
       careHomeName: map['careHomeName'] ?? map['careHome']?['name'] ?? '',

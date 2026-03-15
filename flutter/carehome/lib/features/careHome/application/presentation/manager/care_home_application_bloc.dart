@@ -17,16 +17,16 @@ class CareHomeApplicationBloc
       remoteDataSource: CareHomeApplicationRemoteDataSourceImpl(),
     );
 //-- Fetch All request in care home
-    //     on<FetchApplicationsEvent>((event, emit) async {
-    //       emit(CareHomeApplicationsLoading());
-    //       final result = await repo.getApplicationsByOffer();
-    //       result.fold((failure) {
-    //         final msg = failure is ServerFailure
-    //             ? (failure.messageEn ?? failure.message ?? 'Failed to load')
-    //             : 'Something went wrong';
-    //         emit(CareHomeApplicationsError(msg));
-    //       }, (list) => emit(CareHomeApplicationsLoaded(list)));
-    //     });
+//         on<FetchApplicationsEvent>((event, emit) async {
+    //           emit(CareHomeApplicationsLoading());
+    //           // final result = await repo.getApplications();
+    //           result.fold((failure) {
+    //             final msg = failure is ServerFailure
+    //                 ? (failure.messageEn ?? failure.message ?? 'Failed to load')
+    //                 : 'Something went wrong';
+    //             emit(CareHomeApplicationsError(msg));
+    //           }, (list) => emit(CareHomeApplicationsLoaded(list)));
+    //         });
 
     // ── Fetch list ────────────────────────────────────────────────────────────
     on<FetchApplicationsByOfferEvent>((event, emit) async {

@@ -28,10 +28,12 @@ class EndPoints {
       "/api/applications/$offerId";
   static const String careHomeAcceptApplication = 'api/applications/accept';
   static const String careHomeRejectApplication = 'api/applications/reject';
+  static const String careHomeApplications = 'api/applications';
+
 
   // -------------Admin EndPoind----------------
 
-  static const String verifyAdminPending = 'api/admin/verifications/pending';
+  static const String verifyAdminPending = '/api/admin/users/PSW';
 
   static String verifyAdminApprove(String pswId) =>
       'api/admin/verifications/$pswId/approve';

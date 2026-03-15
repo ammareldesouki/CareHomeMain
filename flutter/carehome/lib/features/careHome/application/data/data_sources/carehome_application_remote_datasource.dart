@@ -7,6 +7,9 @@ import '../models/carehome_application_model.dart';
 abstract class CareHomeApplicationRemoteDataSource {
   Future<List<CareHomeApplicationModel>> getApplicationsByOffer(String offerId);
 
+  Future<List<CareHomeApplicationModel>> getApplications();
+
+
   Future<void> acceptApplication({
     required String shiftId,
     required String jobRequestItemId,
@@ -18,6 +21,21 @@ abstract class CareHomeApplicationRemoteDataSource {
 class CareHomeApplicationRemoteDataSourceImpl
     implements CareHomeApplicationRemoteDataSource {
   final _dio = NetworkDioHandler().dio;
+
+
+  @override
+  Future<List<CareHomeApplicationModel>> getApplications() async {
+    try {
+      final response = await _dio.get(
+          EndPoints.careHomeApplications);
+      final List data = response.data is List
+          ? response.data
+          : (response.data['items'] ?? response.data['data'] ?? []);
+      return data.map((e) => CareHomeApplicationModel.fromMap(e)).toList();
+    } on DioException catch (e) {
+      throw ServerFailure.fromMap(e.response?.data ?? {});
+    }
+  }
 
   @override
   Future<List<CareHomeApplicationModel>> getApplicationsByOffer(
@@ -49,6 +67,7 @@ class CareHomeApplicationRemoteDataSourceImpl
       throw ServerFailure.fromMap(e.response?.data ?? {});
     }
   }
+
 
   @override
   Future<void> rejectApplication(String jobRequestItemId) async {

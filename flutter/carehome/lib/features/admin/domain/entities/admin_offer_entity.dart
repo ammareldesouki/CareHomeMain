@@ -6,6 +6,7 @@ class AdminOfferEntity {
   final double? latitude;
   final double? longitude;
   final String careHomeName;
+  final String careHomeId;
 
   const AdminOfferEntity({
     required this.id,
@@ -15,5 +16,6 @@ class AdminOfferEntity {
     required this.careHomeName,
     this.latitude,
     this.longitude,
+    required this.careHomeId,
   });
 }

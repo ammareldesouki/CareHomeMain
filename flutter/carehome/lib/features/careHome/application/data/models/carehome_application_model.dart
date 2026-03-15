@@ -27,10 +27,10 @@ class CareHomePswModel extends CareHomePswEntity {
     required super.pswId,
     required super.fullName,
     required super.age,
-    required super.isVerified,
-    required super.workStatus,
-    required super.proofIdentityType,
-    required super.cvFileId,
+    required super.verificationStatus,
+
+    required super.email,
+    required super.phoneNumber,
   });
 
   factory CareHomePswModel.fromMap(Map<String, dynamic> map) {
@@ -38,10 +38,10 @@ class CareHomePswModel extends CareHomePswEntity {
       pswId: map['pswId'] ?? '',
       fullName: map['fullName'] ?? '',
       age: map['age'] ?? 0,
-      isVerified: map['isVerified'] ?? false,
-      workStatus: map['workStatus'] ?? false,
-      proofIdentityType: map['proofIdentityType'] ?? '',
-      cvFileId: map['cvFileId'] ?? '',
+      verificationStatus: map['verificationStatus'] ?? '',
+
+      email: map['email'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
     );
   }
 }

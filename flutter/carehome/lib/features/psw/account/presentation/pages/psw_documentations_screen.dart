@@ -162,7 +162,7 @@ class _PswDocumentationsBody extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              profile.isVerified
+                              profile.verificationStatus == "Approved"
                                   ? 'Your profile is verified'
                                   : 'Upload all documents to complete verification',
                               style: const TextStyle(
@@ -206,7 +206,7 @@ class _PswDocumentationsBody extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: profile.isVerified
+                              color: profile.verificationStatus == "Approved"
                                   ? Colors.green.shade50
                                   : Colors.orange.shade50,
                               borderRadius: BorderRadius.circular(20),
@@ -215,20 +215,21 @@ class _PswDocumentationsBody extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  profile.isVerified
+                                  profile.verificationStatus == "Approved"
                                       ? Icons.verified
                                       : Icons.schedule,
                                   size: 12,
-                                  color: profile.isVerified
+                                  color:
+                                      profile.verificationStatus == "Approved"
                                       ? Colors.green.shade700
                                       : Colors.orange.shade700,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  profile.isVerified ? 'Verified' : 'Pending',
+                                  profile.verificationStatus,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: profile.isVerified
+                                    color: profile.isProfileCompleted
                                         ? Colors.green.shade700
                                         : Colors.orange.shade700,
                                     fontWeight: FontWeight.w600,

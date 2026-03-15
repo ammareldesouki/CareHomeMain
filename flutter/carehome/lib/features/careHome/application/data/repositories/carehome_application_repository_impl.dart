@@ -11,6 +11,18 @@ class CareHomeApplicationRepositoryImpl
 
   CareHomeApplicationRepositoryImpl({required this.remoteDataSource});
 
+  // Future<Either<Failure, List<CareHomeApplicationEntity>>>
+  // getApplications() async {
+  //   try {
+  //     final list = await remoteDataSource.getApplications();
+  //     return Right(list);
+  //   } on ServerFailure catch (e) {
+  //     return Left(e);
+  //   } catch (e) {
+  //     return Left(ServerFailure(message: e.toString()));
+  //   }
+  // }
+
   @override
   Future<Either<Failure, List<CareHomeApplicationEntity>>>
   getApplicationsByOffer(String offerId) async {

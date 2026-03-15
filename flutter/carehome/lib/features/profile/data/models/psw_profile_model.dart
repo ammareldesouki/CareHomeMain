@@ -13,9 +13,7 @@ class PswProfileModel extends PswProfileEntity {
     required super.gender,
     required super.address,
     super.proofIdentityType,
-    super.workStatus,
     super.isProfileCompleted,
-    super.isVerified,
     super.role,
     super.proofIdentityFile,
     super.insuranceFile,
@@ -24,6 +22,7 @@ class PswProfileModel extends PswProfileEntity {
     super.immunizationRecordFile,
     super.criminalRecordFile,
     super.firstAidOrCPRFile,
+    super.verificationStatus,
   });
 
   factory PswProfileModel.fromMap(Map<String, dynamic> map) {
@@ -44,9 +43,9 @@ class PswProfileModel extends PswProfileEntity {
           ? AddressModel.fromMap(map['address'] as Map<String, dynamic>)
           : const AddressModel(),
       proofIdentityType: map['proofIdentityType'] ?? '',
-      workStatus: map['workStatus'] ?? false,
       isProfileCompleted: map['isProfileCompleted'] ?? false,
-      isVerified: map['isVerified'] ?? false,
+      verificationStatus: map['verificationStatus'] ?? 'None',
+
       role: map['role'],
       proofIdentityFile: _doc('proofIdentityFile'),
       insuranceFile: _doc('insuranceFile'),

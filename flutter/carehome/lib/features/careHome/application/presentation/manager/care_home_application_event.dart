@@ -3,6 +3,8 @@ part of 'care_home_application_bloc.dart';
 @immutable
 sealed class CareHomeApplicationEvent {}
 
+class FetchApplicationsEvent extends CareHomeApplicationEvent {}
+
 class FetchApplicationsByOfferEvent extends CareHomeApplicationEvent {
   final String offerId;
 

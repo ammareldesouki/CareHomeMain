@@ -46,6 +46,8 @@ class AdminVerificationsScreen extends StatelessWidget {
             state is VerificationMutationLoading;
         final list = state is VerificationsLoaded
             ? state.list
+            .where((e) => e.verificationStatus == "Pending")
+            .toList()
             : <AdminPswVerificationEntity>[];
 
         return Scaffold(
@@ -132,7 +134,8 @@ class AdminVerificationsScreen extends StatelessWidget {
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 12),
                           itemBuilder: (ctx, i) =>
-                              _VerificationCard(item: list[i]),
+                              _VerificationCard(item: list[i])
+
                         ),
                       ),
               ),
