@@ -8,28 +8,52 @@ import '../models/offer_list_item_model.dart';
 
 abstract class OffersRemoteDataSource {
   Future<List<OfferListItemModel>> getOffers({
-    required int pageNumber,
+    required int pageIndex,
     required int pageSize,
+    String? careHomeId,
+    String? search,
+    String? sort,
   });
 
   Future<OfferDetailModel> getOfferById(String id);
 }
 
 class OffersRemoteDataSourceImpl implements OffersRemoteDataSource {
-  // Singleton Dio — already has Bearer token set after login
   final Dio _dio = NetworkDioHandler().dio;
 
   @override
   Future<List<OfferListItemModel>> getOffers({
-    required int pageNumber,
+    required int pageIndex,
     required int pageSize,
+    String? careHomeId,
+    String? search,
+    String? sort,
   }) async {
     try {
+      final params = <String, dynamic>{
+        'PageIndex': pageIndex,
+        'PageSize': pageSize,
+      };
+      if (careHomeId != null) params['CareHomeId'] = careHomeId;
+      if (search != null && search.isNotEmpty) params['Search'] = search;
+      if (sort != null && sort.isNotEmpty) params['Sort'] = sort;
+
       final response = await _dio.get(
         EndPoints.offers,
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize},
+        queryParameters: params,
       );
-      final list = response.data as List<dynamic>;
+
+      // API may return a paginated wrapper or a plain list
+      final dynamic body = response.data;
+      final List<dynamic> list;
+      if (body is List) {
+        list = body;
+      } else if (body is Map && body.containsKey('data')) {
+        list = body['data'] as List<dynamic>;
+      } else {
+        list = [];
+      }
+
       return list
           .map((e) => OfferListItemModel.fromMap(e as Map<String, dynamic>))
           .toList();

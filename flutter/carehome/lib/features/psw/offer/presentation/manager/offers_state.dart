@@ -1,11 +1,11 @@
 part of 'offers_bloc.dart';
 
-/// Single combined state — list and detail are stored independently.
-/// Fetching detail NEVER wipes the loaded offers list.
 class OffersState {
   // ── List ──────────────────────────────────────────────────────────────────
   final List<OfferListItemEntity> offers;
   final bool listLoading;
+  final bool listLoadingMore; // true when appending next page
+  final bool hasMore;
   final String? listError;
 
   // ── Detail ────────────────────────────────────────────────────────────────
@@ -16,6 +16,8 @@ class OffersState {
   const OffersState({
     this.offers = const [],
     this.listLoading = false,
+    this.listLoadingMore = false,
+    this.hasMore = true,
     this.listError,
     this.detail,
     this.detailLoading = false,
@@ -25,6 +27,8 @@ class OffersState {
   OffersState copyWith({
     List<OfferListItemEntity>? offers,
     bool? listLoading,
+    bool? listLoadingMore,
+    bool? hasMore,
     String? listError,
     bool clearListError = false,
     OfferDetailEntity? detail,
@@ -36,6 +40,8 @@ class OffersState {
     return OffersState(
       offers: offers ?? this.offers,
       listLoading: listLoading ?? this.listLoading,
+      listLoadingMore: listLoadingMore ?? this.listLoadingMore,
+      hasMore: hasMore ?? this.hasMore,
       listError: clearListError ? null : (listError ?? this.listError),
       detail: clearDetail ? null : (detail ?? this.detail),
       detailLoading: detailLoading ?? this.detailLoading,

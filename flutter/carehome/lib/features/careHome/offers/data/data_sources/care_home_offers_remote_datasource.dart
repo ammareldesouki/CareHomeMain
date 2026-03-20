@@ -6,45 +6,77 @@ import '../../../../../core/failure/server_failure.dart';
 import '../../../../../core/network/dio_handler.dart';
 
 abstract class CareHomeOffersRemoteDataSource {
-  Future<List<CareHomeOfferListItem>> getOffers({
+  Future<OffersPage> getOffers({
     required String careHomeId,
-    int pageNumber = 1,
+    int pageIndex = 1,
     int pageSize = 10,
+    String? search,
+    String? sort,
   });
 
   Future<CareHomeOfferDetail> getOfferById(String id);
-
   Future<void> createOffer(CreateOfferRequest request);
-
   Future<void> updateOffer(String id, UpdateOfferRequest request);
-
   Future<void> deleteOffer(String id);
 }
 
 class CareHomeOffersRemoteDataSourceImpl
     implements CareHomeOffersRemoteDataSource {
-  // Singleton Dio — Bearer token set after login automatically
   final Dio _dio = NetworkDioHandler().dio;
 
   @override
-  Future<List<CareHomeOfferListItem>> getOffers({
+  Future<OffersPage> getOffers({
     required String careHomeId,
-    int pageNumber = 1,
+    int pageIndex = 1,
     int pageSize = 10,
+    String? search,
+    String? sort,
   }) async {
     try {
+      final params = <String, dynamic>{
+        'CareHomeId': careHomeId,
+        'PageIndex': pageIndex,
+        'PageSize': pageSize,
+      };
+      if (search != null && search.isNotEmpty) params['Search'] = search;
+      if (sort != null && sort.isNotEmpty) params['Sort'] = sort;
+
       final response = await _dio.get(
-        EndPoints.offers,
-        queryParameters: {
-          'careHomeId': careHomeId,
-          'pageNumber': pageNumber,
-          'pageSize': pageSize,
-        },
+          EndPoints.offers, queryParameters: params);
+
+      final body = response.data;
+      final List<dynamic> rawList;
+      int totalCount;
+      int retPageIndex;
+      int retPageSize;
+
+      if (body is Map) {
+        rawList = (body['data'] ?? body['items'] ?? []) as List<dynamic>;
+        totalCount =
+        (body['count'] ?? body['totalCount'] ?? rawList.length) as int;
+        retPageIndex = (body['pageIndex'] ?? pageIndex) as int;
+        retPageSize = (body['pageSize'] ?? pageSize) as int;
+      } else if (body is List) {
+        rawList = body;
+        totalCount = rawList.length;
+        retPageIndex = pageIndex;
+        retPageSize = pageSize;
+      } else {
+        rawList = [];
+        totalCount = 0;
+        retPageIndex = pageIndex;
+        retPageSize = pageSize;
+      }
+
+      return OffersPage(
+        items: rawList
+            .map((e) =>
+            CareHomeOfferListItem.fromMap(e as Map<String, dynamic>))
+            .toList(),
+        totalCount: totalCount,
+        pageIndex: retPageIndex,
+        pageSize: retPageSize,
       );
-      final list = response.data as List<dynamic>;
-      return list
-          .map((e) => CareHomeOfferListItem.fromMap(e as Map<String, dynamic>))
-          .toList();
     } on DioException catch (e) {
       _handleError(e);
       rethrow;

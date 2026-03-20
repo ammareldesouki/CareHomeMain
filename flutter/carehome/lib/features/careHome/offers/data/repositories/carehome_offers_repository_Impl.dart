@@ -12,18 +12,22 @@ class CareHomeOffersRepositoryImpl implements CareHomeOffersRepository {
   CareHomeOffersRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<CareHomeOfferListItem>>> getOffers({
+  Future<Either<Failure, OffersPage>> getOffers({
     required String careHomeId,
-    int pageNumber = 1,
-    int pageSize = 10,
+    required int pageIndex,
+    required int pageSize,
+    required String? search,
+    required String? sort,
   }) async {
     try {
-      final list = await remoteDataSource.getOffers(
+      final page = await remoteDataSource.getOffers(
         careHomeId: careHomeId,
-        pageNumber: pageNumber,
+        pageIndex: pageIndex,
         pageSize: pageSize,
+        search: search,
+        sort: sort,
       );
-      return Right(list);
+      return Right(page);
     } on ServerFailure catch (e) {
       return Left(e);
     } catch (e) {
@@ -55,10 +59,8 @@ class CareHomeOffersRepositoryImpl implements CareHomeOffersRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateOffer(
-    String id,
-    UpdateOfferRequest request,
-  ) async {
+  Future<Either<Failure, void>> updateOffer(String id,
+      UpdateOfferRequest request) async {
     try {
       await remoteDataSource.updateOffer(id, request);
       return const Right(null);

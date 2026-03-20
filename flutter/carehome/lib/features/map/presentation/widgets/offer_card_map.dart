@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class OfferCardMap extends StatelessWidget {
   final String title;
   final String subtitle; // address
-  final double? hourlyRate; // null for legacy cards
-  final double? distance; // null until known
+  final double? hourlyRate;
+  final double? distance;
+  final String? posterName; // care home name
   final VoidCallback onTap;
 
   const OfferCardMap({
@@ -14,6 +15,7 @@ class OfferCardMap extends StatelessWidget {
     required this.onTap,
     this.hourlyRate,
     this.distance,
+    this.posterName,
   });
 
   @override
@@ -26,22 +28,25 @@ class OfferCardMap extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: const Border(
+              left: BorderSide(color: Colors.blue, width: 4),
+            ),
             boxShadow: const [
               BoxShadow(blurRadius: 8, color: Colors.black12),
             ],
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Title + rate badge ───────────────────────────────────────
+              // ── Title + rate badge ─────────────────────────────────────────
               Row(
                 children: [
                   Expanded(
                     child: Text(
                       title,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 15, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -66,45 +71,67 @@ class OfferCardMap extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 6),
+              const SizedBox(height: 5),
 
-              // ── Address ──────────────────────────────────────────────────
+              // ── Poster (care home) name ────────────────────────────────────
+              if (posterName != null && posterName!.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(Icons.business_outlined,
+                        size: 13, color: Colors.blue.shade400),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        posterName!,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue.shade600,
+                            fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+
+              const SizedBox(height: 4),
+
+              // ── Address ────────────────────────────────────────────────────
               Row(
                 children: [
                   Icon(Icons.location_on_outlined,
-                      size: 14, color: Colors.grey.shade500),
+                      size: 13, color: Colors.grey.shade500),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       subtitle,
                       style: TextStyle(
-                          fontSize: 13, color: Colors.grey.shade600),
+                          fontSize: 12, color: Colors.grey.shade600),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
 
-              // ── Distance ─────────────────────────────────────────────────
+              // ── Distance ──────────────────────────────────────────────────
               if (distance != null) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Row(
                   children: [
                     Icon(Icons.straighten,
-                        size: 14, color: Colors.grey.shade500),
+                        size: 13, color: Colors.grey.shade500),
                     const SizedBox(width: 4),
                     Text(
                       '${distance!.toStringAsFixed(2)} km away',
                       style: TextStyle(
-                          fontSize: 13, color: Colors.grey.shade600),
+                          fontSize: 12, color: Colors.grey.shade600),
                     ),
                   ],
                 ),
               ],
 
-              const SizedBox(height: 8),
+              const Spacer(),
 
-              // ── Tap hint ─────────────────────────────────────────────────
+              // ── Tap hint ──────────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

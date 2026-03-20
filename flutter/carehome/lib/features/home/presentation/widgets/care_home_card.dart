@@ -6,12 +6,14 @@ import '../../../psw/offer/domain/entities/offer_entity.dart';
 import '../../../psw/offer/presentation/manager/offers_bloc.dart';
 import '../../../psw/offer/presentation/pages/offer_details.dart';
 
-
 class OfferListCard extends StatelessWidget {
   final OfferListItemEntity offer;
   final double? distance;
 
   const OfferListCard({super.key, required this.offer, this.distance});
+
+  bool get _isIndividual =>
+      offer.posterType.toLowerCase() == 'individual';
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,6 @@ class OfferListCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Fetch detail then show bottom sheet
           context.read<OffersBloc>().add(FetchOfferDetailEvent(offer.id));
           showModalBottomSheet(
             context: context,
@@ -42,8 +43,13 @@ class OfferListCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: const Border(
-              left: BorderSide(color: Colors.blue, width: 5),
+            border: Border(
+              left: BorderSide(
+                color: _isIndividual
+                    ? Colors.deepPurple.shade400
+                    : Colors.blue,
+                width: 5,
+              ),
             ),
             boxShadow: [
               BoxShadow(
@@ -58,7 +64,7 @@ class OfferListCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Rate + Title + Distance ─────────────────────────────────
+                // ── Row 1: Rate · Title · Distance ──────────────────────────
                 Row(
                   children: [
                     Container(
@@ -71,7 +77,9 @@ class OfferListCard extends StatelessWidget {
                       child: Text(
                         '\$${offer.hourlyRate.toStringAsFixed(0)}/H',
                         style: TextStyle(
-                            color: Colors.blue.shade700,
+                            color: _isIndividual
+                                ? Colors.deepPurple.shade700
+                                : Colors.blue.shade700,
                             fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -112,7 +120,66 @@ class OfferListCard extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                // ── Address ──────────────────────────────────────────────────
+                // ── Row 2: Poster name + type badge ─────────────────────────
+                Row(
+                  children: [
+                    Icon(
+                      _isIndividual
+                          ? Icons.person_outline
+                          : Icons.business_outlined,
+                      size: 14,
+                      color: _isIndividual
+                          ? Colors.deepPurple.shade400
+                          : Colors.blue.shade400,
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        offer.posterName.isNotEmpty
+                            ? offer.posterName
+                            : 'Unknown',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: _isIndividual
+                              ? Colors.deepPurple.shade600
+                              : Colors.blue.shade600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // Poster type pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _isIndividual
+                            ? Colors.deepPurple.withOpacity(0.08)
+                            : Colors.blue.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: _isIndividual
+                              ? Colors.deepPurple.shade200
+                              : Colors.blue.shade200,
+                        ),
+                      ),
+                      child: Text(
+                        offer.posterType,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: _isIndividual
+                              ? Colors.deepPurple.shade600
+                              : Colors.blue.shade600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                // ── Row 3: Address ───────────────────────────────────────────
                 Row(
                   children: [
                     const Icon(Icons.location_on_outlined,

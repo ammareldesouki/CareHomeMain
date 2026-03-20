@@ -24,4 +24,7 @@ class Data {
     'War',
     'Western',
   ];
+
+  /// Page size for offers pagination (increased from 10 to 20 for better UX)
+  static const int kOffersPageSize = 20;
 }

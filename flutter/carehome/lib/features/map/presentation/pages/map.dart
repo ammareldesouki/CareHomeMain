@@ -72,7 +72,6 @@ class _MapScreenState extends State<MapScreen>
     }
   }
 
-  /// Re-locates and animates camera to current position
   Future<void> _goToMyLocation() async {
     try {
       final pos = await Geolocator.getCurrentPosition(
@@ -162,24 +161,27 @@ class _MapScreenState extends State<MapScreen>
 
     return BlocBuilder<OffersBloc, OffersState>(
       buildWhen: (prev, curr) =>
-      prev.offers != curr.offers || prev.listLoading != curr.listLoading,
+      prev.offers != curr.offers ||
+          prev.listLoading != curr.listLoading,
       builder: (context, state) {
-        final offers = state.offers;
+        // ── Only show CareHome offers on the map ─────────────────────────────
+        final offers = state.offers
+            .where((o) => o.posterType.toLowerCase() == 'carehome')
+            .toList();
 
         return Stack(
           children: [
-            // ── Google Map ─────────────────────────────────────────────
+            // ── Google Map ────────────────────────────────────────────────────
             GoogleMap(
               initialCameraPosition:
               CameraPosition(target: _myPosition!, zoom: 14),
               markers: Set.of(_markers.values),
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
-              // ← disable default button
               onMapCreated: (c) => _mapController = c,
             ),
 
-            // ── Custom "My Location" button — top right ────────────────
+            // ── Custom "My Location" button ───────────────────────────────────
             Positioned(
               top: MediaQuery
                   .of(context)
@@ -196,23 +198,55 @@ class _MapScreenState extends State<MapScreen>
                   child: const Padding(
                     padding: EdgeInsets.all(10),
                     child: Icon(
-                      Icons.my_location,
-                      size: 24,
-                      color: Colors.black87,
-                    ),
+                        Icons.my_location, size: 24, color: Colors.black87),
                   ),
                 ),
               ),
             ),
 
-            // ── Cards carousel ─────────────────────────────────────────
+            // ── "CareHome only" label — top left ──────────────────────────────
+            Positioned(
+              top: MediaQuery
+                  .of(context)
+                  .padding
+                  .top + 16,
+              left: 16,
+              child: Container(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(blurRadius: 6, color: Colors.black12),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.business, size: 14, color: Colors.blue.shade600),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Care Homes',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Cards carousel ────────────────────────────────────────────────
             if (offers.isNotEmpty)
               Positioned(
                 bottom: 20,
                 left: 0,
                 right: 0,
                 child: SizedBox(
-                  height: 140,
+                  height: 150,
                   child: PageView.builder(
                     controller: _pageController,
                     itemCount: offers.length,
@@ -242,6 +276,7 @@ class _MapScreenState extends State<MapScreen>
                           title: offer.title,
                           subtitle: offer.address,
                           hourlyRate: offer.hourlyRate,
+                          posterName: offer.posterName,
                           onTap: () => _openSheet(ctx, offer.id, index),
                         ),
                       );
@@ -250,7 +285,7 @@ class _MapScreenState extends State<MapScreen>
                 ),
               ),
 
-            // ── Empty state ────────────────────────────────────────────
+            // ── Empty state ───────────────────────────────────────────────────
             if (offers.isEmpty && !state.listLoading)
               Positioned(
                 bottom: 10,
@@ -265,15 +300,22 @@ class _MapScreenState extends State<MapScreen>
                       BoxShadow(blurRadius: 8, color: Colors.black12)
                     ],
                   ),
-                  child: const Text(
-                    'No offers available nearby',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.business_outlined,
+                          size: 18, color: Colors.grey.shade400),
+                      const SizedBox(width: 8),
+                      Text(
+                        'No care home offers available nearby',
+                        style: TextStyle(color: Colors.grey.shade500),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-            // ── Loading spinner ────────────────────────────────────────
+            // ── Loading spinner ───────────────────────────────────────────────
             if (state.listLoading)
               const Positioned(
                 top: 60,

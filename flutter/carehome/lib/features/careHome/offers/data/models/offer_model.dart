@@ -1,22 +1,29 @@
-// ── Create / Update offer request ─────────────────────────────────────────────
+// ── Shift request — used in both Create and Update ────────────────────────────
 class ShiftRequest {
+  final String? shiftId; // null for new shifts; required by PUT for existing
   final String date; // "2026-03-04"
   final String startTime; // "09:00:00"
   final String endTime; // "17:00:00"
 
   const ShiftRequest({
+    this.shiftId,
     required this.date,
     required this.startTime,
     required this.endTime,
   });
 
-  Map<String, dynamic> toMap() => {
-    'date': date,
-    'startTime': startTime,
-    'endTime': endTime,
-  };
+  Map<String, dynamic> toMap() {
+    final m = <String, dynamic>{
+      'date': date,
+      'startTime': startTime,
+      'endTime': endTime,
+    };
+    if (shiftId != null && shiftId!.isNotEmpty) m['shiftId'] = shiftId;
+    return m;
+  }
 }
 
+// ── Create offer request ──────────────────────────────────────────────────────
 class CreateOfferRequest {
   final String title;
   final String description;
@@ -47,7 +54,7 @@ class CreateOfferRequest {
   };
 }
 
-// Same shape as create but includes shiftId for existing shifts
+// ── Update offer request — same shape but shifts carry shiftId ────────────────
 class UpdateOfferRequest extends CreateOfferRequest {
   const UpdateOfferRequest({
     required super.title,
@@ -60,7 +67,28 @@ class UpdateOfferRequest extends CreateOfferRequest {
   });
 }
 
-// ── List item (GET /api/Offers?careHomeId=) ───────────────────────────────────
+// ── Paginated wrapper returned by GET /api/offers ─────────────────────────────
+class OffersPage {
+  final List<CareHomeOfferListItem> items;
+  final int totalCount;
+  final int pageIndex;
+  final int pageSize;
+
+  const OffersPage({
+    required this.items,
+    required this.totalCount,
+    required this.pageIndex,
+    required this.pageSize,
+  });
+
+  // Used for infinite scroll: determines if the *next* page exists.
+  // Works for both 0-based and 1-based pageIndex.
+  int get _startOffset => pageIndex == 0 ? 0 : (pageIndex - 1) * pageSize;
+
+  bool get hasMore => _startOffset + items.length < totalCount;
+}
+
+// ── List item (GET /api/offers?careHomeId=) ───────────────────────────────────
 class CareHomeOfferListItem {
   final String id;
   final String title;
@@ -83,7 +111,7 @@ class CareHomeOfferListItem {
       );
 }
 
-// ── Detail (GET /api/Offers/{id}) ─────────────────────────────────────────────
+// ── Detail (GET /api/offers/{id}) ─────────────────────────────────────────────
 class CareHomeShift {
   final String shiftId;
   final String date;

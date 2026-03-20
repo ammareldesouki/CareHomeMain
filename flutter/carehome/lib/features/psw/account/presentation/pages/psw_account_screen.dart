@@ -154,7 +154,7 @@ class _PswAccountBody extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
-                            vertical: 8,
+                            vertical: 40,
                           ),
                           child: Row(
                             children: [

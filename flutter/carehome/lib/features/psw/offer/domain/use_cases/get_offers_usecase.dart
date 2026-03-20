@@ -10,7 +10,16 @@ class GetOffersUseCase {
   GetOffersUseCase(this.repository);
 
   Future<Either<Failure, List<OfferListItemEntity>>> call({
-    int pageNumber = 1,
+    int pageIndex = 1,
     int pageSize = 10,
-  }) => repository.getOffers(pageNumber: pageNumber, pageSize: pageSize);
+    String? careHomeId,
+    String? search,
+    String? sort,
+  }) => repository.getOffers(
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    careHomeId: careHomeId,
+    search: search,
+    sort: sort,
+  );
 }

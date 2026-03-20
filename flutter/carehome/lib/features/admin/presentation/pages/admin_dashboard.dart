@@ -21,7 +21,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AdminBloc()
-        ..add(FetchPendingVerificationsEvent())
+        ..add(FetchVerificationsEvent())
         ..add(FetchPendingApplicationsEvent())
         ..add(FetchAllOffersEvent()),
       child: _AdminDashboardBody(
@@ -70,7 +70,7 @@ class _AdminDashboardBody extends StatelessWidget {
             final bloc = context.read<AdminBloc>();
             switch (i) {
               case 0:
-                bloc.add(FetchPendingVerificationsEvent());
+                bloc.add(FetchVerificationsEvent());
                 break;
               case 1:
                 bloc.add(FetchPendingApplicationsEvent());

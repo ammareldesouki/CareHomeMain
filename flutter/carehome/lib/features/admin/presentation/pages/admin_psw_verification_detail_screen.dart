@@ -1,20 +1,33 @@
+import 'package:carehome/core/constants/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/entities/admin_psw_verification_entity.dart';
+import '../../domain/entities/psw_profile_entity.dart';
 import '../manager/admin_bloc.dart';
 
-/// Full-screen detail view for a single PSW verification request.
-/// The admin can review all uploaded documents and then Approve or Reject.
-class AdminPswVerificationDetailScreen extends StatelessWidget {
+class AdminPswVerificationDetailScreen extends StatefulWidget {
   final AdminPswVerificationEntity item;
 
   const AdminPswVerificationDetailScreen({super.key, required this.item});
 
-  // ── Base URL for file downloads ──────────────────────────────────────────
-  // Adjust this to match your backend's file-serving endpoint.
-  static const String _fileBaseUrl = 'http://3.99.158.214:5000/api/files/';
+  @override
+  State<AdminPswVerificationDetailScreen> createState() =>
+      _AdminPswVerificationDetailScreenState();
+}
+
+class _AdminPswVerificationDetailScreenState
+    extends State<AdminPswVerificationDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AdminBloc>().add(
+          FetchPswProfileEvent("33117571-e6cc-4e9b-18dd-08de83d79a7b"));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,537 +38,312 @@ class AdminPswVerificationDetailScreen extends StatelessWidget {
             SnackBar(
               content: Text(state.message),
               backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              margin: const EdgeInsets.all(16),
             ),
           );
-          Navigator.pop(context); // go back after action
+          Navigator.pop(context);
         }
+
         if (state is VerificationMutationError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red.shade400,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              margin: const EdgeInsets.all(16),
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
-      child: BlocBuilder<AdminBloc, AdminState>(
-        builder: (context, state) {
-          final isMutating = state is VerificationMutationLoading;
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+        body: CustomScrollView(
+          slivers: [
 
-          return Scaffold(
-            backgroundColor: Colors.grey.shade50,
-            body: CustomScrollView(
-              slivers: [
-                // ── App Bar ──────────────────────────────────────────────
-                SliverAppBar(
-                  expandedHeight: 160,
-                  pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 48, 20, 16),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 32,
-                                backgroundColor: Colors.white.withOpacity(0.2),
-                                child: Text(
-                                  item.fullName.isNotEmpty
-                                      ? item.fullName[0].toUpperCase()
-                                      : 'P',
+            /// APP BAR
+            SliverAppBar(
+              expandedHeight: 170,
+              pinned: true,
+              backgroundColor: const Color(0xFF1A73E8),
+              foregroundColor: Colors.white,
+              title: const Text('Verification Review'),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1A73E8), Color(0xFF0D47A1)],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 52, 20, 16),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 32,
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            child: Text(
+                              widget.item.fullName.isNotEmpty
+                                  ? widget.item.fullName[0].toUpperCase()
+                                  : 'P',
+                              style: const TextStyle(
+                                fontSize: 26,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 14),
+
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  widget.item.fullName,
                                   style: const TextStyle(
-                                    fontSize: 26,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+
+                                Text(
+                                  widget.item.email,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                Row(
                                   children: [
-                                    Text(
-                                      item.fullName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                    _StatusBadge(
+                                      status: widget.item.verificationStatus,
                                     ),
-                                    Text(
-                                      item.email,
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    _StatusBadge(status: 'Pending'),
+
+
                                   ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
-                  backgroundColor: const Color(0xFF1A73E8),
-                  foregroundColor: Colors.white,
-                  title: const Text(
-                    'Verification Review',
-                    style: TextStyle(fontSize: 16),
-                  ),
                 ),
+              ),
+            ),
 
-                // ── Content ──────────────────────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
+            /// BODY
+            SliverToBoxAdapter(
+              child: BlocBuilder<AdminBloc, AdminState>(
+                builder: (context, state) {
+                  /// Loading profile
+                  if (state is PswProfileLoading) {
+                    return const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  /// Profile
+                  final profile = state is PswProfileLoaded
+                      ? state.profile
+                      : null;
+
+                  return Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Personal Info Card
+
+                        /// PERSONAL INFO
                         _SectionTitle('Personal Information'),
                         const SizedBox(height: 8),
+
                         _InfoCard(
                           children: [
                             _InfoRow(
                               icon: Icons.person_outline,
                               label: 'Full Name',
-                              value: item.fullName,
+                              value: profile?.fullName ?? widget.item.fullName,
                             ),
+
                             _InfoRow(
                               icon: Icons.email_outlined,
                               label: 'Email',
-                              value: item.email,
+                              value: profile?.email ?? widget.item.email,
                             ),
+
                             _InfoRow(
                               icon: Icons.phone_outlined,
                               label: 'Phone',
-                              value: item.phoneNumber.isNotEmpty
-                                  ? item.phoneNumber
-                                  : '—',
+                              value:
+                              profile?.phoneNumber ??
+                                  widget.item.phoneNumber,
                             ),
+
+                            if (profile?.gender != null)
+                              _InfoRow(
+                                icon: Icons.wc_outlined,
+                                label: 'Gender',
+                                value: profile!.gender,
+                              ),
+
+                            if (profile?.dateOfBirth != null)
+                              _InfoRow(
+                                icon: Icons.cake_outlined,
+                                label: 'Date of Birth',
+                                value: _formatDate(profile!.dateOfBirth),
+                              ),
+
                             _InfoRow(
                               icon: Icons.badge_outlined,
-                              label: 'ID Type',
-                              value: item.proofIdentityType.isNotEmpty
-                                  ? item.proofIdentityType
-                                  : '—',
+                              label: 'Identity Type',
+                              value:
+                              profile?.proofIdentityType ??
+                                  widget.item.proofIdentityType ??
+                                  '—',
                             ),
-                            if (item.submittedAt.isNotEmpty)
-                              _InfoRow(
-                                icon: Icons.calendar_today_outlined,
-                                label: 'Submitted',
-                                value: _formatDate(item.submittedAt),
-                              ),
+
+                            _InfoRow(
+                              icon: Icons.location_on_outlined,
+                              label: 'Address',
+                              value: profile?.address.state ?? '',
+                            ),
                           ],
                         ),
+                        const SizedBox(height: 24),
 
-                        const SizedBox(height: 20),
-
-                        // Documents Section
+                        /// DOCUMENTS
                         _SectionTitle('Uploaded Documents'),
                         const SizedBox(height: 8),
-                        _DocumentsCard(
-                          documents: [
-                            _DocItem(
-                              icon: Icons.credit_card_outlined,
-                              label: 'Proof of Identity',
-                              fileId: item.proofIdentityFileId,
-                            ),
-                            _DocItem(
-                              icon: Icons.school_outlined,
-                              label: 'PSW Certificate',
-                              fileId: item.pswCertificateFileId,
-                            ),
-                            _DocItem(
-                              icon: Icons.description_outlined,
-                              label: 'CV / Resume',
-                              fileId: item.cvFileId,
-                            ),
-                            _DocItem(
-                              icon: Icons.medical_services_outlined,
-                              label: 'Immunization Record',
-                              fileId: item.immunizationRecordFileId,
-                            ),
-                            _DocItem(
-                              icon: Icons.gavel_outlined,
-                              label: 'Criminal Record',
-                              fileId: item.criminalRecordFileId,
-                            ),
-                            _DocItem(
-                              icon: Icons.favorite_border,
-                              label: 'First Aid / CPR Certificate',
-                              fileId: item.firstAidOrCprFileId,
-                            ),
-                          ],
-                          baseUrl: _fileBaseUrl,
-                        ),
 
-                        const SizedBox(height: 28),
-
-                        // ── Action Buttons ────────────────────────────────
-                        if (isMutating)
-                          const Center(child: CircularProgressIndicator())
+                        if (profile == null)
+                          const Center(child: Text("Loading documents..."))
                         else
+                          _DocumentsFromProfile(profile: profile),
+
+                        const SizedBox(height: 32),
+                        if(widget.item.verificationStatus == "Pending")
+
+                        /// ACTIONS
                           Row(
                             children: [
                               Expanded(
                                 child: OutlinedButton.icon(
-                                  onPressed: () => _showRejectDialog(
+                                  onPressed: () {
+                                    _showRejectDialog(
                                     context,
-                                    item.pswId,
-                                    item.fullName,
-                                  ),
-                                  icon: const Icon(Icons.close, size: 18),
-                                  label: const Text('Reject'),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.red,
-                                    side: const BorderSide(color: Colors.red),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
+                                      widget.item.pswId,
+                                      widget.item.fullName,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.close),
+                                  label: const Text("Reject"),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+
+                              const SizedBox(width: 16),
+
                               Expanded(
                                 child: ElevatedButton.icon(
-                                  onPressed: () =>
-                                      context.read<AdminBloc>().add(
-                                        ApproveVerificationEvent(item.pswId),
-                                      ),
-                                  icon: const Icon(
-                                    Icons.verified_outlined,
-                                    size: 18,
-                                  ),
-                                  label: const Text('Approve'),
+                                  onPressed: () {
+                                    context.read<AdminBloc>().add(
+                                      ApproveVerificationEvent(
+                                          widget.item.pswId),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.check),
+                                  label: const Text("Approve"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        const SizedBox(height: 32),
+
+                        const SizedBox(height: 40),
                       ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showRejectDialog(BuildContext context, String pswId, String name) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.cancel, color: Colors.red.shade600, size: 20),
-            ),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text(
-                'Reject Verification',
-                style: TextStyle(fontSize: 16),
+                  );
+                },
               ),
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Rejecting verification for:',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: 'Explain the reason for rejection...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF1A73E8)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'This reason will be visible to the PSW.',
-              style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
-            ),
-          ],
+      ),
+    );
+  }
+
+  /// Reject dialog
+  void _showRejectDialog(BuildContext context, String pswId, String name) {
+    final controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Reject Verification"),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: const InputDecoration(hintText: "Reason..."),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: const Text("Cancel"),
           ),
+
           ElevatedButton(
             onPressed: () {
-              final reason = controller.text.trim();
-              if (reason.isEmpty) return;
-              Navigator.pop(ctx);
               context.read<AdminBloc>().add(
-                RejectVerificationEvent(pswId: pswId, reason: reason),
+                RejectVerificationEvent(pswId: pswId, reason: controller.text),
               );
+
+              Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text('Reject'),
+            child: const Text("Reject"),
           ),
         ],
       ),
     );
   }
 
-  String _formatDate(String dateStr) {
+  String _formatDate(String raw) {
     try {
-      return DateFormat('MMM dd, yyyy').format(DateTime.parse(dateStr));
+      return DateFormat('MMM dd, yyyy').format(DateTime.parse(raw));
     } catch (_) {
-      return dateStr;
+      return raw;
     }
   }
 }
 
-// ── Documents Card ────────────────────────────────────────────────────────────
-
-class _DocItem {
-  final IconData icon;
-  final String label;
-  final String fileId;
-
-  const _DocItem({
-    required this.icon,
-    required this.label,
-    required this.fileId,
-  });
-}
-
-class _DocumentsCard extends StatelessWidget {
-  final List<_DocItem> documents;
-  final String baseUrl;
-
-  const _DocumentsCard({required this.documents, required this.baseUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: documents.map((doc) {
-          final hasFile = doc.fileId.isNotEmpty;
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: hasFile
-                            ? const Color(0xFF1A73E8).withOpacity(0.08)
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        doc.icon,
-                        size: 18,
-                        color: hasFile
-                            ? const Color(0xFF1A73E8)
-                            : Colors.grey.shade400,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        doc.label,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (hasFile)
-                      GestureDetector(
-                        onTap: () {
-                          // final url = Uri.parse('$baseUrl${doc.fileId}');
-                          // if (await canLaunchUrl(url)) {
-                          //   await launchUrl(url,
-                          //       mode: LaunchMode.externalApplication);
-                          // }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1A73E8).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.open_in_new,
-                                size: 14,
-                                color: Color(0xFF1A73E8),
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'View',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF1A73E8),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Not uploaded',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (doc != documents.last)
-                Divider(height: 1, color: Colors.grey.shade100),
-            ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-// ── Shared Widgets ────────────────────────────────────────────────────────────
-
 class _StatusBadge extends StatelessWidget {
   final String status;
-
   const _StatusBadge({required this.status});
-
   @override
   Widget build(BuildContext context) {
     Color bg, border, text;
     switch (status.toLowerCase()) {
-      case 'verified':
       case 'approved':
-        bg = Colors.green.shade50;
-        border = Colors.green.shade200;
-        text = Colors.green.shade700;
+        bg = Colors.green.shade400;
+        border = Colors.green.shade400;
+        text = Colors.white;
         break;
       case 'rejected':
-        bg = Colors.red.shade50;
-        border = Colors.red.shade200;
-        text = Colors.red.shade700;
+        bg = Colors.red.shade400;
+        border = Colors.red.shade400;
+        text = Colors.white;
         break;
       default:
-        bg = Colors.orange.shade50;
-        border = Colors.orange.shade200;
-        text = Colors.orange.shade700;
+        bg = Colors.orange.shade400;
+        border = Colors.orange.shade400;
+        text = Colors.white;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
@@ -566,7 +354,7 @@ class _StatusBadge extends StatelessWidget {
         style: TextStyle(
           color: text,
           fontSize: 11,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -575,9 +363,7 @@ class _StatusBadge extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   final String text;
-
   const _SectionTitle(this.text);
-
   @override
   Widget build(BuildContext context) => Text(
     text,
@@ -587,9 +373,7 @@ class _SectionTitle extends StatelessWidget {
 
 class _InfoCard extends StatelessWidget {
   final List<Widget> children;
-
   const _InfoCard({required this.children});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -622,18 +406,17 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-
   const _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
   });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(7),
@@ -669,6 +452,218 @@ class _InfoRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── Documents — from full profile ─────────────────────────────────────────────
+class _DocumentsFromProfile extends StatelessWidget {
+  final PswProfileEntity profile;
+
+  const _DocumentsFromProfile({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    final docs = [
+      (
+      'Proof of Identity',
+      profile.proofIdentityFile,
+      Icons.credit_card_outlined,
+      ),
+      ('Insurance', profile.insuranceFile, Icons.security_outlined),
+      (
+      'PSW Certificate',
+      profile.pswCertificateFile,
+      Icons.workspace_premium_outlined,
+      ),
+      ('CV / Resume', profile.cvFile, Icons.description_outlined),
+      (
+      'Immunization Record',
+      profile.immunizationRecordFile,
+      Icons.vaccines_outlined,
+      ),
+      ('Criminal Record', profile.criminalRecordFile, Icons.policy_outlined),
+      (
+      'First Aid / CPR',
+      profile.firstAidOrCPRFile,
+      Icons.health_and_safety_outlined,
+      ),
+    ];
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: docs
+            .asMap()
+            .entries
+            .map((entry) {
+          final i = entry.key;
+          final (label, file, icon) = entry.value;
+          final hasFile = file != null;
+          return Column(
+            children: [
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: (hasFile ? Colors.green : Colors.grey).withOpacity(
+                      0.1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 18,
+                    color: hasFile ? Colors.green.shade600 : Colors.grey,
+                  ),
+                ),
+                title: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: hasFile
+                    ? Text(
+                  file.fileName,
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 11,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
+                    : null,
+                trailing: hasFile
+                    ? GestureDetector(
+                  onTap: () =>
+                      _showDocumentPreview(context, file.url, label),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A73E8).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.open_in_new,
+                          size: 14,
+                          color: Color(0xFF1A73E8),
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'View',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF1A73E8),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                    : Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Not uploaded',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+              ),
+              if (i < docs.length - 1)
+                Divider(height: 1, color: Colors.grey.shade100),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  void _showDocumentPreview(BuildContext context, String url, String title) {
+    final isPdf = url.toLowerCase().endsWith('.pdf');
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) =>
+          GestureDetector(
+            onTap: () => Navigator.pop(ctx),
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black87,
+              child: Center(
+                child: isPdf
+                    ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.picture_as_pdf,
+                      color: Colors.white70,
+                      size: 64,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'PDF preview not available. Tap outside to close.',
+                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                    ),
+                  ],
+                )
+                    : InteractiveViewer(
+                  child: Image.network(
+                    "https://relief-app-file.s3.ca-central-1.amazonaws.com/psw/certificate/33117571-e6cc-4e9b-18dd-08de83d79a7b/486ac558-8f19-4c3a-b835-3866ddc32b80.jpg?X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaDGNhLWNlbnRyYWwtMSJIMEYCIQDpXZFEMOX8egucebOM0khN812u0%2BY7WFPyhNdoLqqUmQIhALz4BHBxMprL%2FLMPeVkTstSVrtcg1z6vJ9RM2nMbE4DiKs8FCPP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMOTM4NTM2NDk5OTk1IgwPXAnJqVBExmmn3AgqowW0pTh3Bxe0YV52LxxQBopzPlc1ztj9x%2BnM9RQQpjUy%2BbomreYKRFrOvcATeN3RNXtjtlQCrrcQb9097K8tY9qeSKO5Fl%2F5XKss7Eu%2FFCDEDaDfmH6rCehNOqB8lqnSukGoIPLn3g%2FMeCbnFtnWu78HzQq141cIJI3aCKLXDpOvpGN%2FDBVErzq6i4BR%2FLxjIHrypZPSfC1u4e%2FH1dnsPLXg9ai2KXsfWPRE%2B4NzgAfegGV8XTo%2BuEb9LfK8el2Ci0eFkoKyUDc4ILoLkLzdkEBOLo64%2BlEi066M07f1emJyFXRBdgStZ%2FqhpaP9IfmtR5u%2F69Z0dZ0EIvGkJXJ1aFdkaQ5QfuIBp2LEc1mbEmyTqcEjCjTivilm3yjjR1S4amWjXkcP8inoM2I29bfkCI0CmBTQljYhoQRL0x6V2BWsiJOsI1Hz23dbc0Ecnpqo%2FkClePseXQSDI%2BZMCjBPl%2B1ccGmyEdyv2RtFl%2B0KThbuW2HUJ8%2F00mXQYyjlvZEQMWySEHjxyusKbhzu5Hgz5IaxebyruvMSVB2HQW8tPv2zxhkK3GgCWnIzscVFv2y5sNueX7S4pAyIsJ%2BkgMot3GYKgmIWA5Od3D3QJy2W%2Fdng%2BxdOY66XpQEzFB3By3asOHVX7prCeJPfoKaMusbEbjtYD5%2FPWWk8W9h%2F535zhe2OOWAqYBoUMVhc1cXO8i45I2U2ybdUWmTUmo8uLaRg4NWqnxn5KdlE5o8qFIagQzI3cyEWlyo%2B2Mn2eaxHSaruVfmAbD2T971boxPgDdIfiJWFAVu%2B7K3ndyU%2BRFuaugd9n5A1IBwh7cLoe%2FH0r9rBrdoSJhkPlqSdfpYmTC10TaRnnkJD%2FmOhdRRgsXhOB8%2F%2B4rnnyW56o07XilO0tfq3IS17rFAw0q%2FmzQY6sAFTo%2FR9nr1%2FqIDs310%2BP0%2FSfA668DV%2BhawtQImuanAP1zdbKHGE8nSVcKaeOshbRwL%2BrIeTRKwM02YG4VVxq9vGIGjK4fi%2FpW5hxKicbpkZV159j5TnG5RVNB9XbJ5twwmjfwcGIaRhzK2oY0UC%2FQHMajrwg3IQCrsb%2B92NcdA0w26LUOZIzdczCJh2k%2BPjzynuk4fFWud26x8Brh2epkDSbnbOxEYVo1%2FoCfF67YzFlQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5VBJCPMNYR26SKED%2F20260317%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260317T183758Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2cfce2cf4b10a4838509eeed0c4e1381552478e5265413d88b0ba390ac1e9618",
+                    fit: BoxFit.contain,
+                    loadingBuilder: (_, child, progress) =>
+                    progress == null
+                        ? child
+                        : const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                    errorBuilder: (_, __, ___) =>
+                    const Icon(
+                      Icons.error,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
     );
   }
 }

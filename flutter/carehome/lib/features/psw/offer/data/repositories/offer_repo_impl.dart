@@ -13,25 +13,34 @@ class OffersRepositoryImpl implements OffersRepository {
 
   @override
   Future<Either<Failure, List<OfferListItemEntity>>> getOffers({
-    required int pageNumber,
+    required int pageIndex,
     required int pageSize,
+    String? careHomeId,
+    String? search,
+    String? sort,
   }) async {
     try {
       final models = await remoteDataSource.getOffers(
-        pageNumber: pageNumber,
+        pageIndex: pageIndex,
         pageSize: pageSize,
+        careHomeId: careHomeId,
+        search: search,
+        sort: sort,
       );
       final entities = models
-          .map(
-            (m) => OfferListItemEntity(
-              id: m.id,
-              title: m.title,
-              address: m.address,
-              hourlyRate: m.hourlyRate,
-              latitude: m.latitude,
-              longitude: m.longitude,
-            ),
-          )
+          .map((m) =>
+          OfferListItemEntity(
+            id: m.id,
+            title: m.title,
+            address: m.address,
+            hourlyRate: m.hourlyRate,
+            latitude: m.latitude,
+            longitude: m.longitude,
+            careHomeId: m.careHomeId,
+            individualId: m.individualId,
+            posterName: m.posterName,
+            posterType: m.posterType,
+          ))
           .toList();
       return Right(entities);
     } on ServerFailure catch (e) {
@@ -53,16 +62,19 @@ class OffersRepositoryImpl implements OffersRepository {
         latitude: model.latitude,
         longitude: model.longitude,
         hourlyRate: model.hourlyRate,
+        careHomeId: model.careHomeId,
+        individualId: model.individualId,
+        posterName: model.posterName,
+        posterType: model.posterType,
         shifts: model.shifts
-            .map(
-              (s) => ShiftEntity(
-                shiftId: s.shiftId,
-                date: s.date,
-                startTime: s.startTime,
-                endTime: s.endTime,
-                isAvailable: s.isAvailable,
-              ),
-            )
+            .map((s) =>
+            ShiftEntity(
+              shiftId: s.shiftId,
+              date: s.date,
+              startTime: s.startTime,
+              endTime: s.endTime,
+              isAvailable: s.isAvailable,
+            ))
             .toList(),
       );
       return Right(entity);

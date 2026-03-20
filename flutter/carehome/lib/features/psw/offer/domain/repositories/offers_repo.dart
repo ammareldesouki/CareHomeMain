@@ -5,8 +5,11 @@ import '../entities/offer_entity.dart';
 
 abstract class OffersRepository {
   Future<Either<Failure, List<OfferListItemEntity>>> getOffers({
-    required int pageNumber,
+    required int pageIndex,
     required int pageSize,
+    String? careHomeId,
+    String? search,
+    String? sort,
   });
 
   Future<Either<Failure, OfferDetailEntity>> getOfferById(String id);

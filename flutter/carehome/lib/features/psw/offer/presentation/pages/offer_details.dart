@@ -68,8 +68,6 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
 
   static const accent = Color(0xFF1A73E8);
 
-  // ── helpers ──────────────────────────────────────────────────────────────
-
   List<ShiftEntity> get _availableShifts =>
       widget.detail.shifts.where((s) => s.isAvailable).toList();
 
@@ -101,11 +99,28 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
     });
   }
 
+  /// For Individual offers show only the postal-code portion of the address.
+  /// The address format from API: "street, City, Country"
+  /// We show the last segment as the area reference, labelled "Postal Code".
+  String _postalCodeDisplay(String address) {
+    if (address
+        .trim()
+        .isEmpty) return '—';
+    final parts = address
+        .split(',')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+    // Return last meaningful part (usually City or Country)
+    return parts.isNotEmpty ? parts.last : address;
+  }
+
   @override
   Widget build(BuildContext context) {
     final offer = widget.detail;
     final workStatus = NetworkDioHandler().currentWorkStatus;
     final available = _availableShifts;
+    final isIndividual = offer.isIndividual;
 
     return BlocListener<PswApplicationBloc, PswApplicationState>(
       listener: (context, state) {
@@ -130,29 +145,72 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
         slivers: [
           // ── App Bar ───────────────────────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 180,
+            expandedHeight: 200,
             pinned: true,
-            backgroundColor: accent,
+            backgroundColor: isIndividual
+                ? Colors.deepPurple.shade600
+                : accent,
             leading: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [accent, Color(0xFF0D47A1)],
+                    colors: isIndividual
+                        ? [
+                      Colors.deepPurple.shade500,
+                      Colors.deepPurple.shade900
+                    ]
+                        : [accent, const Color(0xFF0D47A1)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 56, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(20, 56, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        // ── Poster name + type badge ─────────────────────────
+                        Row(
+                          children: [
+                            Icon(
+                              isIndividual
+                                  ? Icons.person_outline
+                                  : Icons.business_outlined,
+                              color: Colors.white70,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              offer.posterName.isNotEmpty
+                                  ? offer.posterName
+                                  : 'Unknown',
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 12),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                offer.posterType,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 10),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        // ── Rate badge ──────────────────────────────────────
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
@@ -166,7 +224,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                 color: Colors.white, fontSize: 12),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
                           offer.title,
                           style: Theme
@@ -177,13 +235,44 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                           maxLines: 2,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          offer.address,
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 13),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        // ── Address / Postal code ────────────────────────────
+                        Row(
+                          children: [
+                            if (isIndividual) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'Postal Code',
+                                  style: TextStyle(
+                                      color: Colors.white60,
+                                      fontSize: 10),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _postalCodeDisplay(offer.address),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.85),
+                                    fontSize: 13),
+                              ),
+                            ] else
+                              Expanded(
+                                child: Text(
+                                  offer.address,
+                                  style: TextStyle(
+                                      color:
+                                      Colors.white.withOpacity(0.85),
+                                      fontSize: 13),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -199,7 +288,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── workStatus warning ──────────────────────────────────
+                  // ── Work status warning ─────────────────────────────────────
                   if (workStatus == "None" || workStatus == "Pending") ...[
                     Container(
                       width: double.infinity,
@@ -216,11 +305,12 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'You cannot apply until the admin approves your account.',
+                              workStatus == "None"
+                                  ? 'Your account is not yet verified. Complete your profile to apply.'
+                                  : 'Your verification is pending. You will be notified once approved.',
                               style: TextStyle(
-                                  color: Colors.orange.shade800,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500),
+                                  color: Colors.orange.shade700,
+                                  fontSize: 13),
                             ),
                           ),
                         ],
@@ -229,170 +319,109 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                     const SizedBox(height: 16),
                   ],
 
-                  // ── Quick badges ────────────────────────────────────────
+                  // ── Quick badges ────────────────────────────────────────────
                   Row(
                     children: [
                       _QuickBadge(
-                        icon: Icons.schedule_rounded,
+                        icon: Icons.attach_money,
                         label:
-                        '${offer.shifts.length} Shift${offer.shifts.length != 1
-                            ? 's'
-                            : ''}',
+                        '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
                       ),
                       const SizedBox(width: 10),
                       _QuickBadge(
-                        icon: Icons.check_circle_outline,
-                        label: '${available.length} Available',
+                        icon: isIndividual
+                            ? Icons.person_outline
+                            : Icons.business_outlined,
+                        label: offer.posterType,
                       ),
                       const SizedBox(width: 10),
-                      const _QuickBadge(
-                          icon: Icons.location_on_outlined, label: 'On-site'),
+                      _QuickBadge(
+                        icon: Icons.event_available_outlined,
+                        label: '${available.length} available',
+                      ),
                     ],
                   ),
 
                   const SizedBox(height: 20),
 
-                  // ── Description ─────────────────────────────────────────
-                  if (offer.description.isNotEmpty) ...[
+                  // ── Description ─────────────────────────────────────────────
+                  if (offer.description.isNotEmpty)
                     _SectionCard(
                       title: 'About this offer',
-                      icon: Icons.info_outline_rounded,
+                      icon: Icons.info_outline,
                       child: Text(
                         offer.description,
                         style: TextStyle(
-                            fontSize: 14,
                             color: Colors.grey.shade700,
+                            fontSize: 14,
                             height: 1.5),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                  ],
 
-                  // ── Location ────────────────────────────────────────────
+                  if (offer.description.isNotEmpty) const SizedBox(height: 16),
+
+                  // ── Location ────────────────────────────────────────────────
                   _SectionCard(
-                    title: 'Location',
-                    icon: Icons.apartment_rounded,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(offer.address,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
-                        Row(children: [
-                          Icon(Icons.location_on_outlined,
-                              size: 15, color: Colors.grey.shade500),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${offer.latitude.toStringAsFixed(4)}, ${offer
-                                .longitude.toStringAsFixed(4)}',
-                            style: TextStyle(
-                                color: Colors.grey.shade500, fontSize: 13),
-                          ),
-                        ]),
-                      ],
+                    title: isIndividual ? 'Postal Code' : 'Location',
+                    icon: Icons.location_on_outlined,
+                    child: Text(
+                      isIndividual
+                          ? _postalCodeDisplay(offer.address)
+                          : offer.address,
+                      style: TextStyle(
+                          color: Colors.grey.shade700, fontSize: 14),
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 16),
 
-                  // ── Shifts ───────────────────────────────────────────────
+                  // ── Shifts ──────────────────────────────────────────────────
                   _SectionCard(
-                    title: workStatus == "Approved"
-                        ? 'Select Shifts to Apply'
-                        : 'Shifts',
-                    icon: Icons.schedule_rounded,
+                    title: 'Shifts',
+                    icon: Icons.schedule_outlined,
                     child: Column(
                       children: [
-                        // ── Select All / Deselect All ─────────────────────
-                        if (workStatus == "Approved" &&
-                            available.isNotEmpty) ...[
-                          GestureDetector(
+                        // Select all row
+                        if (available.isNotEmpty) ...[
+                          InkWell(
                             onTap: _toggleSelectAll,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 11),
-                              decoration: BoxDecoration(
-                                color: _allSelected
-                                    ? accent.withOpacity(0.1)
-                                    : Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: _allSelected
-                                      ? accent
-                                      : Colors.grey.shade300,
-                                  width: _allSelected ? 1.5 : 1,
-                                ),
-                              ),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.symmetric(vertical: 6),
                               child: Row(
                                 children: [
-                                  // animated checkbox
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    width: 22,
-                                    height: 22,
-                                    decoration: BoxDecoration(
+                                  Icon(
+                                    _allSelected
+                                        ? Icons.check_box
+                                        : Icons.check_box_outline_blank,
+                                    size: 18,
+                                    color: _allSelected
+                                        ? accent
+                                        : Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _allSelected
+                                        ? 'Deselect all'
+                                        : 'Select all (${available.length})',
+                                    style: TextStyle(
+                                      fontSize: 13,
                                       color: _allSelected
                                           ? accent
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: _allSelected
-                                            ? accent
-                                            : Colors.grey.shade400,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: _allSelected
-                                        ? const Icon(Icons.check,
-                                        color: Colors.white, size: 14)
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      _allSelected
-                                          ? 'Deselect All Shifts'
-                                          : 'Select All Available Shifts  (${available
-                                          .length})',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: _allSelected
-                                            ? accent
-                                            : Colors.grey.shade700,
-                                      ),
+                                          : Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  // selected counter pill (shown when partial)
-                                  if (!_allSelected &&
-                                      _selectedShiftIds.isNotEmpty)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: accent.withOpacity(0.1),
-                                        borderRadius:
-                                        BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        '${_selectedShiftIds.length} selected',
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: accent,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          Divider(
+                              height: 1, color: Colors.grey.shade200),
+                          const SizedBox(height: 8),
                         ],
-
-                        // ── Individual shift tiles ─────────────────────────
+                        // Shift list
                         ...offer.shifts
                             .asMap()
                             .entries
@@ -403,54 +432,56 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                           _selectedShiftIds.contains(s.shiftId);
 
                           return GestureDetector(
-                            onTap: workStatus == "Approved" && s.isAvailable
+                            onTap: s.isAvailable
                                 ? () => _toggleShift(s.shiftId)
                                 : null,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              margin: EdgeInsets.only(top: i == 0 ? 0 : 10),
-                              padding: const EdgeInsets.all(12),
+                            child: Container(
+                              margin:
+                              const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? accent.withOpacity(0.1)
+                                    ? accent.withOpacity(0.08)
                                     : s.isAvailable
-                                    ? Colors.blue.shade50
+                                    ? Colors.grey.shade50
                                     : Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(12),
-                                border: isSelected
-                                    ? Border.all(color: accent, width: 1.5)
-                                    : null,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? accent
+                                      : Colors.grey.shade200,
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  // checkbox / number badge
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 180),
-                                    width: 32,
-                                    height: 32,
+                                  // Number / check circle
+                                  Container(
+                                    width: 28,
+                                    height: 28,
                                     decoration: BoxDecoration(
                                       color: isSelected
                                           ? accent
                                           : s.isAvailable
-                                          ? accent
-                                          : Colors.grey,
-                                      borderRadius: BorderRadius.circular(8),
+                                          ? Colors.grey.shade300
+                                          : Colors.grey.shade200,
+                                      shape: BoxShape.circle,
                                     ),
                                     child: Center(
                                       child: isSelected
                                           ? const Icon(Icons.check,
-                                          color: Colors.white, size: 16)
+                                          color: Colors.white,
+                                          size: 16)
                                           : Text(
                                         '${i + 1}',
                                         style: const TextStyle(
                                             color: Colors.white,
-                                            fontWeight: FontWeight.bold),
+                                            fontWeight:
+                                            FontWeight.bold),
                                       ),
                                     ),
                                   ),
                                   const SizedBox(width: 14),
-
-                                  // date + time
+                                  // Date + time
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -467,16 +498,16 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                               color: Colors.grey.shade500),
                                           const SizedBox(width: 4),
                                           Text(
-                                              '${s.startTime} – ${s.endTime}',
-                                              style: TextStyle(
-                                                  color: Colors.grey.shade600,
-                                                  fontSize: 13)),
+                                            '${s.startTime} – ${s.endTime}',
+                                            style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 13),
+                                          ),
                                         ]),
                                       ],
                                     ),
                                   ),
-
-                                  // available / taken badge
+                                  // Available / Taken badge
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 3),
@@ -484,7 +515,8 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                       color: s.isAvailable
                                           ? Colors.green.shade100
                                           : Colors.red.shade100,
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius:
+                                      BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       s.isAvailable ? 'Available' : 'Taken',
@@ -507,7 +539,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
 
                   const SizedBox(height: 24),
 
-                  // ── Apply button ─────────────────────────────────────────
+                  // ── Apply button ─────────────────────────────────────────────
                   BlocBuilder<PswApplicationBloc, PswApplicationState>(
                     builder: (context, appState) {
                       final isLoading =
@@ -522,13 +554,14 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                               context.read<PswApplicationBloc>().add(
                                 ApplyForOfferEvent(
                                   offerId: offer.id,
-                                  shiftIds:
-                                  _selectedShiftIds.toList(),
+                                  shiftIds: _selectedShiftIds.toList(),
                                 ),
                               )
                               : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: accent,
+                            backgroundColor: isIndividual
+                                ? Colors.deepPurple.shade600
+                                : accent,
                             disabledBackgroundColor: Colors.grey.shade300,
                             padding:
                             const EdgeInsets.symmetric(vertical: 16),
@@ -543,7 +576,8 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                 color: Colors.white, strokeWidth: 2),
                           )
                               : Text(
-                            workStatus == "None" || workStatus == "Pending"
+                            workStatus == "None" ||
+                                workStatus == "Pending"
                                 ? 'Account Pending Approval'
                                 : _selectedShiftIds.isEmpty
                                 ? 'Select Shifts to Apply'
@@ -583,7 +617,8 @@ class _QuickBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding:
+        const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),

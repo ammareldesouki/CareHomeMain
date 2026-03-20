@@ -31,6 +31,10 @@ class OfferDetailModel {
   final double longitude;
   final double hourlyRate;
   final List<ShiftModel> shifts;
+  final String? careHomeId;
+  final String? individualId;
+  final String posterName;
+  final String posterType;
 
   const OfferDetailModel({
     required this.id,
@@ -41,6 +45,10 @@ class OfferDetailModel {
     required this.longitude,
     required this.hourlyRate,
     required this.shifts,
+    this.careHomeId,
+    this.individualId,
+    required this.posterName,
+    required this.posterType,
   });
 
   factory OfferDetailModel.fromMap(Map<String, dynamic> map) =>
@@ -52,6 +60,10 @@ class OfferDetailModel {
         latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
         longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
         hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
+        careHomeId: map['careHomeId'] as String?,
+        individualId: map['individualId'] as String?,
+        posterName: map['posterName'] ?? '',
+        posterType: map['posterType'] ?? 'CareHome',
         shifts:
             (map['shifts'] as List<dynamic>?)
                 ?.map((s) => ShiftModel.fromMap(s as Map<String, dynamic>))

@@ -6,23 +6,47 @@ import '../../data/data_sources/admin_remote_datasource.dart';
 import '../../domain/entities/admin_application_entity.dart';
 import '../../domain/entities/admin_offer_entity.dart';
 import '../../domain/entities/admin_psw_verification_entity.dart';
+import '../../domain/entities/psw_profile_entity.dart';
 
 part 'admin_event.dart';
-
 part 'admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final AdminRemoteDataSource _ds;
 
+  // Remember the last verification filter so we can re-fetch after mutations.
+  String? _lastVerificationStatus;
+  String? _lastVerificationSearch;
+  String? _lastVerificationSort;
+  int _lastVerificationPageSize = 10;
+
   AdminBloc({AdminRemoteDataSource? dataSource})
-    : _ds = dataSource ?? AdminRemoteDataSourceImpl(),
-      super(AdminInitial()) {
+      : _ds = dataSource ?? AdminRemoteDataSourceImpl(),
+        super(AdminInitial()) {
     // ── Verifications ───────────────────────────────────────────────────────
-    on<FetchPendingVerificationsEvent>((_, emit) async {
+
+    on<FetchVerificationsEvent>((event, emit) async {
+      // Store params for post-mutation re-fetch.
+      _lastVerificationStatus = event.verificationStatus;
+      _lastVerificationSearch = event.search;
+      _lastVerificationSort = event.sort;
+      _lastVerificationPageSize = event.pageSize;
+
       emit(VerificationsLoading());
       try {
-        final list = await _ds.getPendingVerifications();
-        emit(VerificationsLoaded(list));
+        final result = await _ds.getVerifications(
+          verificationStatus: event.verificationStatus,
+          pageIndex: event.pageIndex,
+          pageSize: event.pageSize,
+          search: event.search,
+          sort: event.sort,
+        );
+        emit(VerificationsLoaded(
+          list: result.items,
+          totalCount: result.totalCount,
+          pageIndex: result.pageIndex,
+          pageSize: result.pageSize,
+        ));
       } catch (e) {
         final msg = e is ServerFailure
             ? (e.messageEn ?? e.message ?? 'Failed to load verifications')
@@ -31,13 +55,54 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       }
     });
 
+    on<LoadMoreVerificationsEvent>((event, emit) async {
+      // Only append if current state has data.
+      final current = state;
+      if (current is! VerificationsLoaded) return;
+
+      emit(VerificationsLoadingMore(
+        list: current.list,
+        totalCount: current.totalCount,
+        pageIndex: current.pageIndex,
+        pageSize: current.pageSize,
+      ));
+      try {
+        final result = await _ds.getVerifications(
+          verificationStatus: event.verificationStatus,
+          pageIndex: event.pageIndex,
+          pageSize: event.pageSize,
+          search: event.search,
+          sort: event.sort,
+        );
+        emit(VerificationsLoaded(
+          list: [...current.list, ...result.items],
+          totalCount: result.totalCount,
+          pageIndex: result.pageIndex,
+          pageSize: result.pageSize,
+        ));
+      } catch (e) {
+        // On error, restore previous loaded state so the list remains visible.
+        emit(VerificationsLoaded(
+          list: current.list,
+          totalCount: current.totalCount,
+          pageIndex: current.pageIndex,
+          pageSize: current.pageSize,
+        ));
+      }
+    });
+
     on<ApproveVerificationEvent>((event, emit) async {
       emit(VerificationMutationLoading());
       try {
-        print("-------------------${event.pswId}");
         await _ds.approveVerification(event.pswId);
         emit(VerificationMutationSuccess('PSW approved successfully'));
-        add(FetchPendingVerificationsEvent());
+        // Re-fetch page 1 with the same filter the user had open.
+        add(FetchVerificationsEvent(
+          verificationStatus: _lastVerificationStatus,
+          search: _lastVerificationSearch,
+          sort: _lastVerificationSort,
+          pageSize: _lastVerificationPageSize,
+        ));
       } catch (e) {
         final msg = e is ServerFailure
             ? (e.messageEn ?? e.message ?? 'Approve failed')
@@ -50,8 +115,13 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       emit(VerificationMutationLoading());
       try {
         await _ds.rejectVerification(event.pswId, event.reason);
-        emit(VerificationMutationSuccess('PSW verification rejected'));
-        add(FetchPendingVerificationsEvent());
+        emit(VerificationMutationSuccess('Verification rejected'));
+        add(FetchVerificationsEvent(
+          verificationStatus: _lastVerificationStatus,
+          search: _lastVerificationSearch,
+          sort: _lastVerificationSort,
+          pageSize: _lastVerificationPageSize,
+        ));
       } catch (e) {
         final msg = e is ServerFailure
             ? (e.messageEn ?? e.message ?? 'Reject failed')
@@ -61,6 +131,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     });
 
     // ── Applications ────────────────────────────────────────────────────────
+
     on<FetchPendingApplicationsEvent>((_, emit) async {
       emit(ApplicationsLoading());
       try {
@@ -77,7 +148,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<ApproveApplicationEvent>((event, emit) async {
       emit(ApplicationMutationLoading());
       try {
-        print("------------------" + event.requestId);
         await _ds.approveApplication(event.requestId);
         emit(ApplicationMutationSuccess('Application approved'));
         add(FetchPendingApplicationsEvent());
@@ -104,6 +174,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     });
 
     // ── Offers ──────────────────────────────────────────────────────────────
+
     on<FetchAllOffersEvent>((_, emit) async {
       emit(AdminOffersLoading());
       try {
@@ -128,6 +199,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             ? (e.messageEn ?? e.message ?? 'Cancel failed')
             : 'Something went wrong';
         emit(OfferMutationError(msg));
+      }
+    });
+
+    // ── PSW Profile ──────────────────────────────────────────────────────────
+
+    on<FetchPswProfileEvent>((event, emit) async {
+      emit(PswProfileLoading());
+      try {
+        final profile = await _ds.getPswProfile(event.pswId);
+        emit(PswProfileLoaded(profile));
+      } catch (e) {
+        final msg = e is ServerFailure
+            ? (e.messageEn ?? e.message ?? 'Failed to load PSW profile')
+            : 'Something went wrong';
+        emit(PswProfileError(msg));
       }
     });
   }
