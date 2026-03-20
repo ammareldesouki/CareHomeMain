@@ -89,7 +89,7 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
         index: _index,
         children: const [
           OfferScreen(),
-          ApplictionScreen(),
+          // ApplictionScreen(),
           CAReAccountScreen(),
         ],
       ),
@@ -99,10 +99,10 @@ class _CBottomNavigationBarState extends State<CBottomNavigationBar> {
               icon: Icon(Icons.work_outline_rounded),
               activeIcon: Icon(Icons.work_rounded),
               label: 'Offers'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people_outline_rounded),
-              activeIcon: Icon(Icons.people_rounded),
-              label: 'Requests'),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.people_outline_rounded),
+          //     activeIcon: Icon(Icons.people_rounded),
+          //     label: 'Requests'),
           BottomNavigationBarItem(
               icon: Icon(Icons.person_outline_rounded),
               activeIcon: Icon(Icons.person_rounded),

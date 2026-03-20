@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
@@ -74,10 +75,7 @@ class _AddOfferDialogState extends State<AddOfferDialog> {
   /// Shows a 24-hour time input dialog using a simple HH:MM TextField.
   Future<void> _pickTime24(int i, bool isStart) async {
     final current = isStart ? _shifts[i].startTime : _shifts[i].endTime;
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => _TimeInputDialog(initial: current),
-    );
+    final result = await _showTimePicker24(initial: current);
     if (result != null) {
       setState(() {
         if (isStart) {
@@ -87,6 +85,106 @@ class _AddOfferDialogState extends State<AddOfferDialog> {
         }
       });
     }
+  }
+
+  TimeOfDay? _parseHHmm(String v) {
+    final parts = v.split(':');
+    if (parts.length != 2) return null;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return null;
+    if (h < 0 || h > 23 || m < 0 || m > 59) return null;
+    return TimeOfDay(hour: h, minute: m);
+  }
+
+  String _formatHHmm(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(
+          2, '0')}';
+
+  Future<String?> _showTimePicker24({required String initial}) async {
+    final parsed = _parseHHmm(initial);
+    final initialTime = parsed ?? TimeOfDay.now();
+
+    final platform = Theme
+        .of(context)
+        .platform;
+    final isIOS = platform == TargetPlatform.iOS ||
+        platform == TargetPlatform.macOS;
+
+    if (isIOS) {
+      final now = DateTime.now();
+      final initialDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        initialTime.hour,
+        initialTime.minute,
+      );
+
+      final picked = await showCupertinoModalPopup<String>(
+        context: context,
+        builder: (ctx) {
+          DateTime current = initialDateTime;
+          return SafeArea(
+            child: SizedBox(
+              height: 260,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            final t = TimeOfDay(
+                              hour: current.hour,
+                              minute: current.minute,
+                            );
+                            Navigator.pop(ctx, _formatHHmm(t));
+                          },
+                          child: const Text('Done'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.time,
+                      use24hFormat: true,
+                      initialDateTime: initialDateTime,
+                      minuteInterval: 1,
+                      onDateTimeChanged: (dt) {
+                        current = dt;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+      return picked;
+    }
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (ctx, child) {
+        return MediaQuery(
+          data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
+    );
+
+    if (picked == null) return null;
+    return _formatHHmm(picked);
   }
 
   /// Converts "HH:MM" → "HH:MM:00" for the API
