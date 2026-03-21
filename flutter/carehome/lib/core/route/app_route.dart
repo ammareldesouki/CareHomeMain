@@ -1,5 +1,4 @@
-import 'package:carehome/features/psw/registration/presentation/pages/register_form.dart'
-    hide PswVerificationScreen;
+import 'package:carehome/features/psw/registration/presentation/pages/register_form.dart';
 import 'package:flutter/material.dart';
 
 import '../../features/admin/presentation/pages/admin_dashboard.dart';

@@ -107,16 +107,16 @@ class CareHomeRegistrationBloc
         );
       }
 
-      result.fold(
-        (failure) {
+      await result.fold<Future<void>>(
+        (failure) async {
           final msg = failure is ServerFailure
               ? (failure.messageEn ?? failure.message ?? 'Registration failed')
               : 'Something went wrong';
           emit(state.copyWith(isLoading: false, errorMessage: msg, error: msg));
         },
-        (user) {
+        (user) async {
           // Store Bearer token for all subsequent requests
-          NetworkDioHandler().setAuthToken(user.token);
+          await NetworkDioHandler().setAuthToken(user.token);
           NetworkDioHandler().setCurrentUser(
             userId: user.userId,
             role: user.role,

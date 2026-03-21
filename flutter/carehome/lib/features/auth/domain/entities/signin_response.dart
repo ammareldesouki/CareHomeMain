@@ -16,7 +16,8 @@ class SignInResponse {
   });
 
   factory SignInResponse.fromMap(Map<String, dynamic> map) => SignInResponse(
-    token: map['token'] ?? '',
+    token: (map['token'] ?? map['accessToken'] ?? map['access_token'] ?? '')
+        .toString(),
     expiresAtUtc: map['expiresAtUtc'] ?? '',
     email: map['email'] ?? '',
     role: map['role'] ?? '',

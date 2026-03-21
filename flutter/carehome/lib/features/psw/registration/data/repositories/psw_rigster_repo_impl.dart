@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../../core/failure/failure.dart';
 import '../../../../../core/failure/server_failure.dart';
+import '../../../../../core/network/dio_handler.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/repositories/psw_register_repo.dart';
 import '../data_sources/psw_auth_datasourse.dart';
@@ -18,6 +19,18 @@ class PswRegistrationRepositoryImpl implements PswRegistrationRepository {
   ) async {
     try {
       final response = await remoteDataSource.registerPsw(request);
+
+      // ✅ Persist + apply the token immediately so every subsequent request
+      // (e.g. completeProfile) carries Authorization without any race condition.
+      await NetworkDioHandler().setAuthToken(response.token);
+
+      // Optionally store user meta so the rest of the app can read it.
+      NetworkDioHandler().setCurrentUser(
+        userId: response.userId,
+        role: response.role,
+        workStatus: response.workStatus.toString(),
+      );
+
       final entity = AuthEntity(
         token: response.token,
         email: response.email,

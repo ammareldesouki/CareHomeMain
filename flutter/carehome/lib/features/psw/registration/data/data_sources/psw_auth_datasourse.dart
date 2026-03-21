@@ -26,6 +26,17 @@ class PswRegistrationRemoteDataSourceImpl
   // Use the singleton Dio instance
   final Dio _dio = NetworkDioHandler().dio;
 
+  static String _basename(String path) {
+    final normalized = path.replaceAll('\\', '/');
+    final i = normalized.lastIndexOf('/');
+    return i >= 0 && i < normalized.length - 1
+        ? normalized.substring(i + 1)
+        : normalized;
+  }
+
+  static Future<MultipartFile> _filePart(String path) =>
+      MultipartFile.fromFile(path, filename: _basename(path));
+
   @override
   Future<AuthResponse> registerPsw(PswRegisterRequest request) async {
     try {
@@ -55,29 +66,30 @@ class PswRegistrationRemoteDataSourceImpl
     String? firstAidOrCprFilePath,
   }) async {
     try {
+      final optionalAid = firstAidOrCprFilePath;
       final formData = FormData.fromMap({
         'ProofIdentityType': proofIdentityType,
         'WorkStatus': workStatus,
-        'ProofIdentityFile': await MultipartFile.fromFile(
-          proofIdentityFilePath,
-        ),
-        'PswCertificateFile': await MultipartFile.fromFile(
-          pswCertificateFilePath,
-        ),
-        'CVFile': await MultipartFile.fromFile(cvFilePath),
-        'ImmunizationRecordFile': await MultipartFile.fromFile(
-          immunizationRecordFilePath,
-        ),
-        'CriminalRecordFile': await MultipartFile.fromFile(
-          criminalRecordFilePath,
-        ),
-        if (firstAidOrCprFilePath != null)
-          'FirstAidOrCPRFile': await MultipartFile.fromFile(
-            firstAidOrCprFilePath,
-          ),
+        'ProofIdentityFile': await _filePart(proofIdentityFilePath),
+        'PswCertificateFile': await _filePart(pswCertificateFilePath),
+        'CVFile': await _filePart(cvFilePath),
+        'ImmunizationRecordFile': await _filePart(immunizationRecordFilePath),
+        'CriminalRecordFile': await _filePart(criminalRecordFilePath),
+        if (optionalAid != null) 'FirstAidOrCPRFile': await _filePart(
+            optionalAid),
       });
 
-      await _dio.post(EndPoints.completeProfile, data: formData);
+      await _dio.post(
+        EndPoints.completeProfile,
+        data: formData,
+        options: Options(
+          sendTimeout: const Duration(minutes: 3),
+          receiveTimeout: const Duration(minutes: 3),
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
     } on DioException catch (e) {
       final data = e.response?.data;
       if (data is Map<String, dynamic>) {

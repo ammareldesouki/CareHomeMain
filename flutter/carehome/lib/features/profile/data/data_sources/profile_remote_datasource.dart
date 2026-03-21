@@ -27,6 +27,14 @@ abstract class ProfileRemoteDataSource {
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   final Dio _dio = NetworkDioHandler().dio;
 
+  static String _basename(String path) {
+    final normalized = path.replaceAll('\\', '/');
+    final i = normalized.lastIndexOf('/');
+    return i >= 0 && i < normalized.length - 1
+        ? normalized.substring(i + 1)
+        : normalized;
+  }
+
   @override
   Future<PswProfileModel> getPswProfile() async {
     try {
@@ -97,9 +105,19 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     try {
       final formData = FormData.fromMap({
         'documentType': documentType,
-        'file': await MultipartFile.fromFile(filePath),
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: _basename(filePath),
+        ),
       });
-      await _dio.put(EndPoints.updateProfileDocument, data: formData);
+      await _dio.put(
+        EndPoints.updateProfileDocument,
+        data: formData,
+        options: Options(
+          sendTimeout: const Duration(minutes: 3),
+          receiveTimeout: const Duration(minutes: 3),
+        ),
+      );
       return true;
     } on DioException catch (e) {
       final data = e.response?.data;

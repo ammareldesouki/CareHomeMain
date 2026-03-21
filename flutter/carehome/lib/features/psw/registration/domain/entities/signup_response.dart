@@ -16,7 +16,8 @@ class AuthResponse {
   });
 
   factory AuthResponse.fromMap(Map<String, dynamic> map) => AuthResponse(
-    token: map['token'] ?? '',
+    token: (map['token'] ?? map['accessToken'] ?? map['access_token'] ?? '')
+        .toString(),
     expiresAtUtc: map['expiresAtUtc'] ?? '',
     email: map['email'] ?? '',
     role: map['role'] ?? '',

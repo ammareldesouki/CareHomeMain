@@ -1,6 +1,5 @@
 import 'package:carehome/core/route/route_name.dart';
 import 'package:carehome/features/auth/presentation/widgets/custome_form_field.dart';
-import 'package:carehome/features/psw/registration/presentation/pages/psw_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -384,8 +383,4 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
       ),
     );
   }
-}
-
-class PswVerificationScreen {
-  const PswVerificationScreen();
 }

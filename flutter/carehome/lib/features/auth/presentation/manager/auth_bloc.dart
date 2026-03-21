@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/failure/server_failure.dart';
@@ -39,7 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (_) {
         // Even if the API call fails, log the user out locally
       }
-      NetworkDioHandler().clearAuthToken();
+      await NetworkDioHandler().clearAuthToken();
       emit(AuthLoggedOut());
     });
 
@@ -47,15 +45,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInEvent>((event, emit) async {
       emit(AuthSignInLoading());
       final result = await signInUseCase(event.request);
-      result.fold(
-        (failure) {
+      await result.fold<Future<void>>(
+        (failure) async {
           final msg = failure is ServerFailure
               ? (failure.messageEn ?? failure.message ?? 'Login failed')
               : 'Something went wrong';
           emit(AuthSignInError(msg));
         },
-        (user) {
-          NetworkDioHandler().setAuthToken(user.token);
+        (user) async {
+          await NetworkDioHandler().setAuthToken(user.token);
           NetworkDioHandler().setCurrentUser(
             userId: user.userId,
             role: user.role,
@@ -87,15 +85,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
       final result = await registerPswUseCase(request);
-      result.fold(
-        (failure) {
+      await result.fold<Future<void>>(
+        (failure) async {
           final msg = failure is ServerFailure
               ? (failure.messageEn ?? failure.message ?? 'Registration failed')
               : 'Something went wrong';
           emit(AuthSignUpError(msg));
         },
-        (entity) {
-          NetworkDioHandler().setAuthToken(entity.token);
+        (entity) async {
+          await NetworkDioHandler().setAuthToken(entity.token);
           NetworkDioHandler().setCurrentUser(
             userId: entity.userId,
             role: 'PSW',

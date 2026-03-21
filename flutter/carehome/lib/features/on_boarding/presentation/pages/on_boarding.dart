@@ -92,8 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: Theme.of(
                       context,
                     )
-                        .textTheme
-                        .titleMedium!,
+                        .textTheme.titleMedium!.copyWith(color: Colors.white),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -122,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Text(
                             "Back",
                             style: Theme.of(context).textTheme.titleMedium!
-                                .copyWith(color: TColors.primary),
+                                .copyWith(color: TColors.darkBlue),
                           ),
                         ),
                       ),
