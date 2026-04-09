@@ -75,8 +75,8 @@ class PswRegistrationRemoteDataSourceImpl
         'CVFile': await _filePart(cvFilePath),
         'ImmunizationRecordFile': await _filePart(immunizationRecordFilePath),
         'CriminalRecordFile': await _filePart(criminalRecordFilePath),
-        if (optionalAid != null) 'FirstAidOrCPRFile': await _filePart(
-            optionalAid),
+        if (optionalAid != null)
+          'FirstAidOrCPRFile': await _filePart(optionalAid),
       });
 
       await _dio.post(
@@ -87,6 +87,8 @@ class PswRegistrationRemoteDataSourceImpl
           receiveTimeout: const Duration(minutes: 3),
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization':
+                'Bearer ${NetworkDioHandler().dio.options.headers['Authorization']}',
           },
         ),
       );

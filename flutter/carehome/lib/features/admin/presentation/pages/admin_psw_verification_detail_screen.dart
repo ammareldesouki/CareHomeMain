@@ -2,6 +2,7 @@ import 'package:carehome/core/constants/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../domain/entities/admin_psw_verification_entity.dart';
 import '../../domain/entities/psw_profile_entity.dart';
@@ -25,7 +26,7 @@ class _AdminPswVerificationDetailScreenState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AdminBloc>().add(
-          FetchPswProfileEvent("33117571-e6cc-4e9b-18dd-08de83d79a7b"));
+          FetchPswProfileEvent(widget.item.pswId));
     });
   }
 
@@ -548,7 +549,8 @@ class _DocumentsFromProfile extends StatelessWidget {
                 trailing: hasFile
                     ? GestureDetector(
                   onTap: () =>
-                      _showDocumentPreview(context, file.url, label),
+                      _showDocumentPreview(
+                          context, file.url, label, file.fileName),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -606,59 +608,44 @@ class _DocumentsFromProfile extends StatelessWidget {
     );
   }
 
-  void _showDocumentPreview(BuildContext context, String url, String title) {
-    final isPdf = url.toLowerCase().endsWith('.pdf');
+  void _showDocumentPreview(BuildContext context, String url, String title,
+      String fileName) {
+    final isPdf = fileName.toLowerCase().endsWith('.pdf');
+
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (ctx) =>
-          GestureDetector(
-            onTap: () => Navigator.pop(ctx),
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.black87,
-              child: Center(
-                child: isPdf
-                    ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.picture_as_pdf,
-                      color: Colors.white70,
-                      size: 64,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'PDF preview not available. Tap outside to close.',
-                      style: TextStyle(color: Colors.white60, fontSize: 12),
-                    ),
-                  ],
-                )
-                    : InteractiveViewer(
-                  child: Image.network(
-                    "https://relief-app-file.s3.ca-central-1.amazonaws.com/psw/certificate/33117571-e6cc-4e9b-18dd-08de83d79a7b/486ac558-8f19-4c3a-b835-3866ddc32b80.jpg?X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaDGNhLWNlbnRyYWwtMSJIMEYCIQDpXZFEMOX8egucebOM0khN812u0%2BY7WFPyhNdoLqqUmQIhALz4BHBxMprL%2FLMPeVkTstSVrtcg1z6vJ9RM2nMbE4DiKs8FCPP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMOTM4NTM2NDk5OTk1IgwPXAnJqVBExmmn3AgqowW0pTh3Bxe0YV52LxxQBopzPlc1ztj9x%2BnM9RQQpjUy%2BbomreYKRFrOvcATeN3RNXtjtlQCrrcQb9097K8tY9qeSKO5Fl%2F5XKss7Eu%2FFCDEDaDfmH6rCehNOqB8lqnSukGoIPLn3g%2FMeCbnFtnWu78HzQq141cIJI3aCKLXDpOvpGN%2FDBVErzq6i4BR%2FLxjIHrypZPSfC1u4e%2FH1dnsPLXg9ai2KXsfWPRE%2B4NzgAfegGV8XTo%2BuEb9LfK8el2Ci0eFkoKyUDc4ILoLkLzdkEBOLo64%2BlEi066M07f1emJyFXRBdgStZ%2FqhpaP9IfmtR5u%2F69Z0dZ0EIvGkJXJ1aFdkaQ5QfuIBp2LEc1mbEmyTqcEjCjTivilm3yjjR1S4amWjXkcP8inoM2I29bfkCI0CmBTQljYhoQRL0x6V2BWsiJOsI1Hz23dbc0Ecnpqo%2FkClePseXQSDI%2BZMCjBPl%2B1ccGmyEdyv2RtFl%2B0KThbuW2HUJ8%2F00mXQYyjlvZEQMWySEHjxyusKbhzu5Hgz5IaxebyruvMSVB2HQW8tPv2zxhkK3GgCWnIzscVFv2y5sNueX7S4pAyIsJ%2BkgMot3GYKgmIWA5Od3D3QJy2W%2Fdng%2BxdOY66XpQEzFB3By3asOHVX7prCeJPfoKaMusbEbjtYD5%2FPWWk8W9h%2F535zhe2OOWAqYBoUMVhc1cXO8i45I2U2ybdUWmTUmo8uLaRg4NWqnxn5KdlE5o8qFIagQzI3cyEWlyo%2B2Mn2eaxHSaruVfmAbD2T971boxPgDdIfiJWFAVu%2B7K3ndyU%2BRFuaugd9n5A1IBwh7cLoe%2FH0r9rBrdoSJhkPlqSdfpYmTC10TaRnnkJD%2FmOhdRRgsXhOB8%2F%2B4rnnyW56o07XilO0tfq3IS17rFAw0q%2FmzQY6sAFTo%2FR9nr1%2FqIDs310%2BP0%2FSfA668DV%2BhawtQImuanAP1zdbKHGE8nSVcKaeOshbRwL%2BrIeTRKwM02YG4VVxq9vGIGjK4fi%2FpW5hxKicbpkZV159j5TnG5RVNB9XbJ5twwmjfwcGIaRhzK2oY0UC%2FQHMajrwg3IQCrsb%2B92NcdA0w26LUOZIzdczCJh2k%2BPjzynuk4fFWud26x8Brh2epkDSbnbOxEYVo1%2FoCfF67YzFlQ%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5VBJCPMNYR26SKED%2F20260317%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260317T183758Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2cfce2cf4b10a4838509eeed0c4e1381552478e5265413d88b0ba390ac1e9618",
-                    fit: BoxFit.contain,
-                    loadingBuilder: (_, child, progress) =>
-                    progress == null
-                        ? child
-                        : const CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                    errorBuilder: (_, __, ___) =>
-                    const Icon(
-                      Icons.error,
-                      color: Colors.white,
-                      size: 50,
-                    ),
+          Scaffold( // Use Scaffold for better layout control in dialogs
+            backgroundColor: Colors.black87,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: Text(title, style: const TextStyle(fontSize: 16)),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(ctx),
+              ),
+            ),
+            body: Center(
+              child: isPdf
+                  ? SfPdfViewer.network(
+                url,
+                canShowPaginationDialog: true,
+              )
+                  : InteractiveViewer(
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (_, child, progress) =>
+                  progress == null
+                      ? child
+                      : const CircularProgressIndicator(color: Colors.white),
+                  errorBuilder: (_, __, ___) =>
+                  const Icon(
+                    Icons.broken_image,
+                    color: Colors.white,
+                    size: 50,
                   ),
                 ),
               ),

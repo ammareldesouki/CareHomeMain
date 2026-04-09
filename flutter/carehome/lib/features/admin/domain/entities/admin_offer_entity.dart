@@ -7,6 +7,7 @@ class AdminOfferEntity {
   final double? longitude;
   final String careHomeName;
   final String careHomeId;
+  final String individualId;
 
   const AdminOfferEntity({
     required this.id,
@@ -17,5 +18,6 @@ class AdminOfferEntity {
     this.latitude,
     this.longitude,
     required this.careHomeId,
+    required this.individualId,
   });
 }

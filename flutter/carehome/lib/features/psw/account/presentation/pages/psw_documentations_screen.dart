@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../../../../core/utils/image_picker_helper.dart';
 
@@ -561,62 +562,47 @@ class _DocTileState extends State<_DocTile> {
   }
 
   void _viewDocument() {
+    final String fileName = widget.document?.fileName ?? "";
+    final String url = widget.document?.fullUrl ?? "";
+    final bool isPdf = fileName.toLowerCase().endsWith('.pdf');
+
     showDialog(
       context: context,
       builder: (_) => Dialog(
+        // هنا بنخلي الـ Dialog ياخد مساحة أكبر بالعرض
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Image.network(
-                widget.document!.fullUrl,
-                height: 300,
-                fit: BoxFit.contain,
-                loadingBuilder: (_, child, progress) => progress == null
-                    ? child
-                    : const SizedBox(
-                        height: 200,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                errorBuilder: (_, __, ___) => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40),
-                  child: Column(
-                    children: [
-                      Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                      SizedBox(height: 8),
-                      Text(
-                        'Unable to load image',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
+        clipBehavior: Clip.antiAlias,
+        child: SizedBox(
+          width: double.infinity, // ياخد عرض الشاشة بالكامل
+          height: MediaQuery
+              .of(context)
+              .size
+              .height * 0.8, // ياخد 80% من طول الشاشة
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(widget.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold))),
+                    IconButton(icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context)),
+                  ],
                 ),
               ),
-            ),
-          ],
+              const Divider(height: 1),
+              Expanded( // استخدمنا Expanded هنا عشان ياخد كل المساحة الباقية
+                child: isPdf
+                    ? SfPdfViewer.network(url)
+                    : InteractiveViewer(
+                  maxScale: 5.0, // بيسمح للمستخدم يعمل زووم كبير
+                  child: Image.network(url, fit: BoxFit.contain),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -650,14 +636,14 @@ class _DocTileState extends State<_DocTile> {
               ),
               child: _isUploading
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                padding: EdgeInsets.all(12),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
                   : Icon(
-                      _hasDoc ? Icons.description : Icons.upload_file,
-                      color: _hasDoc ? Colors.green : TColors.darkBlue,
-                      size: 22,
-                    ),
+                _hasDoc ? Icons.description : Icons.upload_file,
+                color: _hasDoc ? Colors.green : TColors.darkBlue,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 12),
             // Info

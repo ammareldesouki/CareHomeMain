@@ -9,5 +9,5 @@ class DocumentFileEntity {
     required this.url,
   });
 
-  String get fullUrl => 'http://3.99.158.214:5000/$url';
+  String get fullUrl => url;
 }

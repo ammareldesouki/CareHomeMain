@@ -172,7 +172,9 @@ class AdminOfferDetailScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => AdminCareHomeProfileScreen(
-                              careHomeId: offer.careHomeId,
+                              careHomeId: offer.careHomeId == null
+                                  ? offer.individualId
+                                  : offer.careHomeId,
                             ),
                           ),
                         ),

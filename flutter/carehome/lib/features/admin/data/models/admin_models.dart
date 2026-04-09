@@ -55,6 +55,7 @@ class AdminOfferModel extends AdminOfferEntity {
     super.latitude,
     super.longitude,
     required super.careHomeId,
+    required super.individualId,
   });
 
   factory AdminOfferModel.fromMap(Map<String, dynamic> map) {
@@ -62,6 +63,7 @@ class AdminOfferModel extends AdminOfferEntity {
       id: map['id'] ?? '',
       title: map['title'] ?? '',
       careHomeId: map['careHomeId'] ?? '',
+      individualId: map['individualId'] ?? '',
 
       address: map['address'] ?? '',
       hourlyRate: (map['hourlyRate'] ?? 0).toDouble(),
