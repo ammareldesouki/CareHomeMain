@@ -94,7 +94,7 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
               Navigator.pop(context); // close loading dialog
               Navigator.pushReplacementNamed(
                 context,
-                RouteNames.pswVerification,
+                RouteNames.login,
               );
             }
 

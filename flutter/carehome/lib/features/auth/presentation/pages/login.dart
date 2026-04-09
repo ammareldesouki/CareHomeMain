@@ -1,4 +1,6 @@
 import 'package:carehome/features/auth/presentation/manager/auth_bloc.dart';
+import 'package:carehome/features/auth/presentation/pages/upload_screen.dart';
+import 'package:carehome/features/psw/registration/presentation/pages/psw_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,7 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
             // ── success → navigate based on role ──────────────────────────
             if (state is AuthSignInSuccess) {
               Navigator.pop(context); // close loading dialog
+              state.user.workStatus == "None" && state.user.role == "PSW" ?
 
+              Navigator.pushReplacementNamed(
+                context,
+                RouteNames.pswVerification,
+              )
+                  :
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

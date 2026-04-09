@@ -22,6 +22,7 @@ class SignInResponse {
     email: map['email'] ?? '',
     role: map['role'] ?? '',
     userId: map['userId'] ?? '',
+
     workStatus: map['verficationStatus'] ?? "",
   );
 }
