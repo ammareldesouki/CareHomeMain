@@ -45,8 +45,8 @@ class ChooseAccountTypeScreen extends StatelessWidget {
             _accountCard(
               context: context,
               icon: Icons.sync_alt,
-              title: "Locum Account",
-              subtitle: "Register as a Locum (PSW)",
+              title: "CareGiver",
+              subtitle: "Register as a (PSW) Or (Dsw)",
               onTap: () {
                 // Navigator.push(context, MaterialPageRoute(
                 //   builder: (context) => CBottomNavigationBar(role: "PSW"),

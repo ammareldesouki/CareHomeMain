@@ -41,6 +41,7 @@ class PswSignUpEvent extends AuthEvent {
   final String state;
   final String postalCode;
   final String country;
+  final String role;
 
   PswSignUpEvent({
     required this.firstName,
@@ -56,5 +57,6 @@ class PswSignUpEvent extends AuthEvent {
     required this.state,
     required this.postalCode,
     required this.country,
+    required this.role,
   });
 }

@@ -68,7 +68,13 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<PswProfileModel> updatePswProfile(Map<String, dynamic> data) async {
     try {
-      final response = await _dio.put(EndPoints.profile, data: data);
+      final formData = FormData.fromMap(data);
+      final response = await _dio.put(EndPoints.profile, data: formData);
+      if (response.statusCode == 204 ||
+          response.data == null ||
+          response.data == '') {
+        return await getPswProfile();
+      }
       return PswProfileModel.fromMap(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       final responseData = e.response?.data;
@@ -84,7 +90,13 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     Map<String, dynamic> data,
   ) async {
     try {
-      final response = await _dio.put(EndPoints.profile, data: data);
+      final formData = FormData.fromMap(data);
+      final response = await _dio.put(EndPoints.profile, data: formData);
+      if (response.statusCode == 204 ||
+          response.data == null ||
+          response.data == '') {
+        return await getCareHomeProfile();
+      }
       return CareHomeProfileModel.fromMap(
         response.data as Map<String, dynamic>,
       );
@@ -103,15 +115,22 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     required String filePath,
   }) async {
     try {
+      String fileKey = documentType;
+      if (!fileKey.endsWith('File')) {
+        fileKey = '${fileKey}File';
+      }
+      if (documentType == 'FirstAidCPR') {
+        fileKey = 'FirstAidOrCPRFile';
+      }
+
       final formData = FormData.fromMap({
-        'documentType': documentType,
-        'file': await MultipartFile.fromFile(
+        fileKey: await MultipartFile.fromFile(
           filePath,
           filename: _basename(filePath),
         ),
       });
       await _dio.put(
-        EndPoints.updateProfileDocument,
+        EndPoints.profile,
         data: formData,
         options: Options(
           sendTimeout: const Duration(minutes: 3),

@@ -57,6 +57,8 @@ class OfferDetailEntity {
   final String? individualId;
   final String posterName;
   final String posterType; // "Individual" | "CareHome"
+  final List<String> preferences;
+  final String position;
 
   const OfferDetailEntity({
     required this.id,
@@ -71,6 +73,8 @@ class OfferDetailEntity {
     this.individualId,
     required this.posterName,
     required this.posterType,
+    required this.preferences,
+    required this.position,
   });
 
   /// For Individual offers the address is shown as a postal-code only label.

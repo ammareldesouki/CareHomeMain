@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../core/network/dio_handler.dart';
 import '../../../application/presentation/manager/psw_application_bloc.dart';
@@ -15,37 +16,38 @@ class OfferDetailSheet extends StatelessWidget {
       initialChildSize: 0.92,
       minChildSize: 0.5,
       maxChildSize: 0.95,
-      builder: (_, controller) =>
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF4F6FB),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            child: BlocBuilder<OffersBloc, OffersState>(
-              buildWhen: (prev, curr) =>
+      builder: (_, controller) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFF4F6FB),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: BlocBuilder<OffersBloc, OffersState>(
+          buildWhen: (prev, curr) =>
               prev.detailLoading != curr.detailLoading ||
-                  prev.detail != curr.detail ||
-                  prev.detailError != curr.detailError,
-              builder: (context, state) {
-                if (state.detailLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state.detailError != null) {
-                  return Center(
-                    child: Text(state.detailError!,
-                        style: const TextStyle(color: Colors.red)),
-                  );
-                }
-                if (state.detail != null) {
-                  return _OfferDetailBody(
-                    controller: controller,
-                    detail: state.detail!,
-                  );
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-            ),
-          ),
+              prev.detail != curr.detail ||
+              prev.detailError != curr.detailError,
+          builder: (context, state) {
+            if (state.detailLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state.detailError != null) {
+              return Center(
+                child: Text(
+                  state.detailError!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+            if (state.detail != null) {
+              return _OfferDetailBody(
+                controller: controller,
+                detail: state.detail!,
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
     );
   }
 }
@@ -54,10 +56,7 @@ class _OfferDetailBody extends StatefulWidget {
   final ScrollController controller;
   final OfferDetailEntity detail;
 
-  const _OfferDetailBody({
-    required this.controller,
-    required this.detail,
-  });
+  const _OfferDetailBody({required this.controller, required this.detail});
 
   @override
   State<_OfferDetailBody> createState() => _OfferDetailBodyState();
@@ -73,7 +72,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
 
   bool get _allSelected =>
       _availableShifts.isNotEmpty &&
-          _availableShifts.every((s) => _selectedShiftIds.contains(s.shiftId));
+      _availableShifts.every((s) => _selectedShiftIds.contains(s.shiftId));
 
   void _toggleSelectAll() {
     setState(() {
@@ -103,16 +102,9 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
   /// The address format from API: "street, City, Country"
   /// We show the last segment as the area reference, labelled "Postal Code".
   String _postalCodeDisplay(String address) {
-    if (address
-        .trim()
-        .isEmpty) return '—';
-    final parts = address
-        .split(',')
-        .map((p) => p.trim())
-        .where((p) => p.isNotEmpty)
-        .toList();
-    // Return last meaningful part (usually City or Country)
-    return parts.isNotEmpty ? parts.last : address;
+    if (address.isEmpty) return 'Unknown';
+    final parts = address.split(',');
+    return parts.last.trim();
   }
 
   @override
@@ -126,18 +118,22 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
       listener: (context, state) {
         if (state is PswApplicationMutationSuccess) {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
         if (state is PswApplicationMutationError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       },
       child: CustomScrollView(
@@ -147,9 +143,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
-            backgroundColor: isIndividual
-                ? Colors.deepPurple.shade600
-                : accent,
+            backgroundColor: accent,
             leading: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
               onPressed: () => Navigator.pop(context),
@@ -158,12 +152,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isIndividual
-                        ? [
-                      Colors.deepPurple.shade500,
-                      Colors.deepPurple.shade900
-                    ]
-                        : [accent, const Color(0xFF0D47A1)],
+                    colors: [accent, const Color(0xFF0D47A1)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -191,12 +180,16 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                   ? offer.posterName
                                   : 'Unknown',
                               style: const TextStyle(
-                                  color: Colors.white70, fontSize: 12),
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
@@ -204,7 +197,9 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                               child: Text(
                                 offer.posterType,
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 10),
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
                               ),
                             ),
                           ],
@@ -213,7 +208,9 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                         // ── Rate badge ──────────────────────────────────────
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(8),
@@ -221,17 +218,17 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                           child: Text(
                             '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           offer.title,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Colors.white),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium!.copyWith(color: Colors.white),
                           maxLines: 2,
                         ),
                         const SizedBox(height: 4),
@@ -241,7 +238,9 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                             if (isIndividual) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(4),
@@ -249,25 +248,27 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                 child: const Text(
                                   'Postal Code',
                                   style: TextStyle(
-                                      color: Colors.white60,
-                                      fontSize: 10),
+                                    color: Colors.white60,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 _postalCodeDisplay(offer.address),
                                 style: TextStyle(
-                                    color: Colors.white.withOpacity(0.85),
-                                    fontSize: 13),
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 13,
+                                ),
                               ),
                             ] else
                               Expanded(
                                 child: Text(
                                   offer.address,
                                   style: TextStyle(
-                                      color:
-                                      Colors.white.withOpacity(0.85),
-                                      fontSize: 13),
+                                    color: Colors.white.withOpacity(0.85),
+                                    fontSize: 13,
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -300,8 +301,11 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.warning_amber_rounded,
-                              color: Colors.orange.shade700, size: 20),
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.orange.shade700,
+                            size: 20,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -309,8 +313,9 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                   ? 'Your account is not yet verified. Complete your profile to apply.'
                                   : 'Your verification is pending. You will be notified once approved.',
                               style: TextStyle(
-                                  color: Colors.orange.shade700,
-                                  fontSize: 13),
+                                color: Colors.orange.shade700,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
@@ -324,8 +329,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                     children: [
                       _QuickBadge(
                         icon: Icons.attach_money,
-                        label:
-                        '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
+                        label: '\$${offer.hourlyRate.toStringAsFixed(0)}/hr',
                       ),
                       const SizedBox(width: 10),
                       _QuickBadge(
@@ -352,24 +356,95 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                       child: Text(
                         offer.description,
                         style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 14,
-                            height: 1.5),
+                          color: Colors.grey.shade700,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
                       ),
                     ),
 
                   if (offer.description.isNotEmpty) const SizedBox(height: 16),
 
+                  // ── Preferences ─────────────────────────────────────────────
+                  if (offer.preferences.isNotEmpty) ...[
+                    _SectionCard(
+                      title: 'Preferences',
+                      icon: Icons.star_border,
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: offer.preferences
+                            .map(
+                              (p) => Chip(
+                                label: Text(
+                                  p,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                backgroundColor: accent.withOpacity(0.08),
+                                side: BorderSide.none,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // ── Position ────────────────────────────────────────────────
+                  if (offer.position.isNotEmpty) ...[
+                    _SectionCard(
+                      title: 'Position',
+                      icon: Icons.work_outline,
+                      child: Text(
+                        offer.position,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
                   // ── Location ────────────────────────────────────────────────
                   _SectionCard(
-                    title: isIndividual ? 'Postal Code' : 'Location',
-                    icon: Icons.location_on_outlined,
-                    child: Text(
-                      isIndividual
-                          ? _postalCodeDisplay(offer.address)
-                          : offer.address,
-                      style: TextStyle(
-                          color: Colors.grey.shade700, fontSize: 14),
+                    title: isIndividual ? 'Poster' : 'Location',
+                    icon: isIndividual
+                        ? Icons.person_outline
+                        : Icons.location_on_outlined,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isIndividual ? offer.posterName : offer.address,
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                        if (!isIndividual) ...[
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () async {
+                              final uri = Uri.parse(
+                                'https://www.google.com/maps/search/?api=1&query=${offer.latitude},${offer.longitude}',
+                              );
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri);
+                              }
+                            },
+                            icon: const Icon(Icons.map_outlined, size: 18),
+                            label: const Text('Open in Google Maps'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: accent,
+                              side: BorderSide(color: accent.withOpacity(0.5)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
 
@@ -387,8 +462,7 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                             onTap: _toggleSelectAll,
                             borderRadius: BorderRadius.circular(8),
                             child: Padding(
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.symmetric(vertical: 6),
                               child: Row(
                                 children: [
                                   Icon(
@@ -417,27 +491,23 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                               ),
                             ),
                           ),
-                          Divider(
-                              height: 1, color: Colors.grey.shade200),
+                          Divider(height: 1, color: Colors.grey.shade200),
                           const SizedBox(height: 8),
                         ],
                         // Shift list
-                        ...offer.shifts
-                            .asMap()
-                            .entries
-                            .map((entry) {
+                        ...offer.shifts.asMap().entries.map((entry) {
                           final i = entry.key;
                           final s = entry.value;
-                          final isSelected =
-                          _selectedShiftIds.contains(s.shiftId);
+                          final isSelected = _selectedShiftIds.contains(
+                            s.shiftId,
+                          );
 
                           return GestureDetector(
                             onTap: s.isAvailable
                                 ? () => _toggleShift(s.shiftId)
                                 : null,
                             child: Container(
-                              margin:
-                              const EdgeInsets.symmetric(vertical: 5),
+                              margin: const EdgeInsets.symmetric(vertical: 5),
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
                                 color: isSelected
@@ -468,16 +538,18 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                     ),
                                     child: Center(
                                       child: isSelected
-                                          ? const Icon(Icons.check,
-                                          color: Colors.white,
-                                          size: 16)
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                              size: 16,
+                                            )
                                           : Text(
-                                        '${i + 1}',
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight:
-                                            FontWeight.bold),
-                                      ),
+                                              '${i + 1}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                     ),
                                   ),
                                   const SizedBox(width: 14),
@@ -485,47 +557,57 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(s.date,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14)),
-                                        const SizedBox(height: 3),
-                                        Row(children: [
-                                          Icon(Icons.access_time,
-                                              size: 13,
-                                              color: Colors.grey.shade500),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${s.startTime} – ${s.endTime}',
-                                            style: TextStyle(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 13),
+                                        Text(
+                                          s.date,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
                                           ),
-                                        ]),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.access_time,
+                                              size: 13,
+                                              color: Colors.grey.shade500,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${s.startTime} – ${s.endTime}',
+                                              style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
                                   // Available / Taken badge
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: s.isAvailable
                                           ? Colors.green.shade100
                                           : Colors.red.shade100,
-                                      borderRadius:
-                                      BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       s.isAvailable ? 'Available' : 'Taken',
                                       style: TextStyle(
-                                          fontSize: 11,
-                                          color: s.isAvailable
-                                              ? Colors.green.shade700
-                                              : Colors.red.shade700,
-                                          fontWeight: FontWeight.w600),
+                                        fontSize: 11,
+                                        color: s.isAvailable
+                                            ? Colors.green.shade700
+                                            : Colors.red.shade700,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -543,53 +625,52 @@ class _OfferDetailBodyState extends State<_OfferDetailBody> {
                   BlocBuilder<PswApplicationBloc, PswApplicationState>(
                     builder: (context, appState) {
                       final isLoading =
-                      appState is PswApplicationMutationLoading;
+                          appState is PswApplicationMutationLoading;
                       return SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: workStatus == "Approved" &&
-                              !isLoading &&
-                              _selectedShiftIds.isNotEmpty
-                              ? () =>
-                              context.read<PswApplicationBloc>().add(
-                                ApplyForOfferEvent(
-                                  offerId: offer.id,
-                                  shiftIds: _selectedShiftIds.toList(),
-                                ),
-                              )
+                          onPressed:
+                              workStatus == "Approved" &&
+                                  !isLoading &&
+                                  _selectedShiftIds.isNotEmpty
+                              ? () => context.read<PswApplicationBloc>().add(
+                                  ApplyForOfferEvent(
+                                    offerId: offer.id,
+                                    shiftIds: _selectedShiftIds.toList(),
+                                  ),
+                                )
                               : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isIndividual
-                                ? Colors.deepPurple.shade600
-                                : accent,
+                            backgroundColor:
+                              accent,
                             disabledBackgroundColor: Colors.grey.shade300,
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                           child: isLoading
                               ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
-                          )
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : Text(
-                            workStatus == "None" ||
-                                workStatus == "Pending"
-                                ? 'Account Pending Approval'
-                                : _selectedShiftIds.isEmpty
-                                ? 'Select Shifts to Apply'
-                                : 'Apply for ${_selectedShiftIds
-                                .length} Shift${_selectedShiftIds.length > 1
-                                ? 's'
-                                : ''}',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white),
-                          ),
+                                  workStatus == "None" ||
+                                          workStatus == "Pending"
+                                      ? 'Account Pending Approval'
+                                      : _selectedShiftIds.isEmpty
+                                      ? 'Select Shifts to Apply'
+                                      : 'Apply for ${_selectedShiftIds.length} Shift${_selectedShiftIds.length > 1 ? 's' : ''}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       );
                     },
@@ -617,8 +698,7 @@ class _QuickBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding:
-        const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -630,10 +710,14 @@ class _QuickBadge extends StatelessWidget {
             Icon(icon, size: 15, color: const Color(0xFF1A73E8)),
             const SizedBox(width: 5),
             Flexible(
-              child: Text(label,
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600),
-                  overflow: TextOverflow.ellipsis),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -648,8 +732,11 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-  const _SectionCard(
-      {required this.title, required this.icon, required this.child});
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -664,13 +751,19 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Icon(icon, size: 18, color: const Color(0xFF1A73E8)),
-            const SizedBox(width: 8),
-            Text(title,
+          Row(
+            children: [
+              Icon(icon, size: 18, color: const Color(0xFF1A73E8)),
+              const SizedBox(width: 8),
+              Text(
+                title,
                 style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.w700)),
-          ]),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 14),
           child,
         ],

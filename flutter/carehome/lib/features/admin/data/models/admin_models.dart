@@ -62,7 +62,7 @@ class AdminOfferModel extends AdminOfferEntity {
     return AdminOfferModel(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
-      careHomeId: map['careHomeId'] ?? '',
+      careHomeId: map['posterId'] ?? '',
       individualId: map['individualId'] ?? '',
 
       address: map['address'] ?? '',

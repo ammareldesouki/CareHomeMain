@@ -6,7 +6,7 @@ class ApiConstat {
 class EndPoints {
   static const String login = "/api/auth/login";
   static const String offers = 'api/offers';
-  static const String profile = '/api/profile';
+  static const String profile = 'api/profile';
   static const String logout = '/api/auth/logout';
 
   //  ------------Psw EndPoind----------------
@@ -15,7 +15,7 @@ class EndPoints {
   static const String pswCancelApplication = "api/psw/applications/cancel";
   static const String pswMyApplications = "api/psw/applications";
   static const String completeProfile = "api/psw/profile";
-  static const String updateProfileDocument = '/api/profile/';
+  static const String updateProfileDocument = 'api/profile/update';
 
   static String offerById(String id) => 'api/Offers/$id';
 

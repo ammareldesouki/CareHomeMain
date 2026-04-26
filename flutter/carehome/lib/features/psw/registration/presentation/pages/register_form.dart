@@ -3,6 +3,7 @@ import 'package:carehome/features/auth/presentation/widgets/custome_form_field.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/image_strings.dart';
 import '../../../../../core/utils/validator.dart';
 import '../../../../../core/widgets/elvated_button.dart';
@@ -29,6 +30,8 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
 
   String? selectedGender;
   final List<String> genderOptions = ['Male', 'Female'];
+
+  String selectedJobTitle = 'PSW'; // Default selection
 
   final TextEditingController apartmentController = TextEditingController();
   final TextEditingController streetController = TextEditingController();
@@ -117,11 +120,44 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
                     ),
                     Center(
                       child: Text(
-                        'Create PSW Account',
+                        'Create Care Giver Account',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
                     const SizedBox(height: 10),
+                    _sectionHeader(context, 'Position'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _jobTitleCard(
+                              context,
+                              title: 'PSW',
+
+                              icon: Icons.person_search,
+                              isSelected: selectedJobTitle == 'PSW',
+                              onTap: () =>
+                                  setState(() => selectedJobTitle = 'PSW'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _jobTitleCard(
+                              context,
+                              title: 'DSW',
+                              icon: Icons.health_and_safety,
+                              isSelected: selectedJobTitle == 'DSW',
+                              onTap: () =>
+                                  setState(() => selectedJobTitle = 'DSW'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
@@ -214,6 +250,8 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
                                 ),
                               ),
                             ),
+
+
 
                             _sectionHeader(context, 'Gender'),
                             Padding(
@@ -333,6 +371,8 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
                                         selectedDateOfBirth!,
                                       ),
                                       gender: selectedGender!,
+                                      role: selectedJobTitle,
+
                                       apartmentNumber: apartmentController.text
                                           .trim(),
                                       street: streetController.text.trim(),
@@ -371,12 +411,63 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
     );
   }
 
+  Widget _jobTitleCard(
+    BuildContext context, {
+    required String title,
+
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? TColors.darkBlue : Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? TColors.darkBlue  : Colors.grey.shade300,
+            width: 2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: TColors.darkBlue.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: isSelected ? Colors.white : Colors.grey.shade600,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+
+            ),
+            const SizedBox(height: 4),
+
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _sectionHeader(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
           color: Colors.grey.shade700,
           fontWeight: FontWeight.bold,
         ),

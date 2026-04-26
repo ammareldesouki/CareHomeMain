@@ -263,18 +263,25 @@ class _OfferDetailsDialogState extends State<OfferDetailsDialog> {
                               offerId: offer.id,
                               request: UpdateOfferRequest(
                                 title: _titleCtrl.text.trim(),
+                                position: offer.position,
                                 description: offer.description,
                                 address: offer.address,
+                                address2: offer.address2,
+                                city: offer.city,
+                                postalCode: offer.postalCode,
+                                province: offer.province,
                                 latitude: offer.latitude,
                                 longitude: offer.longitude,
                                 hourlyRate: offer.hourlyRate,
+                                preferences: offer.preferences,
                                 shifts: offer.shifts
                                     .map((s) =>
-                                    ShiftRequest(
-                                      date: s.date,
-                                      startTime: s.startTime,
-                                      endTime: s.endTime,
-                                    ))
+                                        ShiftRequest(
+                                          shiftId: s.shiftId,
+                                          date: s.date,
+                                          startTime: s.startTime,
+                                          endTime: s.endTime,
+                                        ))
                                     .toList(),
                               ),
                             ));

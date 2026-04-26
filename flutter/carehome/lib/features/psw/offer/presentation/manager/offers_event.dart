@@ -39,5 +39,11 @@ class LoadMoreOffersEvent extends OffersEvent {
 
 class FetchOfferDetailEvent extends OffersEvent {
   final String offerId;
-  FetchOfferDetailEvent(this.offerId);
+  final String posterName;
+  final String posterType;
+
+  FetchOfferDetailEvent(this.offerId, {
+    this.posterName = '',
+    this.posterType = 'CareHome',
+  });
 }

@@ -6,6 +6,7 @@ class PswRegisterRequest {
   final String phoneNumber;
   final String dateOfBirth;
   final String gender;
+  final String role;
   final AddressRequest address;
 
   const PswRegisterRequest({
@@ -16,6 +17,7 @@ class PswRegisterRequest {
     required this.phoneNumber,
     required this.dateOfBirth,
     required this.gender,
+    required this.role,
     required this.address,
   });
 
@@ -27,6 +29,7 @@ class PswRegisterRequest {
     'phoneNumber': phoneNumber,
     'dateOfBirth': dateOfBirth,
     'gender': gender,
+    'role': role,
     'address': address.toMap(),
   };
 }

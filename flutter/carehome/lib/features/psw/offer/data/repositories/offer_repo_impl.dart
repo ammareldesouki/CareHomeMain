@@ -76,6 +76,8 @@ class OffersRepositoryImpl implements OffersRepository {
               isAvailable: s.isAvailable,
             ))
             .toList(),
+        preferences: model.preferences,
+        position: model.position,
       );
       return Right(entity);
     } on ServerFailure catch (e) {

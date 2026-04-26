@@ -12,8 +12,7 @@ class OfferListCard extends StatelessWidget {
 
   const OfferListCard({super.key, required this.offer, this.distance});
 
-  bool get _isIndividual =>
-      offer.posterType.toLowerCase() == 'individual';
+  bool get _isIndividual => offer.posterType.toLowerCase() == 'individual';
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +21,24 @@ class OfferListCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          context.read<OffersBloc>().add(FetchOfferDetailEvent(offer.id));
+          context.read<OffersBloc>().add(
+            FetchOfferDetailEvent(
+              offer.id,
+              posterName: offer.posterName,
+              posterType: offer.posterType,
+            ),
+          );
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (_) =>
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: context.read<OffersBloc>()),
-                    BlocProvider.value(
-                        value: context.read<PswApplicationBloc>()),
-                  ],
-                  child: const OfferDetailSheet(),
-                ),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<OffersBloc>()),
+                BlocProvider.value(value: context.read<PswApplicationBloc>()),
+              ],
+              child: const OfferDetailSheet(),
+            ),
           );
         },
         child: Container(
@@ -43,14 +46,7 @@ class OfferListCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border(
-              left: BorderSide(
-                color: _isIndividual
-                    ? Colors.deepPurple.shade400
-                    : Colors.blue,
-                width: 5,
-              ),
-            ),
+            border: Border(left: BorderSide(color: Colors.blue, width: 5)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -73,14 +69,15 @@ class OfferListCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 5),
+                        horizontal: 12,
+                        vertical: 5,
+                      ),
                       child: Text(
                         '\$${offer.hourlyRate.toStringAsFixed(0)}/H',
                         style: TextStyle(
-                            color: _isIndividual
-                                ? Colors.deepPurple.shade700
-                                : Colors.blue.shade700,
-                            fontWeight: FontWeight.w600),
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -88,29 +85,37 @@ class OfferListCard extends StatelessWidget {
                       child: Text(
                         offer.title,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (distance != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.grey.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.location_on,
-                                size: 14, color: Colors.blue.shade600),
+                            Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: Colors.blue.shade600,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${distance!.toStringAsFixed(1)} km',
                               style: TextStyle(
-                                  color: Colors.blue.shade600,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12),
+                                color: Colors.blue.shade600,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -128,9 +133,7 @@ class OfferListCard extends StatelessWidget {
                           ? Icons.person_outline
                           : Icons.business_outlined,
                       size: 14,
-                      color: _isIndividual
-                          ? Colors.deepPurple.shade400
-                          : Colors.blue.shade400,
+                      color: Colors.blue.shade400,
                     ),
                     const SizedBox(width: 5),
                     Expanded(
@@ -141,9 +144,7 @@ class OfferListCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: _isIndividual
-                              ? Colors.deepPurple.shade600
-                              : Colors.blue.shade600,
+                          color: Colors.blue.shade600,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -151,26 +152,20 @@ class OfferListCard extends StatelessWidget {
                     // Poster type pill
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: _isIndividual
-                            ? Colors.deepPurple.withOpacity(0.08)
-                            : Colors.blue.withOpacity(0.08),
+                        color: Colors.blue.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: _isIndividual
-                              ? Colors.deepPurple.shade200
-                              : Colors.blue.shade200,
-                        ),
+                        border: Border.all(color: Colors.blue.shade200),
                       ),
                       child: Text(
                         offer.posterType,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: _isIndividual
-                              ? Colors.deepPurple.shade600
-                              : Colors.blue.shade600,
+                          color: Colors.blue.shade600,
                         ),
                       ),
                     ),
@@ -182,14 +177,21 @@ class OfferListCard extends StatelessWidget {
                 // ── Row 3: Address ───────────────────────────────────────────
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined,
-                        size: 15, color: Colors.grey),
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 15,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        offer.address,
+                        offer.posterType.toLowerCase() == 'individual'
+                            ? ""
+                            : " offer.address",
                         style: const TextStyle(
-                            color: Colors.grey, fontSize: 13),
+                          color: Colors.grey,
+                          fontSize: 13,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

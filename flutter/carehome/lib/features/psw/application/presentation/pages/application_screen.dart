@@ -99,32 +99,35 @@ class _PswAppliedBody extends StatelessWidget {
                         const SizedBox(height: 16),
 
                         // ── Summary chips ────────────────────────────
+
+
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: [
-                              _SummaryChip(
-                                  label: 'Pending',
-                                  count: _count("Pending"),
-                                  color: Colors.orange),
-                              const SizedBox(width: 8),
-                              _SummaryChip(
-                                  label: 'Accepted',
-                                  count: _count("Accepted"),
-                                  color: Colors.green),
-                              const SizedBox(width: 8),
-                              _SummaryChip(
-                                  label: 'Rejected',
-                                  count: _count("RejectedByCareHome"),
-                                  color: Colors.red),
-                              const SizedBox(width: 8),
-                              _SummaryChip(
-                                  label: 'Cancelled',
-                                  count: _count("Canceled"),
-                                  color: Colors.grey),
-                            ],
-                          ),
+                              children: [
+                                _SummaryChip(
+                                    label: 'Pending',
+                                    count: _count("Pending"),
+                                    color: Colors.orange),
+
+                                _SummaryChip(
+                                    label: 'Accepted',
+                                    count: _count("Accepted"),
+                                    color: Colors.green),
+
+                                _SummaryChip(
+                                    label: 'Rejected',
+                                    count: _count("RejectedByCareHome"),
+                                    color: Colors.red),
+
+                                _SummaryChip(
+                                    label: 'Cancelled',
+                                    count: _count("Canceled"),
+                                    color: Colors.grey),
+                              ],
+                            ),
                         ),
+
 
                         const SizedBox(height: 16),
 
@@ -567,7 +570,7 @@ class _SummaryChip extends StatelessWidget {
       padding:
       const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withOpacity(0.3)),
       ),

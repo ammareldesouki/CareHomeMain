@@ -75,6 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         phoneNumber: event.phoneNumber,
         dateOfBirth: event.dateOfBirth,
         gender: event.gender,
+        role: event.role,
         address: AddressRequest(
           apartmentNumber: int.tryParse(event.apartmentNumber) ?? 0,
           street: event.street,
@@ -96,7 +97,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await NetworkDioHandler().setAuthToken(entity.token);
           NetworkDioHandler().setCurrentUser(
             userId: entity.userId,
-            role: 'PSW',
+            role: event.role, // Use the selected job title as role
             workStatus: "None",
           );
           emit(AuthSignUpSuccess(token: entity.token, userId: entity.userId));

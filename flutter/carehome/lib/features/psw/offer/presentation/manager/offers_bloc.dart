@@ -27,12 +27,14 @@ class OffersBloc extends Bloc<OffersEvent, OffersState> {
 
     // ── Fresh fetch (page 1) ──────────────────────────────────────────────
     on<FetchOffersEvent>((event, emit) async {
-      emit(state.copyWith(
-        listLoading: true,
-        clearListError: true,
-        offers: [], // clear old list on fresh fetch
-        hasMore: true,
-      ));
+      emit(
+        state.copyWith(
+          listLoading: true,
+          clearListError: true,
+          offers: [], // clear old list on fresh fetch
+          hasMore: true,
+        ),
+      );
 
       // When posterType is "Individual" we don't send CareHomeId;
       // when it is "CareHome" we let the API filter by posterType via search.
@@ -50,20 +52,22 @@ class OffersBloc extends Bloc<OffersEvent, OffersState> {
       );
 
       result.fold(
-            (failure) {
+        (failure) {
           final msg = failure is ServerFailure
-              ? (failure.messageEn ?? failure.message ??
-              'Failed to load offers')
+              ? (failure.messageEn ??
+                    failure.message ??
+                    'Failed to load offers')
               : 'Something went wrong';
           emit(state.copyWith(listLoading: false, listError: msg));
         },
-            (offers) =>
-            emit(state.copyWith(
-              listLoading: false,
-              offers: offers,
-              clearListError: true,
-              hasMore: offers.length >= event.pageSize,
-            )),
+        (offers) => emit(
+          state.copyWith(
+            listLoading: false,
+            offers: offers,
+            clearListError: true,
+            hasMore: offers.length >= event.pageSize,
+          ),
+        ),
       );
     });
 
@@ -80,37 +84,65 @@ class OffersBloc extends Bloc<OffersEvent, OffersState> {
       );
 
       result.fold(
-            (_) => emit(state.copyWith(listLoadingMore: false)),
-            (newOffers) =>
-            emit(state.copyWith(
-              listLoadingMore: false,
-              offers: [...state.offers, ...newOffers],
-              hasMore: newOffers.length >= event.pageSize,
-            )),
+        (_) => emit(state.copyWith(listLoadingMore: false)),
+        (newOffers) => emit(
+          state.copyWith(
+            listLoadingMore: false,
+            offers: [...state.offers, ...newOffers],
+            hasMore: newOffers.length >= event.pageSize,
+          ),
+        ),
       );
     });
 
     // ── Fetch detail — NEVER touches list fields ───────────────────────────
     on<FetchOfferDetailEvent>((event, emit) async {
-      emit(state.copyWith(
-        detailLoading: true,
-        clearDetailError: true,
-        clearDetail: true,
-      ));
+      emit(
+        state.copyWith(
+          detailLoading: true,
+          clearDetailError: true,
+          clearDetail: true,
+        ),
+      );
       final result = await _getOfferByIdUseCase(event.offerId);
       result.fold(
-            (failure) {
+        (failure) {
           final msg = failure is ServerFailure
               ? (failure.messageEn ?? failure.message ?? 'Failed to load offer')
               : 'Something went wrong';
           emit(state.copyWith(detailLoading: false, detailError: msg));
         },
-            (offer) =>
-            emit(state.copyWith(
+        (offer) {
+          // Merge fallback values if API returns empty
+          final mergedOffer = OfferDetailEntity(
+            id: offer.id,
+            title: offer.title,
+            description: offer.description,
+            address: offer.address,
+            latitude: offer.latitude,
+            longitude: offer.longitude,
+            hourlyRate: offer.hourlyRate,
+            shifts: offer.shifts,
+            careHomeId: offer.careHomeId,
+            individualId: offer.individualId,
+            posterName: offer.posterName.isNotEmpty
+                ? offer.posterName
+                : event.posterName,
+            posterType:
+                offer.posterType.isNotEmpty && offer.posterType != 'CareHome'
+                ? offer.posterType
+                : event.posterType,
+            preferences: offer.preferences,
+            position: offer.position,
+          );
+          emit(
+            state.copyWith(
               detailLoading: false,
-              detail: offer,
+              detail: mergedOffer,
               clearDetailError: true,
-            )),
+            ),
+          );
+        },
       );
     });
   }

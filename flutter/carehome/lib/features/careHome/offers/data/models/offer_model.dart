@@ -26,30 +26,48 @@ class ShiftRequest {
 // ── Create offer request ──────────────────────────────────────────────────────
 class CreateOfferRequest {
   final String title;
+  final String position;
   final String description;
   final String address;
+  final String? address2;
+  final String city;
+  final String postalCode;
+  final String province;
   final double latitude;
   final double longitude;
   final double hourlyRate;
+  final List<String> preferences;
   final List<ShiftRequest> shifts;
 
   const CreateOfferRequest({
     required this.title,
+    required this.position,
     required this.description,
     required this.address,
+    this.address2,
+    required this.city,
+    required this.postalCode,
+    required this.province,
     required this.latitude,
     required this.longitude,
     required this.hourlyRate,
+    required this.preferences,
     required this.shifts,
   });
 
   Map<String, dynamic> toMap() => {
     'title': title,
+    'position': position,
     'description': description,
     'address': address,
+    if (address2 != null) 'address2': address2,
+    'city': city,
+    'postalCode': postalCode,
+    'province': province,
     'latitude': latitude,
     'longitude': longitude,
     'hourlyRate': hourlyRate,
+    'preferences': preferences,
     'shifts': shifts.map((s) => s.toMap()).toList(),
   };
 }
@@ -58,11 +76,17 @@ class CreateOfferRequest {
 class UpdateOfferRequest extends CreateOfferRequest {
   const UpdateOfferRequest({
     required super.title,
+    required super.position,
     required super.description,
     required super.address,
+    super.address2,
+    required super.city,
+    required super.postalCode,
+    required super.province,
     required super.latitude,
     required super.longitude,
     required super.hourlyRate,
+    required super.preferences,
     required super.shifts,
   });
 }
@@ -139,21 +163,33 @@ class CareHomeShift {
 class CareHomeOfferDetail {
   final String id;
   final String title;
+  final String position;
   final String description;
   final String address;
+  final String? address2;
+  final String city;
+  final String postalCode;
+  final String province;
   final double latitude;
   final double longitude;
   final double hourlyRate;
+  final List<String> preferences;
   final List<CareHomeShift> shifts;
 
   const CareHomeOfferDetail({
     required this.id,
     required this.title,
+    required this.position,
     required this.description,
     required this.address,
+    this.address2,
+    required this.city,
+    required this.postalCode,
+    required this.province,
     required this.latitude,
     required this.longitude,
     required this.hourlyRate,
+    required this.preferences,
     required this.shifts,
   });
 
@@ -161,11 +197,17 @@ class CareHomeOfferDetail {
       CareHomeOfferDetail(
         id: map['id'] ?? '',
         title: map['title'] ?? '',
+        position: map['position'] ?? '',
         description: map['description'] ?? '',
         address: map['address'] ?? '',
+        address2: map['address2'],
+        city: map['city'] ?? '',
+        postalCode: map['postalCode'] ?? '',
+        province: map['province'] ?? '',
         latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
         longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
         hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
+        preferences: List<String>.from(map['preferences'] ?? []),
         shifts: (map['shifts'] as List<dynamic>? ?? [])
             .map((s) => CareHomeShift.fromMap(s as Map<String, dynamic>))
             .toList(),

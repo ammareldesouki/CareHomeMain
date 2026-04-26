@@ -113,19 +113,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     final data = {
-      'firstName': _firstNameCtrl.text.trim(),
-      'lastName': _lastNameCtrl.text.trim(),
-      'phoneNumber': _phoneCtrl.text.trim(),
-      'dateOfBirth': _dobCtrl.text.trim(),
-      'gender': _selectedGender,
-      'address': {
-        'apartmentNumber': int.tryParse(_apartmentCtrl.text.trim()) ?? 0,
-        'street': _streetCtrl.text.trim(),
-        'city': _cityCtrl.text.trim(),
-        'state': _stateCtrl.text.trim(),
-        'postalCode': _postalCodeCtrl.text.trim(),
-        'country': _countryCtrl.text.trim(),
-      },
+      'FirstName': _firstNameCtrl.text.trim(),
+      'LastName': _lastNameCtrl.text.trim(),
+      'PhoneNumber': _phoneCtrl.text.trim(),
+      'DateOfBirth': _dobCtrl.text.trim(),
+      'Gender': _selectedGender,
+      'Address.ApartmentNumber': int.tryParse(_apartmentCtrl.text.trim()) ?? 0,
+      'Address.Street': _streetCtrl.text.trim(),
+      'Address.City': _cityCtrl.text.trim(),
+      'Address.State': _stateCtrl.text.trim(),
+      'Address.PostalCode': _postalCodeCtrl.text.trim(),
+      'Address.Country': _countryCtrl.text.trim(),
     };
 
     widget.onSave(data);

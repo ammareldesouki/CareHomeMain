@@ -35,6 +35,8 @@ class OfferDetailModel {
   final String? individualId;
   final String posterName;
   final String posterType;
+  final List<String> preferences;
+  final String position;
 
   const OfferDetailModel({
     required this.id,
@@ -49,6 +51,8 @@ class OfferDetailModel {
     this.individualId,
     required this.posterName,
     required this.posterType,
+    required this.preferences,
+    required this.position,
   });
 
   factory OfferDetailModel.fromMap(Map<String, dynamic> map) =>
@@ -64,6 +68,12 @@ class OfferDetailModel {
         individualId: map['individualId'] as String?,
         posterName: map['posterName'] ?? '',
         posterType: map['posterType'] ?? 'CareHome',
+        preferences:
+            (map['preferences'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            [],
+        position: map['position'] ?? '',
         shifts:
             (map['shifts'] as List<dynamic>?)
                 ?.map((s) => ShiftModel.fromMap(s as Map<String, dynamic>))
