@@ -1,0 +1,168 @@
+<app-psw-nav></app-psw-nav>
+<app-toast></app-toast>
+
+<div class="history-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>My Applications</h1>
+      <p>Track your job applications and their status</p>
+    </div>
+    <div class="header-pattern"></div>
+  </div>
+
+  <div class="container">
+
+    <div *ngIf="isLoading" class="state-card loading">
+      <div class="spinner"></div>
+      <p>Loading your applications...</p>
+    </div>
+
+    <div *ngIf="!isLoading && applications.length === 0" class="state-card empty">
+      <i class="fas fa-clipboard-list"></i>
+      <h3>No applications yet</h3>
+      <p>You haven't applied for any jobs yet. Browse available offers and start your journey!</p>
+      <a routerLink="/psw" class="btn btn-primary btn-sm">
+        <i class="fas fa-search"></i> Browse Offers
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" *ngIf="!isLoading && applications.length > 0">
+      <div class="stat-box pending" [class.active]="activeTab === 'pending'" (click)="setTab('pending')">
+        <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getPendingCount() }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+      </div>
+      <div class="stat-box accepted" [class.active]="activeTab === 'accepted'" (click)="setTab('accepted')">
+        <div class="stat-icon accepted"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getAcceptedCount() }}</span>
+          <span class="stat-label">Accepted</span>
+        </div>
+      </div>
+      <div class="stat-box rejected" [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">
+        <div class="stat-icon rejected"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getRejectedCount() }}</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+      </div>
+      <div class="stat-box cancelled" [class.active]="activeTab === 'cancelled'" (click)="setTab('cancelled')">
+        <div class="stat-icon cancelled"><i class="fas fa-ban"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getCancelledCount() }}</span>
+          <span class="stat-label">Cancelled</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="applications-grid" *ngIf="!isLoading && filteredApplications.length > 0">
+      <div *ngFor="let app of filteredApplications"
+           class="application-card"
+           [ngClass]="'status-' + app.statusLabel">
+
+        <div class="card-header">
+          <div class="card-title">
+            <h3>{{ app.app.offerTitle || 'Untitled offer' }}</h3>
+          </div>
+          <span class="status-badge" [ngClass]="'badge-' + app.statusLabel">
+            <i class="fas" [ngClass]="{
+              'fa-clock':  app.statusLabel === 'pending',
+              'fa-check':  app.statusLabel === 'accepted',
+              'fa-times':  app.statusLabel === 'rejected',
+              'fa-ban':    app.statusLabel === 'cancelled'
+            }"></i>
+            {{ app.statusDisplay }}
+          </span>
+        </div>
+
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="fas fa-calendar-alt"></i>
+              <div class="info-content">
+                <span class="info-label">Shift Date</span>
+                <span class="info-value">{{ app.app.date ? (app.app.date | date:'MMM d, y') : 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-clock"></i>
+              <div class="info-content">
+                <span class="info-label">Time</span>
+<span class="info-value">{{ app.app.startTime.slice(0,5) }} – {{ app.app.endTime.slice(0,5) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn btn-outline" (click)="viewRequest(app)">
+            <i class="fas fa-eye"></i> View Details
+          </button>
+          <button class="btn btn-danger"
+                  *ngIf="app.statusLabel === 'pending'"
+                  (click)="cancel(app)">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="actions" *ngIf="!isLoading">
+      <a routerLink="/psw" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Offers
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div *ngIf="selectedApp" class="modal-overlay" (click)="closeDetails()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="request-details">
+      <div class="request-header">
+        <h2>{{ selectedApp.app.offerTitle }}</h2>
+        <span class="request-status" [ngClass]="'badge-' + selectedApp.statusLabel">
+          <i class="fas" [ngClass]="{
+            'fa-clock': selectedApp.statusLabel === 'pending',
+            'fa-check': selectedApp.statusLabel === 'accepted',
+            'fa-times': selectedApp.statusLabel === 'rejected',
+            'fa-ban':   selectedApp.statusLabel === 'cancelled'
+          }"></i>
+          {{ selectedApp.statusDisplay }}
+        </span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <h4><i class="fas fa-calendar-alt"></i> Shift Date</h4>
+            <p>{{ selectedApp.app.date ? (selectedApp.app.date | date:'fullDate') : 'N/A' }}</p>
+          </div>
+          <div class="detail-item">
+            <h4><i class="fas fa-clock"></i> Time</h4>
+<p>{{ selectedApp.app.startTime.slice(0,5) }} – {{ selectedApp.app.endTime.slice(0,5) }}</p>
+          </div>
+          <div class="detail-item" *ngIf="selectedApp.statusLabel === 'rejected'">
+            <h4><i class="fas fa-user-shield"></i> Rejected By</h4>
+            <p class="rejected-by-text">{{ selectedApp.rejectedBy }}</p>
+          </div>
+          <div class="detail-item" *ngIf="selectedApp.statusLabel === 'rejected'">
+            <h4><i class="fas fa-comment-slash"></i> Rejection Reason</h4>
+            <p class="text-muted">Not provided by the system</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="closeDetails()">
+          <i class="fas fa-times"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
