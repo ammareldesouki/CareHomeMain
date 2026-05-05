@@ -1,6 +1,6 @@
 
 class ApiConstat {
-  static const String baseUrl = "http://3.99.158.214:5000/";
+  static const String baseUrl = "http://15.223.216.199:5000/";
 }
 
 class EndPoints {
