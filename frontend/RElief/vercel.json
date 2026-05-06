@@ -3,6 +3,7 @@
   "outputDirectory": "dist/frontend/browser",
   "framework": null,
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "http://15.223.216.199:5000/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
