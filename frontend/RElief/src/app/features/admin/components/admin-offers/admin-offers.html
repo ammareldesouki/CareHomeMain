@@ -1,156 +1,110 @@
+<!-- Phase H: Admin Offers — re-skinned. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  userName="Admin"
+  userRole="Super admin"
+  userInitials="A"
+  searchPlaceholder="Search offers…"
+>
 
-<div class="admin-page">
-  <div class="admin-header">
-    <div class="header-left">
-      <a routerLink="/admin/dashboard" class="back-btn" title="Back to Dashboard">
-        <i class="fa-solid fa-arrow-left"></i>
-      </a>
-      <h1>All Job Offers</h1>
+  <div class="au-page-h">
+    <div>
+      <h1 class="au-page-h__title">Job Offers</h1>
+      <p class="au-page-h__sub">Monitor and manage shifts posted by care homes</p>
     </div>
-    <button type="button" class="refresh-btn admin-refresh-btn" (click)="load()" [disabled]="isLoading">
-      <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i>
-      {{ isLoading ? 'Loading...' : 'Refresh' }}
-    </button>
+    <div class="au-page-h__actions">
+      <button class="au-btn au-btn--secondary" (click)="load()" [disabled]="isLoading">
+        ↻ {{ isLoading ? 'Loading…' : 'Refresh' }}
+      </button>
+    </div>
   </div>
 
-  <div class="admin-toolbar">
-    <div class="search-wrap">
-      <label for="off-search">Search</label>
+  <div class="au-toolbar">
+    <div class="au-search-box">
+      <span>🔍</span>
       <input
-        id="off-search"
-        class="search-input"
+        class="au-search-box__input"
         type="search"
         [(ngModel)]="searchInput"
         (input)="onSearch()"
-        placeholder="Title, position, care home, address…"
+        placeholder="Title, description, care home, location…"
       />
     </div>
-    <div class="toolbar-field">
-      <label for="off-page-size">Page size</label>
-      <select
-        id="off-page-size"
-        class="form-select"
-        [ngModel]="pageSize"
-        (ngModelChange)="onPageSizeChange($event)"
-      >
+    <div class="au-toolbar-field">
+      <label class="au-toolbar-field__label">Per page</label>
+      <select class="au-toolbar-field__select" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange(+$event)">
         <option [value]="8">8</option>
         <option [value]="12">12</option>
         <option [value]="24">24</option>
-        <option [value]="48">48</option>
       </select>
     </div>
-    <div class="toolbar-actions">
-      <button type="button" class="btn-apply" (click)="applyFilters()" [disabled]="isLoading">
-        Apply
-      </button>
+    <button class="au-btn au-btn--primary" (click)="applyFilters()" [disabled]="isLoading">Apply</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="au-skeleton au-skeleton--table"></div>
+  }
+
+  @if (!isLoading && error) {
+    <div class="au-alert">⚠ {{ error }}</div>
+  }
+
+  @if (!isLoading && !error && filteredCount === 0 && hasAnyLoaded) {
+    <div class="au-empty">
+      <div class="au-empty__ico">🔍</div>
+      <p>No results match your search</p>
     </div>
-  </div>
+  }
 
-  <div *ngIf="isLoading" class="loading">
-    <div class="loading-spinner"></div>
-    <div>Loading offers...</div>
-  </div>
+  @if (!isLoading && !error && filteredCount === 0 && !hasAnyLoaded) {
+    <div class="au-empty">
+      <div class="au-empty__ico">💼</div>
+      <p>No offers found</p>
+      <span class="au-empty__sub">There are currently no active job offers</span>
+    </div>
+  }
 
-  <div *ngIf="!isLoading && error" class="error">
-    <strong>Error:</strong> {{ error }}
-  </div>
+  @if (!isLoading && !error && offers.length > 0) {
+    <div class="ao-grid">
+      @for (offer of offers; track offer.offerId || offer.id) {
+        <div class="ao-card">
+          <div class="ao-card__head">
+            <div class="ao-card__ico">🏢</div>
+            <div class="ao-card__info">
+              <h3>{{ getTitle(offer) }}</h3>
+              <p class="ao-card__sub">{{ getPosterInfo(offer) }}</p>
+            </div>
+            <span class="pill" [ngClass]="(offer.isActive ?? false) ? 'pill--success' : 'pill--neutral'">
+              <span class="pill__dot"></span>{{ getStatus(offer) }}
+            </span>
+          </div>
 
-  <div *ngIf="!isLoading && !error && filteredCount === 0 && hasAnyLoaded" class="empty">
-    <div class="empty-icon">🔍</div>
-    <div>No offers match your search</div>
-    <div class="empty-subtitle">Try different keywords</div>
-  </div>
-
-  <div *ngIf="!isLoading && !error && filteredCount === 0 && !hasAnyLoaded" class="empty">
-    <div class="empty-icon">📭</div>
-    <div>No job offers found</div>
-    <div class="empty-subtitle">Care homes haven't posted any offers yet</div>
-  </div>
-
-  <div *ngIf="!isLoading && !error && offers.length > 0" class="cards-grid">
-    <div *ngFor="let offer of offers" class="offer-card">
-      <div class="card-header">
-        <div class="offer-icon">💼</div>
-        <div class="offer-info">
-          <h3>{{ getTitle(offer) }}</h3>
-          <h4 *ngIf="getPosition(offer)" class="offer-position">{{ getPosition(offer) }}</h4>
-<div class="shift-status-badges">
-     <span class="badge-available" *ngIf="getAvailabilityStatus(offer).available > 0">
-       {{ getAvailabilityStatus(offer).available }} Available
-     </span>
-     <span class="badge-booked" *ngIf="getAvailabilityStatus(offer).booked > 0">
-       {{ getAvailabilityStatus(offer).booked }} Booked
-     </span>
-     <span class="badge-no-shifts" *ngIf="(offer.shifts || []).length === 0">
-       No Shifts
-     </span>
-   </div>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <div class="info-row">
-          <span class="info-label">👤 Posted by</span>
-<span class="info-value">
-     {{ offer.posterName }}
-     <span class="poster-type-badge">{{ offer.posterType }}</span>
-   </span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">📝 Description</span>
-          <span class="info-value">{{ getTruncatedDescription(offer) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">📍 Address</span>
-          <span class="info-value">{{ getAddress(offer) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">💰 Rate</span>
-          <span class="info-value rate-value">{{ getHourlyRate(offer) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">📅 Shifts</span>
-          <span class="info-value">{{ getShiftSummary(offer) }}</span>
-        </div>
-<div class="shifts-list">
-     <div *ngFor="let shift of (offer.shifts || [])" class="shift-chip" [class.shift-chip--booked]="!shift.isAvailable">
-       <span class="shift-date">{{ shift.date | date:'d MMM' }}</span>
-       <span class="shift-time">{{ shift.startTime.slice(0,5) }} - {{ shift.endTime.slice(0,5) }}</span>
-       <span class="shift-status-dot" [class.available]="shift.isAvailable" [class.booked]="!shift.isAvailable"></span>
-     </div>
-   </div>
-        <div *ngIf="getPreferences(offer).length > 0" class="preferences-section">
-          <span class="info-label">🏷️ Preferences</span>
-          <div class="pref-tags">
-            <span *ngFor="let pref of getPreferences(offer)" class="status-badge pref-tag">{{ pref }}</span>
+          <div class="ao-card__body">
+            <p class="ao-card__desc">{{ getTruncatedDescription(offer) }}</p>
+            
+            <div class="au-field-row"><span class="au-field-row__k">Location</span><span class="au-field-row__v">{{ getAddress(offer) }}</span></div>
+            <div class="au-field-row"><span class="au-field-row__k">Rate</span><span class="au-field-row__v au-field-row__v--rate">{{ getHourlyRate(offer) }}</span></div>
+            <div class="au-field-row"><span class="au-field-row__k">Shifts</span><span class="au-field-row__v">{{ getShiftSummary(offer) }}</span></div>
+            <div class="au-field-row">
+              <span class="au-field-row__k">Availability</span>
+              <span class="au-field-row__v">
+                <span style="color:var(--success-600)">{{ getAvailabilityStatus(offer).available }} available</span> / 
+                <span style="color:var(--warn-600)">{{ getAvailabilityStatus(offer).booked }} booked</span>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      }
+    </div>
 
-      <div class="shift-count-badge">
-        <span class="shift-icon">📆</span>
-        <span>{{ getShiftCount(offer) }} shift{{ getShiftCount(offer) !== 1 ? 's' : '' }} total</span>
+    <div class="au-pagination" style="margin-top:24px">
+      <span class="au-pagination__info">{{ offers.length }} of {{ filteredCount }} · Page {{ pageIndex + 1 }} of {{ totalPages }}</span>
+      <div class="au-pagination__controls">
+        <button class="au-btn au-btn--secondary au-btn--sm" (click)="goPrev()" [disabled]="pageIndex === 0 || isLoading">← Prev</button>
+        <button class="au-btn au-btn--secondary au-btn--sm" (click)="goNext()" [disabled]="pageIndex >= totalPages - 1 || isLoading">Next →</button>
       </div>
     </div>
-  </div>
+  }
 
-  <div *ngIf="!isLoading && !error && filteredCount > 0" class="pagination-bar">
-    <span class="pagination-info">
-      Showing {{ offers.length }} of {{ filteredCount }} · Page {{ pageIndex + 1 }} of {{ totalPages }}
-    </span>
-    <div class="pagination-controls">
-      <button type="button" class="pagination-btn" (click)="goPrev()" [disabled]="pageIndex === 0 || isLoading">
-        Previous
-      </button>
-      <button
-        type="button"
-        class="pagination-btn"
-        (click)="goNext()"
-        [disabled]="pageIndex >= totalPages - 1 || isLoading"
-      >
-        Next
-      </button>
-    </div>
-  </div>
-</div>
-
+</app-dashboard-shell>

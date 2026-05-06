@@ -3,8 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { Footer } from "../../../../shared/components/footer/footer";
-import { Navbar } from "../../../../shared/components/navbar/navbar";
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { OffersService } from '../../../../core/services/offers.service';
 import { CreateJobOfferDto } from '../../../../core/models/api.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -47,13 +48,27 @@ interface Testimonial {
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    Footer,
-    Navbar
+    DashboardShellComponent
   ],
   templateUrl: './care-home-home.html',
   styleUrls: ['./care-home-home.scss'],
 })
 export class CareHomeHome implements OnInit {
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard', icon: '⌂', path: '/care-home' },
+    { type: 'link', label: 'Create offer', icon: '⊕', path: '/care-home/create-offer' },
+    { type: 'link', label: 'Notifications', icon: '🔔', path: '/care-home/notifications' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile', icon: '☺', path: '/care-home/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'Create Offer' },
+  ];
   readonly destroyRef = inject(DestroyRef);
 
   requestForm: FormGroup;

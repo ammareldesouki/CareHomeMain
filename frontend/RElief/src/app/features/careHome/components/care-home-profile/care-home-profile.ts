@@ -2,19 +2,35 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Navbar } from '../../../../shared/components/navbar/navbar';
-import { Footer } from '../../../../shared/components/footer/footer';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-care-home-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar, Footer],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './care-home-profile.html',
   styleUrls: ['./care-home-profile.scss']
 })
 export class CareHomeProfile implements OnInit {
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard', icon: '⌂', path: '/care-home' },
+    { type: 'link', label: 'Create offer', icon: '⊕', path: '/care-home/create-offer' },
+    { type: 'link', label: 'Notifications', icon: '🔔', path: '/care-home/notifications' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile', icon: '☺', path: '/care-home/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'Profile' },
+  ];
   private profileService = inject(ProfileService);
   private notifications = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);

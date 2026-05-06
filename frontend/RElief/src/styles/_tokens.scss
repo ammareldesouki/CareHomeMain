@@ -1,0 +1,87 @@
+:root {
+  // Brand
+  --brand-700: #0b6b80;
+  --brand-600: #0e8aa6;
+  --brand-500: #1aa6c4;
+  --brand-50:  #e8f6fa;
+
+  --accent-700: #0a4a8a;
+  --accent-600: #1763b8;
+  --accent-50:  #eaf2fb;
+
+  // Semantic
+  --success-600: #1e9e5a;
+  --success-500: #22b96a;
+  --success-50:  #e8f7ee;
+
+  --danger-600:  #c8362f;
+  --danger-500:  #e0463f;
+  --danger-50:   #fdecea;
+
+  --warn-700:    #8a5a00;
+  --warn-500:    #f5b13b;
+  --warn-50:     #fff5dd;
+
+  --info-600:    #5a4be0;
+  --info-50:     #eee9fb;
+
+  // Ink (cool neutrals)
+  --ink-900: #0f1f2a;
+  --ink-800: #1c2d3a;
+  --ink-700: #324655;
+  --ink-600: #4a5f6e;
+  --ink-500: #6b7e8b;
+  --ink-400: #93a3ad;
+  --ink-300: #c1ccd3;
+  --ink-200: #dde5ea;
+  --ink-100: #ecf1f4;
+  --ink-50:  #f5f8fa;
+  --ink-0:   #ffffff;
+
+  // Typography
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  // Type scale (1.250 minor third)
+  --t-xs:   12px;
+  --t-sm:   13px;
+  --t-base: 15px;
+  --t-md:   17px;
+  --t-lg:   20px;
+  --t-xl:   24px;
+  --t-2xl:  30px;
+  --t-3xl:  38px;
+  --t-4xl:  48px;
+  --t-5xl:  60px;
+
+  // Spacing (4px grid)
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-7:  32px;
+  --s-8:  40px;
+  --s-9:  56px;
+  --s-10: 72px;
+  --s-11: 96px;
+
+  // Radii
+  --r-xs:   6px;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   22px;
+  --r-pill: 999px;
+
+  // Shadows
+  --sh-1: 0 1px 2px rgba(15,31,42,.04), 0 1px 1px rgba(15,31,42,.03);
+  --sh-2: 0 2px 6px rgba(15,31,42,.05), 0 1px 2px rgba(15,31,42,.04);
+  --sh-3: 0 8px 24px rgba(15,31,42,.07), 0 2px 6px rgba(15,31,42,.04);
+  --sh-4: 0 20px 48px rgba(15,31,42,.10), 0 4px 12px rgba(15,31,42,.05);
+
+  // Layout
+  --container: 1200px;
+  --gutter: var(--s-6);
+}

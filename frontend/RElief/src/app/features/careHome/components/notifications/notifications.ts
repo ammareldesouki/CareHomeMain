@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Navbar } from '../../../../shared/components/navbar/navbar';
-import { Footer } from '../../../../shared/components/footer/footer';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { ApplicationsService } from '../../../../core/services/applications.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ProfileService } from '../../../../core/services/profile.service';
@@ -34,11 +35,26 @@ interface Application {
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule, FormsModule, Navbar, Footer, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './notifications.html',
   styleUrl: './notifications.scss'
 })
 export class Notifications implements OnInit {
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard', icon: '⌂', path: '/care-home' },
+    { type: 'link', label: 'Create offer', icon: '⊕', path: '/care-home/create-offer' },
+    { type: 'link', label: 'Notifications', icon: '🔔', path: '/care-home/notifications' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile', icon: '☺', path: '/care-home/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'Notifications' },
+  ];
   applications: Application[] = [];
   loading = true;
   error: string | null = null;

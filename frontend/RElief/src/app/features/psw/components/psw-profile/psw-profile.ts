@@ -2,9 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, inject, OnDestroy } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { PswNav } from "../../../../shared/components/psw-nav/psw-nav";
-import { Footer } from "../../../../shared/components/footer/footer";
-import { ToastComponent } from "../../../../shared/components/toast/toast";
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { FileService } from '../../../../core/services/file.service';
 import { PswApplicationsService } from '../../../../core/services/psw-applications.service';
@@ -39,11 +39,26 @@ interface DocumentFile {
 @Component({
   selector: 'app-psw-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PswNav, Footer, ToastComponent],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './psw-profile.html',
   styleUrls: ['./psw-profile.scss']
 })
 export class PswProfile implements OnInit, OnDestroy {
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard',        icon: '⌂', path: '/psw/dashboard' },
+    { type: 'link', label: 'Available offers', icon: '≡', path: '/psw/offers' },
+    { type: 'link', label: 'My applications',  icon: '⏱', path: '/psw/history' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile',          icon: '☺', path: '/psw/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'Profile' },
+  ];
   private profileService = inject(ProfileService);
   private fileService = inject(FileService);
   private pswApplicationsService = inject(PswApplicationsService);

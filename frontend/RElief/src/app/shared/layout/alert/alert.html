@@ -1,0 +1,11 @@
+<div class="app-alert" [class]="'app-alert app-alert--' + variant" role="alert">
+  <span class="app-alert__icon" aria-hidden="true">{{ icon }}</span>
+  <div class="app-alert__body">
+    @if (title) {
+      <p class="app-alert__title">{{ title }}</p>
+    }
+    <div class="app-alert__content">
+      <ng-content />
+    </div>
+  </div>
+</div>

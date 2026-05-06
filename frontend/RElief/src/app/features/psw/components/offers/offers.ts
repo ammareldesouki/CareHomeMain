@@ -2,9 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { PswNav } from '../../../../shared/components/psw-nav/psw-nav';
-import { Footer } from '../../../../shared/components/footer/footer';
-import { ToastComponent } from '../../../../shared/components/toast/toast';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { OffersService } from '../../../../core/services/offers.service';
 import { PswApplicationsService } from '../../../../core/services/psw-applications.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -32,7 +32,7 @@ interface OfferDetails extends BrowseOffer {
 @Component({
   selector: 'app-psw-offers',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, FormsModule, PswNav, Footer, ToastComponent],
+  imports: [CommonModule, RouterModule, DatePipe, FormsModule, DashboardShellComponent],
   templateUrl: './offers.html',
   styleUrl: './offers.scss',
 })
@@ -44,6 +44,22 @@ export class PswOffers implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private authService = inject(AuthService);
+
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard',        icon: '⌂', path: '/psw/dashboard' },
+    { type: 'link', label: 'Available offers', icon: '≡', path: '/psw/offers' },
+    { type: 'link', label: 'My applications',  icon: '⏱', path: '/psw/history' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile',          icon: '☺', path: '/psw/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'Available Offers' },
+  ];
 
   offers: BrowseOffer[] = [];
   availableOffers: BrowseOffer[] = [];

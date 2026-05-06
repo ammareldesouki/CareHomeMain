@@ -1,0 +1,28 @@
+<div class="app-offer-card">
+  <div class="app-offer-card__top">
+    <div class="app-offer-card__icon" aria-hidden="true">★</div>
+    <div class="app-offer-card__info">
+      <h4 class="app-offer-card__title">{{ title }}</h4>
+      <div class="app-offer-card__location">{{ location }}</div>
+    </div>
+    @if (spots != null) {
+      <app-pill [variant]="statusVariant" class="app-offer-card__pill">{{ spotLabel }}</app-pill>
+    }
+  </div>
+
+  <div class="app-offer-card__kv">
+    <span class="app-offer-card__k">Rate</span>
+    <span class="app-offer-card__v app-offer-card__v--rate">{{ rate }}</span>
+    <span class="app-offer-card__k">Shift</span>
+    <span class="app-offer-card__v">{{ shift }}</span>
+    @if (type) {
+      <span class="app-offer-card__k">Type</span>
+      <span class="app-offer-card__v">{{ type }}</span>
+    }
+  </div>
+
+  <div class="app-offer-card__actions">
+    <app-button variant="secondary" size="sm" (click)="viewClicked.emit()">View</app-button>
+    <app-button variant="primary" size="sm" (click)="applyClicked.emit()">Apply now →</app-button>
+  </div>
+</div>

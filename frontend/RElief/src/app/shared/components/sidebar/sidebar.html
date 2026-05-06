@@ -1,0 +1,40 @@
+<aside class="app-sidebar">
+  <div class="app-sidebar__brand">
+    <span class="app-sidebar__mark">R</span>
+    <span class="app-sidebar__name">Relief</span>
+  </div>
+
+  @for (item of items; track item.label) {
+    @if (item.type === 'section') {
+      <div class="app-sidebar__section">{{ item.label }}</div>
+    } @else {
+      <a
+        class="app-sidebar__link"
+        [routerLink]="item.path ?? null"
+        routerLinkActive="app-sidebar__link--active"
+        [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+      >
+        @if (item.icon) {
+          <span class="app-sidebar__link-icon" aria-hidden="true">{{ item.icon }}</span>
+        }
+        <span class="app-sidebar__link-label">{{ item.label }}</span>
+        @if (item.badge != null) {
+          <span class="app-sidebar__badge">{{ item.badge }}</span>
+        }
+      </a>
+    }
+  }
+
+  @if (userName) {
+    <div class="app-sidebar__foot">
+      <span class="app-sidebar__foot-av">{{ userInitials }}</span>
+      <div class="app-sidebar__foot-info">
+        <div class="app-sidebar__foot-name">{{ userName }}</div>
+        <div class="app-sidebar__foot-role">{{ userRole }}</div>
+      </div>
+      <button class="app-sidebar__logout" (click)="logout()" title="Logout" aria-label="Logout">
+        <span aria-hidden="true">⎋</span>
+      </button>
+    </div>
+  }
+</aside>

@@ -2,6 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { AdminService, AdminPagedResult } from '../../../../core/services/admin.service';
 import { OffersService } from '../../../../core/services/offers.service';
 import {
@@ -45,11 +48,25 @@ interface ShiftItem {
 @Component({
   selector: 'app-admin-offers',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './admin-offers.html',
-  styleUrls: ['./admin-offers.scss', '../../admin-common.scss'],
+  styleUrls: ['./admin-offers.scss'],
 })
 export class AdminOffers implements OnInit {
+  // Shell config
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Platform' },
+    { type: 'link', label: 'Overview', icon: '⌂', path: '/admin/dashboard' },
+    { type: 'link', label: 'Users', icon: '☺', path: '/admin/users' },
+    { type: 'link', label: 'Verifications', icon: '✓', path: '/admin/verifications' },
+    { type: 'section', label: 'Marketplace' },
+    { type: 'link', label: 'Job offers', icon: '≡', path: '/admin/offers' },
+    { type: 'link', label: 'Applications', icon: '⏱', path: '/admin/applications' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Admin' },
+    { label: 'Job Offers' },
+  ];
   private admin = inject(AdminService);
   private offersService = inject(OffersService);
   private cdr = inject(ChangeDetectorRef);

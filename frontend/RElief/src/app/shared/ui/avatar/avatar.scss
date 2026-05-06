@@ -1,0 +1,19 @@
+.app-avatar {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 700;
+  color: var(--ink-0);
+  flex: none;
+
+  &--sm  { width: 28px; height: 28px; font-size: var(--t-xs); }
+  &--md  { width: 36px; height: 36px; font-size: var(--t-xs); }
+  &--lg  { width: 48px; height: 48px; font-size: var(--t-sm); }
+
+  &--c1 { background: linear-gradient(140deg, #5b6fb1, #3b3f8e); }
+  &--c2 { background: linear-gradient(140deg, #3da9d6, #1f6e98); }
+  &--c3 { background: linear-gradient(140deg, #7d56c9, #4a2f99); }
+  &--c4 { background: linear-gradient(140deg, #e5a341, #c97a16); }
+  &--c5 { background: linear-gradient(140deg, #3fa779, #1d6e4d); }
+  &--c6 { background: linear-gradient(140deg, var(--brand-500), var(--accent-600)); }
+}

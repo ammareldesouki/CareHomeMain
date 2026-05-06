@@ -8,8 +8,8 @@ import { roleGuard } from './core/guards/auth-guards-guard';
 import { profileCompleteGuard } from './core/guards/profile-complete.guard';
 
 export const routes: Routes = [
-  // التوجيه الأساسي
-  { path: '', redirectTo: '/login', pathMatch: 'full' }, 
+  // Landing page
+  { path: '', loadComponent: () => import('./features/landing/landing').then(m => m.LandingComponent) },
   
   // Auth routes
   { path: 'login', component: LoginComponent },
@@ -25,7 +25,7 @@ export const routes: Routes = [
     children: [
       { 
         path: '', 
-        loadComponent: () => import('./features/careHome/components/care-home-home/care-home-home').then(m => m.CareHomeHome) 
+        loadComponent: () => import('./features/careHome/components/care-home-dashboard/care-home-dashboard').then(m => m.CareHomeDashboard) 
       },
       { 
         path: 'history', 
@@ -48,12 +48,15 @@ export const routes: Routes = [
     data: { role: 'psw' },
     canActivate: [authGuard, roleGuard, profileCompleteGuard],
     children: [
-      { path: '', redirectTo: 'offers', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/psw/components/psw-dashboard/psw-dashboard').then(m => m.PswDashboard)
+      },
       {
         path: 'offers',
         loadComponent: () => import('./features/psw/components/offers/offers').then(m => m.PswOffers)
       },
-
       {
         path: 'profile',
         loadComponent: () => import('./features/psw/components/psw-profile/psw-profile').then(m => m.PswProfile)
@@ -119,6 +122,12 @@ export const routes: Routes = [
     ]
   },
   
+  // Dev component showcase
+  {
+    path: 'dev/components',
+    loadComponent: () => import('./dev/components/dev-components').then(m => m.DevComponentsComponent)
+  },
+
   // 404
   { path: '**', component: NotFound }
 ];

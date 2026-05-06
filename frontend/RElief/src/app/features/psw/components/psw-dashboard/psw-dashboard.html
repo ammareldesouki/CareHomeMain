@@ -1,0 +1,177 @@
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="greetingName"
+  userRole="Personal Support Worker"
+  [userInitials]="greetingInitials"
+  searchPlaceholder="Search shifts, care homes, applications…"
+>
+
+  <!-- Greeting banner -->
+  <div class="psw-greet">
+    <div class="psw-greet__av">{{ greetingInitials || '??' }}</div>
+    <div class="psw-greet__copy">
+      <h2 class="psw-greet__headline">{{ greetingTime }}, {{ greetingName }}.</h2>
+      <p class="psw-greet__sub">
+        You have {{ pendingCount }} pending application{{ pendingCount !== 1 ? 's' : '' }} and new offers in your area.
+      </p>
+    </div>
+    <div class="psw-greet__right">
+      <div class="psw-greet__stat">
+        <div class="psw-greet__stat-l">Accepted</div>
+        <div class="psw-greet__stat-v">{{ isLoading ? '—' : acceptedCount }}</div>
+      </div>
+      <div class="psw-greet__stat">
+        <div class="psw-greet__stat-l">Pending</div>
+        <div class="psw-greet__stat-v">{{ isLoading ? '—' : pendingCount }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="psw-kpis">
+    <app-stat-card
+      label="Pending"
+      icon="◷"
+      [value]="isLoading ? '—' : pendingCount.toString()"
+      delta="+1 this week"
+      deltaDirection="up"
+      tone="warn"
+    />
+    <app-stat-card
+      label="Accepted"
+      icon="✓"
+      [value]="isLoading ? '—' : acceptedCount.toString()"
+      delta="+3 vs last month"
+      deltaDirection="up"
+      tone="success"
+    />
+    <app-stat-card
+      label="Rejected"
+      icon="✕"
+      [value]="isLoading ? '—' : rejectedCount.toString()"
+      [delta]="rejectedCount > 0 ? '-2 vs last month' : 'none'"
+      deltaDirection="down"
+      tone="danger"
+    />
+    <app-stat-card
+      label="Rating"
+      icon="★"
+      [value]="rating"
+      delta="based on shifts"
+      deltaDirection="up"
+      tone="brand"
+    />
+  </div>
+
+  <!-- Main content split -->
+  <div class="psw-split">
+
+    <!-- Left: Recommended offers -->
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <h3 class="ds-card__title">Recommended for you</h3>
+        <span class="ds-card__meta">{{ nearbyOffers.length }} offers</span>
+      </div>
+      <div class="ds-card__body psw-offers-grid">
+        @if (isLoading) {
+          <div class="psw-skeleton"></div>
+          <div class="psw-skeleton"></div>
+        } @else if (nearbyOffers.length === 0) {
+          <p class="psw-empty">No offers available right now. Check back soon!</p>
+        } @else {
+          @for (offer of nearbyOffers; track offer.id) {
+            <div class="ds-ocard">
+              <div class="ds-ocard__top">
+                <div class="ds-ocard__ico">★</div>
+                <div class="ds-ocard__info">
+                  <h4 class="ds-ocard__title">{{ offer.title }}</h4>
+                  <div class="ds-ocard__role">{{ offer.location }}</div>
+                </div>
+                <span class="pill pill--success"><span class="pill__dot"></span>1 spot</span>
+              </div>
+              <div class="ds-ocard__kv">
+                <span class="ds-ocard__k">Rate</span>
+                <span class="ds-ocard__v ds-ocard__v--rate">
+                  {{ offer.rate != null ? ('$' + offer.rate + '/hr') : '—' }}
+                </span>
+                <span class="ds-ocard__k">Location</span>
+                <span class="ds-ocard__v">{{ offer.location }}</span>
+              </div>
+              <div class="ds-ocard__actions">
+                <button class="ds-btn ds-btn--secondary ds-btn--sm" [routerLink]="['/psw/offers']">View</button>
+                <button class="ds-btn ds-btn--primary ds-btn--sm" (click)="applyNow(offer)">Apply now →</button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+      <div class="ds-card__foot">
+        Showing {{ nearbyOffers.length }} of {{ nearbyOffers.length }} ·
+        <a class="ds-card__foot-link" routerLink="/psw/offers">View all offers →</a>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div class="psw-right-col">
+
+      <!-- My applications -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Your applications</h3>
+          <span class="ds-card__meta">{{ pendingCount }} pending</span>
+        </div>
+        <div class="ds-card__body">
+          @if (isLoading) {
+            <div class="psw-skeleton psw-skeleton--sm"></div>
+            <div class="psw-skeleton psw-skeleton--sm"></div>
+          } @else if (myApplications.length === 0) {
+            <p class="psw-empty psw-empty--sm">No applications yet. Browse available offers!</p>
+          } @else {
+            @for (app of myApplications; track app.title) {
+              <div class="psw-app-row">
+                <div class="psw-app-row__info">
+                  <div class="psw-app-row__title">{{ app.title }}</div>
+                  <div class="psw-app-row__meta">{{ app.shift }}</div>
+                </div>
+                <span class="pill" [ngClass]="pillClass(app.status)">
+                  <span class="pill__dot"></span>{{ pillLabel(app.status) }}
+                </span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Profile completeness -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Profile completeness</h3>
+          <span class="ds-card__meta">{{ profilePct }}%</span>
+        </div>
+        <div class="psw-profile-prog">
+          <div class="psw-profile-prog__label">
+            <span>{{ profilePct }}% complete</span>
+            <span class="psw-profile-prog__status">
+              @if (profilePct >= 100) { All set! }
+              @else if (profilePct >= 80) { Almost there }
+              @else { Keep going }
+            </span>
+          </div>
+          <div class="psw-prog">
+            <i [style.width]="profilePct + '%'"></i>
+          </div>
+          @if (profilePct < 100) {
+            <div class="psw-profile-hint">
+              <span class="pill pill--warn"><span class="pill__dot"></span>Missing</span>
+              Complete your profile to unlock more shift opportunities.
+              <a routerLink="/psw/profile" class="psw-profile-hint__link">Update profile →</a>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</app-dashboard-shell>

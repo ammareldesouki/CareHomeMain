@@ -2,6 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -41,11 +44,25 @@ function normStatus(app: ApplicationItem): string {
 @Component({
   selector: 'app-admin-applications',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './admin-applications.html',
-  styleUrls: ['./admin-applications.scss', '../../admin-common.scss'],
+  styleUrls: ['./admin-applications.scss'],
 })
 export class AdminApplications implements OnInit {
+  // Shell config
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Platform' },
+    { type: 'link', label: 'Overview', icon: '⌂', path: '/admin/dashboard' },
+    { type: 'link', label: 'Users', icon: '☺', path: '/admin/users' },
+    { type: 'link', label: 'Verifications', icon: '✓', path: '/admin/verifications' },
+    { type: 'section', label: 'Marketplace' },
+    { type: 'link', label: 'Job offers', icon: '≡', path: '/admin/offers' },
+    { type: 'link', label: 'Applications', icon: '⏱', path: '/admin/applications' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Admin' },
+    { label: 'Job Applications' },
+  ];
   private admin = inject(AdminService);
   private profileService = inject(ProfileService);
   private notifications = inject(NotificationService);

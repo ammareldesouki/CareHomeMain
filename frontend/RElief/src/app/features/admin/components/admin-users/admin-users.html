@@ -1,240 +1,203 @@
-<div class="admin-page">
-  <div class="admin-header">
-    <div class="header-left">
-      <a routerLink="/admin/dashboard" class="back-btn" title="Back to Dashboard">
-        <i class="fa-solid fa-arrow-left"></i>
-      </a>
-      <h1>Users</h1>
+<!-- Phase H: Admin Users — re-skinned. All TS logic verbatim. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  userName="Admin"
+  userRole="Super admin"
+  userInitials="A"
+  searchPlaceholder="Search users…"
+>
+
+  <!-- Page header -->
+  <div class="au-page-h">
+    <div>
+      <h1 class="au-page-h__title">Users</h1>
+      <p class="au-page-h__sub">Manage all platform users, PSWs, and care homes</p>
     </div>
-    <button type="button" class="refresh-btn admin-refresh-btn" (click)="load()" [disabled]="isLoading">
-      <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i>
-      {{ isLoading ? 'Loading...' : 'Refresh' }}
-    </button>
+    <div class="au-page-h__actions">
+      <button class="au-btn au-btn--secondary" (click)="load()" [disabled]="isLoading">
+        ↻ {{ isLoading ? 'Loading…' : 'Refresh' }}
+      </button>
+    </div>
   </div>
 
-  <div class="admin-toolbar admin-toolbar--users">
-    <div class="search-wrap">
-      <label for="u-search">Search</label>
+  <!-- Toolbar -->
+  <div class="au-toolbar">
+    <div class="au-search-box">
+      <span>🔍</span>
       <input
+        class="au-search-box__input"
         id="u-search"
-        class="search-input"
         type="search"
         [(ngModel)]="searchInput"
         (input)="onSearch()"
         placeholder="Name, email, id…"
       />
     </div>
-    <div class="toolbar-field">
-      <label for="u-role">Role contains</label>
+    <div class="au-toolbar-field">
+      <label class="au-toolbar-field__label" for="u-role">Role contains</label>
       <input
         id="u-role"
-        class="search-input"
+        class="au-toolbar-field__input"
         type="text"
         [(ngModel)]="roleFilter"
         (input)="onSearch()"
         placeholder="e.g. psw"
       />
     </div>
-    <div class="toolbar-field toolbar-field-page">
-      <label for="u-page-size">Per page</label>
-      <select
-        id="u-page-size"
-        class="form-select"
-        [ngModel]="pageSize"
-        (ngModelChange)="onPageSizeChange(+ $event)"
-      >
+    <div class="au-toolbar-field">
+      <label class="au-toolbar-field__label" for="u-page-size">Per page</label>
+      <select id="u-page-size" class="au-toolbar-field__select" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange(+$event)">
         <option [value]="8">8</option>
         <option [value]="12">12</option>
         <option [value]="24">24</option>
         <option [value]="48">48</option>
       </select>
     </div>
-    <div class="toolbar-actions">
-      <button type="button" class="btn-apply" (click)="applyFilters()" [disabled]="isLoading">
-        Apply filters
-      </button>
+    <button class="au-btn au-btn--primary" (click)="applyFilters()" [disabled]="isLoading">Apply</button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="au-skeleton au-skeleton--table"></div>
+  }
+
+  <!-- Error -->
+  @if (!isLoading && error) {
+    <div class="au-alert">⚠ {{ error }}</div>
+  }
+
+  <!-- Empty states -->
+  @if (!isLoading && !error && filteredCount === 0 && hasAnyLoaded) {
+    <div class="au-empty">
+      <div class="au-empty__ico">🔍</div>
+      <p>No rows match your filters</p>
+      <span class="au-empty__sub">Try clearing search or changing filters</span>
     </div>
-  </div>
-
-  <div *ngIf="isLoading" class="loading">
-    <div class="loading-spinner"></div>
-    <div>Loading users…</div>
-  </div>
-
-  <div *ngIf="!isLoading && error" class="error">
-    <strong>Error:</strong> {{ error }}
-  </div>
-
-  <div *ngIf="!isLoading && !error && filteredCount === 0 && hasAnyLoaded" class="empty">
-    <div class="empty-icon">🔍</div>
-    <div>No rows match your filters</div>
-    <div class="empty-subtitle">Try clearing search or changing filters</div>
-  </div>
-
-  <div *ngIf="!isLoading && !error && filteredCount === 0 && !hasAnyLoaded" class="empty">
-    <div class="empty-icon">👤</div>
-    <div>No users returned</div>
-    <div class="empty-subtitle">Refresh or check permissions</div>
-  </div>
-
-  <div *ngIf="!isLoading && !error && rows.length > 0" class="users-table-wrap">
-    <table class="users-table">
-      <thead>
-        <tr>
-          <th>Name / label</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th class="col-actions">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of rows">
-          <td class="td-strong">{{ pickLabel(row) }}</td>
-          <td>{{ pickEmail(row) }}</td>
-          <td>{{ pickRole(row) }}</td>
-          <td>
-            <button type="button" class="link-profile" (click)="openProfile(row)">
-              <i class="fa-solid fa-eye"></i> View profile
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="!isLoading && !error && filteredCount > 0" class="pagination-bar">
-    <span class="pagination-info">
-      Showing {{ rows.length }} of {{ filteredCount }} · Page {{ pageIndex + 1 }} of {{ totalPages }}
-    </span>
-    <div class="pagination-controls">
-      <button type="button" class="pagination-btn" (click)="goPrev()" [disabled]="pageIndex === 0 || isLoading">
-        Previous
-      </button>
-      <button
-        type="button"
-        class="pagination-btn"
-        (click)="goNext()"
-        [disabled]="pageIndex >= totalPages - 1 || isLoading"
-      >
-        Next
-      </button>
+  }
+  @if (!isLoading && !error && filteredCount === 0 && !hasAnyLoaded) {
+    <div class="au-empty">
+      <div class="au-empty__ico">👤</div>
+      <p>No users returned</p>
+      <span class="au-empty__sub">Refresh or check permissions</span>
     </div>
-  </div>
+  }
 
-<div *ngIf="selectedUserId" class="modal" (click)="closeProfile()">
-    <div class="modal-content ver-profile-modal" (click)="$event.stopPropagation()">
-<div class="ver-profile-head">
-  <div class="ver-profile-avatar">
-    <img
-      *ngIf="getProfilePhotoUrl()"
-      [src]="getProfilePhotoUrl()"
-      alt=""
-      class="profile-photo"
-      style="cursor:pointer"
-      (click)="openLightbox(getProfilePhotoUrl())"
-      (error)="onPhotoError($event)"
-    />
-    <span *ngIf="!getProfilePhotoUrl()">{{ profileInitial }}</span>
-  </div>
-  <div class="ver-profile-titles">
-    <h2>{{ profileHeadline }}</h2>
-    <p class="modal-meta">{{ profileDetail?.['role'] }}</p>
-  </div>
-  <button type="button" class="ver-profile-close" (click)="closeProfile()" aria-label="Close">×</button>
-</div>
-      <div *ngIf="profileLoading || docsLoading" class="ver-profile-loading">Loading profile{{ docsLoading ? ' & documents' : '' }}…</div>
-      <div *ngIf="!profileLoading && !docsLoading && profileDetail" class="ver-profile-body">
-        <!-- Basic Information -->
-        <section class="ver-profile-section">
-          <h3 class="ver-profile-section-title">Basic Information</h3>
-          <div class="ver-profile-section-rows">
-            <div class="ver-profile-field">
-              <div class="ver-profile-key">Name</div>
-              <div class="ver-profile-val">{{ profileHeadline }}</div>
-            </div>
-            <div class="ver-profile-field">
-              <div class="ver-profile-key">Email</div>
-              <div class="ver-profile-val">{{ profileDetail['email'] || 'N/A' }}</div>
-            </div>
-            <div class="ver-profile-field">
-              <div class="ver-profile-key">Role</div>
-              <div class="ver-profile-val">{{ profileDetail['role'] || 'N/A' }}</div>
-            </div>
-            <div class="ver-profile-field">
-              <div class="ver-profile-key">Phone</div>
-              <div class="ver-profile-val">{{ profileDetail['phoneNumber'] || profileDetail['phone'] || 'N/A' }}</div>
-            </div>
-<div class="ver-profile-field">
-              <div class="ver-profile-key">Date of Birth</div>
-<div class="ver-profile-val">{{ formattedDob }}</div>
-            </div>
+  <!-- Table -->
+  @if (!isLoading && !error && rows.length > 0) {
+    <div class="ds-card">
+      <table class="au-table">
+        <thead>
+          <tr>
+            <th>Name / label</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="au-table__th--right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows">
+            <td class="au-td-bold">{{ pickLabel(row) }}</td>
+            <td>{{ pickEmail(row) }}</td>
+            <td>
+              <span class="au-role-pill" [ngClass]="rolePillClass(pickRole(row))">{{ pickRole(row) }}</span>
+            </td>
+            <td class="au-table__td--right">
+              <button class="au-btn au-btn--secondary au-btn--sm" (click)="openProfile(row)">👁 View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      @if (filteredCount > 0) {
+        <div class="au-pagination">
+          <span class="au-pagination__info">{{ rows.length }} of {{ filteredCount }} · Page {{ pageIndex + 1 }} of {{ totalPages }}</span>
+          <div class="au-pagination__controls">
+            <button class="au-btn au-btn--secondary au-btn--sm" (click)="goPrev()" [disabled]="pageIndex === 0 || isLoading">← Prev</button>
+            <button class="au-btn au-btn--secondary au-btn--sm" (click)="goNext()" [disabled]="pageIndex >= totalPages - 1 || isLoading">Next →</button>
           </div>
-        </section>
+        </div>
+      }
+    </div>
+  }
 
-        <!-- Verification Documents (PSW only) -->
-        <section *ngIf="profileDetail['role'] === 'PSW'" class="ver-profile-section">
-          <h3 class="ver-profile-section-title">Verification Documents</h3>
-          <div class="docs-list">
-            <div *ngIf="documentFiles.length === 0" class="text-center py-4 text-muted">
-              <i class="fas fa-folder-open fa-2x mb-2"></i>
-              <p>No documents uploaded yet.</p>
-            </div>
-            <div *ngIf="documentFiles.length > 0" class="docs-grid">
-              <div *ngFor="let doc of documentFiles" class="doc-card">
-                <div class="doc-icon">
-                  <i class="fas {{ doc.icon }}"></i>
-                </div>
-                <p class="doc-name">{{ doc.name }}</p>
-                <button 
-                  *ngIf="!doc.loading" 
-                  class="view-btn" 
-                  (click)="openProfileDocument(doc.fileId!)"
-                  [disabled]="fileOpeningId === doc.fileId">
-                  <i class="fas fa-eye"></i> View
-                </button>
-                <span *ngIf="doc.loading" class="badge bg-light text-muted">Loading...</span>
+  <!-- Profile Modal -->
+  @if (selectedUserId) {
+    <div class="au-modal-backdrop" (click)="closeProfile()">
+      <div class="au-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="au-profile-title">
+        <div class="au-modal__head">
+          <div class="au-profile-av">
+            @if (getProfilePhotoUrl()) {
+              <img [src]="getProfilePhotoUrl()" alt="" class="au-profile-av__img" style="cursor:pointer" (click)="openLightbox(getProfilePhotoUrl())" (error)="onPhotoError($event)" />
+            } @else {
+              <span>{{ profileInitial }}</span>
+            }
+          </div>
+          <div style="flex:1">
+            <h2 id="au-profile-title" class="au-modal__title">{{ profileHeadline }}</h2>
+            <p class="au-modal__sub">{{ profileDetail?.['role'] }}</p>
+          </div>
+          <button class="au-modal__close" (click)="closeProfile()" aria-label="Close">✕</button>
+        </div>
+
+        @if (profileLoading || docsLoading) {
+          <div class="au-modal__loading"><div class="au-spinner"></div><p>Loading profile{{ docsLoading ? ' &amp; documents' : '' }}…</p></div>
+        }
+
+        @if (!profileLoading && !docsLoading && profileDetail) {
+          <div class="au-modal__body">
+            <!-- Basic Info -->
+            <section class="au-profile-section">
+              <h3 class="au-profile-section__title">Basic Information</h3>
+              <div class="au-profile-fields">
+                <div class="au-field-row"><span class="au-field-row__k">Name</span><span class="au-field-row__v">{{ profileHeadline }}</span></div>
+                <div class="au-field-row"><span class="au-field-row__k">Email</span><span class="au-field-row__v">{{ profileDetail['email'] || 'N/A' }}</span></div>
+                <div class="au-field-row"><span class="au-field-row__k">Role</span><span class="au-field-row__v">{{ profileDetail['role'] || 'N/A' }}</span></div>
+                <div class="au-field-row"><span class="au-field-row__k">Phone</span><span class="au-field-row__v">{{ profileDetail['phoneNumber'] || profileDetail['phone'] || 'N/A' }}</span></div>
+                <div class="au-field-row"><span class="au-field-row__k">Date of Birth</span><span class="au-field-row__v">{{ formattedDob }}</span></div>
               </div>
-            </div>
+            </section>
+
+            <!-- Documents (PSW only) -->
+            @if (profileDetail['role'] === 'PSW') {
+              <section class="au-profile-section">
+                <h3 class="au-profile-section__title">Verification Documents</h3>
+                @if (documentFiles.length === 0) {
+                  <p class="au-empty-sm">No documents uploaded yet.</p>
+                } @else {
+                  <div class="au-docs-grid">
+                    @for (doc of documentFiles; track doc.name) {
+                      <div class="au-doc-card">
+                        <div class="au-doc-card__ico">📄</div>
+                        <p class="au-doc-card__name">{{ doc.name }}</p>
+                        @if (!doc.loading) {
+                          <button class="au-btn au-btn--secondary au-btn--sm" (click)="openProfileDocument(doc.fileId!)" [disabled]="fileOpeningId === doc.fileId">👁 View</button>
+                        } @else {
+                          <span class="au-doc-card__loading">Loading…</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </section>
+            }
           </div>
-        </section>
-      </div>
-      <div class="modal-actions ver-profile-actions">
-        <button type="button" class="btn-cancel" (click)="closeProfile()">Close</button>
+        }
+
+        <div class="au-modal__foot">
+          <button class="au-btn au-btn--secondary" (click)="closeProfile()">Close</button>
+        </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- Lightbox -->
-  <div
-    *ngIf="lightboxUrl"
-    class="lightbox-overlay"
-    (click)="closeLightbox()"
-    style="
-      position:fixed; inset:0; z-index:9999;
-      background:rgba(0,0,0,0.85);
-      display:flex; align-items:center; justify-content:center;
-      cursor:zoom-out;
-    ">
-    <img
-      [src]="lightboxUrl"
-      (click)="$event.stopPropagation()"
-      style="
-        max-width:90vw; max-height:90vh;
-        border-radius:12px;
-        box-shadow:0 8px 40px rgba(0,0,0,0.6);
-        object-fit:contain;
-        cursor:default;
-      "
-    />
-    <button
-      (click)="closeLightbox()"
-      style="
-        position:fixed; top:20px; right:28px;
-        background:none; border:none;
-        color:#fff; font-size:2.5rem;
-        cursor:pointer; line-height:1;
-      ">
-      &times;
-    </button>
-  </div>
-</div>
+  @if (lightboxUrl) {
+    <div class="au-lightbox" (click)="closeLightbox()">
+      <img [src]="lightboxUrl" (click)="$event.stopPropagation()" />
+      <button class="au-lightbox__close" (click)="closeLightbox()">✕</button>
+    </div>
+  }
+
+</app-dashboard-shell>

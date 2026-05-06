@@ -1,0 +1,58 @@
+<div class="app-table-wrap">
+  <table class="app-table">
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th class="app-table__th">{{ col.header }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows; track $index) {
+        <tr class="app-table__row">
+          @for (col of columns; track col.key) {
+            <td class="app-table__td">
+              @switch (col.type) {
+                @case ('pill') {
+                  <app-pill [variant]="getPillVariant(col, getCellValue(row, col.key))">
+                    {{ getCellValue(row, col.key) }}
+                  </app-pill>
+                }
+                @case ('avatar-text') {
+                  <div class="app-table__user-cell">
+                    <app-avatar [name]="$any(getCellValue(row, col.key))" [colorIndex]="$any(($index % 5) + 1)" size="sm" />
+                    <div>
+                      <div class="app-table__user-name">{{ getCellValue(row, col.key) }}</div>
+                      @if (col.subKey) {
+                        <div class="app-table__user-sub">{{ getCellValue(row, col.subKey) }}</div>
+                      }
+                    </div>
+                  </div>
+                }
+                @case ('actions') {
+                  <div class="app-table__actions">
+                    @for (action of col.actions ?? []; track action.event) {
+                      <app-button
+                        [variant]="action.variant ?? 'secondary'"
+                        size="sm"
+                        (click)="emit(action.event, row)"
+                      >{{ action.label }}</app-button>
+                    }
+                  </div>
+                }
+                @default {
+                  {{ getCellValue(row, col.key) }}
+                }
+              }
+            </td>
+          }
+        </tr>
+      }
+      @if (rows.length === 0) {
+        <tr>
+          <td [attr.colspan]="columns.length" class="app-table__empty">No records found.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

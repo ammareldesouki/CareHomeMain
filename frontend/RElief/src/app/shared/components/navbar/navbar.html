@@ -1,36 +1,29 @@
-<nav class="relief-navbar">
-  <div class="nav-container">
-    
-    <a class="nav-brand" routerLink="/care-home">
-      <div class="logo-wrapper">
-        <img src="assets/logo.jpg" alt="Relief Logo">
-      </div>
-      <span>Relief</span>
+<nav class="app-topnav">
+  <div class="app-topnav__inner">
+    <a class="app-topnav__brand" routerLink="/care-home">
+      <span class="app-topnav__mark">R</span>
+      <span class="app-topnav__name">Relief</span>
     </a>
-    
-    <div class="nav-actions">
-      <a routerLink="/care-home" routerLinkActive="active-btn" [routerLinkActiveOptions]="{exact: true}" class="nav-item" title="Home">
-        <i class="fa-solid fa-house"></i>
-        <span class="nav-label">Home</span>
+
+    <div class="app-topnav__links">
+      <a routerLink="/care-home" routerLinkActive="app-topnav__link--active"
+         [routerLinkActiveOptions]="{exact: true}" class="app-topnav__link">
+        <i class="fa-solid fa-house"></i><span>Home</span>
       </a>
-      <a routerLink="/care-home/history" routerLinkActive="active-btn" class="nav-item" title="Offers">
-        <i class="fa-solid fa-list-check"></i>
-        <span class="nav-label">Offers</span>
+      <a routerLink="/care-home/history" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <i class="fa-solid fa-list-check"></i><span>Offers</span>
       </a>
-      <a routerLink="/care-home/notifications" routerLinkActive="active-btn" class="nav-item" title="Requests">
-        <i class="fa-solid fa-user-group"></i>
-        <span class="nav-label">Requests</span>
+      <a routerLink="/care-home/notifications" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <i class="fa-solid fa-user-group"></i><span>Requests</span>
       </a>
-      <a routerLink="/care-home/profile" routerLinkActive="active-btn" class="nav-item" title="Profile">
-        <i class="fa-solid fa-user"></i>
-        <span class="nav-label">Profile</span>
+      <a routerLink="/care-home/profile" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <i class="fa-solid fa-user"></i><span>Profile</span>
       </a>
-      <button (click)="onLogout()" class="logout-btn" title="Logout">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        <span class="nav-label">Logout</span>
-      </button>
     </div>
+
+    <button (click)="onLogout()" class="app-topnav__logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span>
+    </button>
   </div>
 </nav>
-
 <app-toast></app-toast>

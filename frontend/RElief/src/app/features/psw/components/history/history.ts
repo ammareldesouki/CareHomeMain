@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { PswNav } from "../../../../shared/components/psw-nav/psw-nav";
-import { Footer } from "../../../../shared/components/footer/footer";
-import { ToastComponent } from "../../../../shared/components/toast/toast";
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { PswApplicationsService } from '../../../../core/services/psw-applications.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CancelApplicationDto } from '../../../../core/models/api.models';
@@ -53,7 +53,7 @@ class PswApplicationPresenter {
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, RouterModule, PswNav, Footer, ToastComponent, DatePipe],
+  imports: [CommonModule, RouterModule, DatePipe, DashboardShellComponent],
   templateUrl: './history.html',
   styleUrl: './history.scss',
 })
@@ -62,6 +62,22 @@ export class History implements OnInit {
   isLoading = true;
   selectedApp: PswApplicationPresenter | null = null;
   activeTab: 'all' | 'pending' | 'accepted' | 'rejected' | 'cancelled' = 'all';
+
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard',        icon: '⌂', path: '/psw/dashboard' },
+    { type: 'link', label: 'Available offers', icon: '≡', path: '/psw/offers' },
+    { type: 'link', label: 'My applications',  icon: '⏱', path: '/psw/history' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile',          icon: '☺', path: '/psw/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'My Applications' },
+  ];
 
   constructor(
     private pswApplicationsService: PswApplicationsService,
@@ -127,5 +143,12 @@ export class History implements OnInit {
   get filteredApplications(): PswApplicationPresenter[] {
     if (this.activeTab === 'all') return this.applications;
     return this.applications.filter(a => a.statusLabel === this.activeTab);
+  }
+
+  pillClass(status: string): string {
+    if (status === 'accepted')  return 'pill--success';
+    if (status === 'pending')   return 'pill--warn';
+    if (status === 'rejected')  return 'pill--danger';
+    return 'pill--neutral';
   }
 }

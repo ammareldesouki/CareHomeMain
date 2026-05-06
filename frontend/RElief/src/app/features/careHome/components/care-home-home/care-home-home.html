@@ -1,240 +1,131 @@
-<app-navbar></app-navbar>
+<!-- Phase G: Care Home Create/Edit Offer — re-skinned. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="userName"
+  userRole="Care Home"
+  [userInitials]="userInitials"
+  [searchPlaceholder]="''"
+>
 
-<!-- Hero Section -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-content">
-      <h1>Perfect Home Care for Your Loved Ones</h1>
-      <p>We provide the best professional caregivers to take care of your family at home</p>
-      <a class="cta-button" (click)="scrollToRequestForm()">
-        <i class="fas fa-user-nurse"></i> Request a Caregiver 
-      </a>
+  <div class="pf-page-h">
+    <div>
+      <h1 class="pf-page-h__title">{{ editingOfferId ? 'Edit Job Offer' : 'Create Job Offer' }}</h1>
+      <p class="pf-page-h__sub">Provide details about the shifts and requirements</p>
     </div>
   </div>
-</section>
 
-<!-- Services Section -->
-<section class="services">
-  <div class="container">
-    <h2>Our Services</h2>
-    <div class="services-grid">
-      <div class="service-card" *ngFor="let service of services">
-        <i class="fas fa-3x" [class]="getServiceIcon(service.icon)"></i>
-        <h3>{{service.title}}</h3>
-        <p>{{service.description}}</p>
-      </div>
-    </div>
-  </div>
-</section>
+  <div class="pf-layout">
+    <div class="pf-col" style="max-width:800px; width:100%">
+      <form [formGroup]="requestForm" (ngSubmit)="submitRequest()" class="ch-form">
+        
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">General Information</h2>
+          </div>
+          <div class="pf-card__body">
+            <div class="pf-fields">
+              <div class="pf-field">
+                <label>Offer Title</label>
+                <input type="text" formControlName="title" class="pf-input" placeholder="e.g. Registered Nurse Needed for Weekend" />
+                <div class="ch-err" *ngIf="requestForm.get('title')?.touched && requestForm.get('title')?.invalid">Title is required.</div>
+              </div>
 
-<!-- How It Works -->
-<section class="how-it-works">
-  <div class="container">
-    <h2>How It Works</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-search-plus"></i>
-        </div>
-        <h3>Choose a Service</h3>
-        <p>Select from our range of services that fit your needs</p>
-      </div>
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-clipboard-list"></i>
-        </div>
-        <h3>Specify Requirements</h3>
-        <p>Tell us about your specific care needs and preferences</p>
-      </div>
-      <div class="step">
-        <div class="step-icon">
-          <i class="fas fa-user-check"></i>
-        </div>
-        <h3>Get Matched</h3>
-        <p>We'll contact you within 24 hours to discuss your needs</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Request Form (Create Job Offer) -->
-<section id="request-form" class="request-form">
-  <div class="container">
-    <h2>Create Request (Job Offer)</h2>
-    <div class="form-row">
-      <div class="form-col">
-        <form [formGroup]="requestForm" (ngSubmit)="submitRequest()">
-          <div class="form-group">
-            <label for="title">Title <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-heading"></i>
-              <input type="text" id="title" formControlName="title" placeholder="Offer title">
-            </div>
-            @if (requestForm.get('title')?.invalid && requestForm.get('title')?.touched) {
-              <div class="error-message">Title is required.</div>
-            }
-          </div>
-          <div class="form-group">
-            <label for="description">Description <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-align-left"></i>
-              <textarea id="description" formControlName="description" placeholder="Describe the role or requirements" rows="3"></textarea>
-            </div>
-            @if (requestForm.get('description')?.invalid && requestForm.get('description')?.touched) {
-              <div class="error-message">Description is required.</div>
-            }
-          </div>
-          <div class="form-group">
-            <label for="address">Address <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-map-marker-alt"></i>
-              <input type="text" id="address" formControlName="address" placeholder="Enter street address">
-            </div>
-            @if (requestForm.get('address')?.invalid && requestForm.get('address')?.touched) {
-              <div class="error-message">Address is required.</div>
-            }
-          </div>
-          
-          <div class="form-group">
-            <label for="position">Job Position <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-user-nurse"></i>
-              <input type="text" id="position" formControlName="position" placeholder="e.g., Registered Nurse, PCA, Home Support Worker">
-            </div>
-            @if (requestForm.get('position')?.invalid && requestForm.get('position')?.touched) {
-              <div class="error-message">Job position is required.</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="address2">Address Line 2 <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-map-marker-alt"></i>
-              <input type="text" id="address2" formControlName="address2" placeholder="Apt/Unit/Street Line 2">
-            </div>
-            @if (requestForm.get('address2')?.invalid && requestForm.get('address2')?.touched) {
-              <div class="error-message">Address line 2 is required.</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="city">City <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-city"></i>
-              <input type="text" id="city" formControlName="city" placeholder="Enter city">
-            </div>
-            @if (requestForm.get('city')?.invalid && requestForm.get('city')?.touched) {
-              <div class="error-message">City is required.</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="province">Province/State <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-map"></i>
-              <input type="text" id="province" formControlName="province" placeholder="Enter province/state">
-            </div>
-            @if (requestForm.get('province')?.invalid && requestForm.get('province')?.touched) {
-              <div class="error-message">Province/state is required.</div>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="postalCode">Postal Code <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope"></i>
-              <input type="text" id="postalCode" formControlName="postalCode" placeholder="e.g., M5V 2T6">
-            </div>
-            @if (requestForm.get('postalCode')?.invalid && requestForm.get('postalCode')?.touched) {
-              <div class="error-message">Postal code is required.</div>
-            }
-          </div>
-          
-          <div class="form-group">
-            <label for="hourlyRate">Hourly Rate <span class="required">*</span></label>
-            <div class="input-wrapper">
-              <i class="fas fa-coins"></i>
-              <input type="number" id="hourlyRate" formControlName="hourlyRate" placeholder="Enter rate (min 10)" min="10" step="0.01">
-            </div>
-            @if (requestForm.get('hourlyRate')?.errors?.['min'] && requestForm.get('hourlyRate')?.touched) {
-              <div class="error-message">Hourly rate must be at least 10.</div>
-            }
-            @if (requestForm.get('hourlyRate')?.errors?.['required'] && requestForm.get('hourlyRate')?.touched) {
-              <div class="error-message">Hourly rate is required.</div>
-            }
-          </div>
-
-          <div class="shifts-section">
-            <div class="shifts-header">
-              <label>Shifts <span class="required">*</span></label>
-              <button type="button" class="add-shift-btn" (click)="addShift()">
-                <i class="fas fa-plus"></i> Add shift
-              </button>
-            </div>
-            <div formArrayName="shifts" class="shifts-list">
-              @for (shift of shifts.controls; track $index) {
-                <div class="shift-block" [formGroupName]="$index">
-                  <div class="shift-row">
-                    <div class="form-group compact">
-                      <label>Date</label>
-                      <input type="date" formControlName="date">
-                    </div>
-                    <div class="form-group compact">
-                      <label>Start</label>
-                      <input type="time" formControlName="startTime">
-                    </div>
-                    <div class="form-group compact">
-                      <label>End</label>
-                      <input type="time" formControlName="endTime">
-                    </div>
-                    @if (shifts.length > 1) {
-                      <button type="button" class="remove-shift-btn" (click)="removeShift($index)" title="Remove shift">
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
-                    }
-                  </div>
+              <div class="pf-field-row-2">
+                <div class="pf-field">
+                  <label>Position</label>
+                  <input type="text" formControlName="position" class="pf-input" placeholder="e.g. PSW, RN" />
+                  <div class="ch-err" *ngIf="requestForm.get('position')?.touched && requestForm.get('position')?.invalid">Position is required.</div>
                 </div>
-              }
+                <div class="pf-field">
+                  <label>Hourly Rate (£)</label>
+                  <input type="number" formControlName="hourlyRate" class="pf-input" placeholder="e.g. 25" />
+                  <div class="ch-err" *ngIf="requestForm.get('hourlyRate')?.touched && requestForm.get('hourlyRate')?.errors?.['min']">Rate must be at least £10.</div>
+                </div>
+              </div>
+
+              <div class="pf-field">
+                <label>Description</label>
+                <textarea formControlName="description" class="pf-input" style="height:120px; padding:12px 16px; resize:vertical" placeholder="Describe the responsibilities and requirements..."></textarea>
+                <div class="ch-err" *ngIf="requestForm.get('description')?.touched && requestForm.get('description')?.invalid">Description is required.</div>
+              </div>
             </div>
           </div>
+        </section>
 
-          <button type="submit" class="submit-btn" [disabled]="requestForm.invalid || isSubmitting">
-            <i class="fas fa-paper-plane"></i> {{ isSubmitting ? 'Submitting...' : 'Submit Request' }}
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">Location</h2>
+          </div>
+          <div class="pf-card__body">
+            <div class="pf-fields">
+              <div class="pf-field">
+                <label>Street Address</label>
+                <input type="text" formControlName="address" class="pf-input" />
+                <div class="ch-err" *ngIf="requestForm.get('address')?.touched && requestForm.get('address')?.invalid">Address is required.</div>
+              </div>
+              <div class="pf-field-row-2">
+                <div class="pf-field">
+                  <label>Apt / Unit (Optional)</label>
+                  <input type="text" formControlName="address2" class="pf-input" />
+                </div>
+                <div class="pf-field">
+                  <label>City</label>
+                  <input type="text" formControlName="city" class="pf-input" />
+                  <div class="ch-err" *ngIf="requestForm.get('city')?.touched && requestForm.get('city')?.invalid">City is required.</div>
+                </div>
+              </div>
+              <div class="pf-field-row-2">
+                <div class="pf-field">
+                  <label>Province / State</label>
+                  <input type="text" formControlName="province" class="pf-input" />
+                  <div class="ch-err" *ngIf="requestForm.get('province')?.touched && requestForm.get('province')?.invalid">Province is required.</div>
+                </div>
+                <div class="pf-field">
+                  <label>Postal Code</label>
+                  <input type="text" formControlName="postalCode" class="pf-input" />
+                  <div class="ch-err" *ngIf="requestForm.get('postalCode')?.touched && requestForm.get('postalCode')?.invalid">Postal Code is required.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="pf-card">
+          <div class="pf-card__head" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="pf-card__title">Shifts</h2>
+            <button type="button" class="pf-btn pf-btn--secondary pf-btn--sm" (click)="addShift()">+ Add Shift</button>
+          </div>
+          <div class="pf-card__body" formArrayName="shifts">
+            <div class="pf-fields">
+              <div class="ch-shift-row" *ngFor="let shift of shifts.controls; let i = index" [formGroupName]="i">
+                <div class="pf-field" style="flex:2">
+                  <label>Date</label>
+                  <input type="date" formControlName="date" class="pf-input" />
+                </div>
+                <div class="pf-field" style="flex:1">
+                  <label>Start Time</label>
+                  <input type="time" formControlName="startTime" class="pf-input" />
+                </div>
+                <div class="pf-field" style="flex:1">
+                  <label>End Time</label>
+                  <input type="time" formControlName="endTime" class="pf-input" />
+                </div>
+                <button type="button" class="ch-shift-row__rm" (click)="removeShift(i)" *ngIf="shifts.length > 1" title="Remove shift">✕</button>
+              </div>
+              <div class="ch-err" *ngIf="shifts.invalid && shifts.touched">Please fill all shift details correctly.</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="pf-actions">
+          <button type="submit" class="pf-btn pf-btn--primary pf-btn--lg" [disabled]="requestForm.invalid || isSubmitting">
+            {{ isSubmitting ? 'Saving…' : (editingOfferId ? 'Update Offer' : 'Create Offer') }}
           </button>
-        </form>
-      </div>
+        </div>
+
+      </form>
     </div>
   </div>
-</section>
 
-<!-- Testimonials -->
-<section class="testimonials">
-  <div class="container">
-    <h2>What Our Clients Say</h2>
-    <div class="testimonials-grid">
-      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
-        <div class="quote-icon">
-          <i class="fas fa-comment-dots"></i>
-        </div>
-        <div class="rating">
-          <span *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= testimonial.rating">
-            <i class="fas fa-star"></i>
-          </span>
-        </div>
-        <p class="testimonial-content">{{testimonial.content}}</p>
-        <div class="testimonial-author">
-          <div class="author-avatar">
-            <i class="fas fa-user-circle"></i>
-          </div>
-          <div class="author-info">
-            <strong>{{testimonial.name}}</strong>
-            <span>{{testimonial.role}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<app-footer></app-footer>
-
+</app-dashboard-shell>

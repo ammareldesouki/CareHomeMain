@@ -1,44 +1,33 @@
-<nav class="relief-navbar">
+<nav class="app-topnav">
   <app-toast></app-toast>
-  <div class="nav-container">
-    
-    <a class="nav-brand" routerLink="/psw">
-      <div class="logo-wrapper">
-        <img src="assets/logo.jpg" alt="Relief Logo">
-      </div>
-      <span>Relief</span>
+  <div class="app-topnav__inner">
+    <a class="app-topnav__brand" routerLink="/psw">
+      <span class="app-topnav__mark">R</span>
+      <span class="app-topnav__name">Relief</span>
     </a>
 
-    <div class="nav-actions">
-      <a routerLink="/psw/offers" routerLinkActive="active-btn" class="nav-item" title="Offers">
-        <i class="fa-solid fa-briefcase"></i>
-        <span class="nav-label">Offers</span>
+    <div class="app-topnav__links">
+      <a routerLink="/psw/offers" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <i class="fa-solid fa-briefcase"></i><span>Offers</span>
       </a>
-      <a routerLink="/psw/history" routerLinkActive="active-btn" class="nav-item" title="History">
-        <i class="fa-solid fa-list"></i>
-        <span class="nav-label">History</span>
+      <a routerLink="/psw/history" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <i class="fa-solid fa-list"></i><span>History</span>
       </a>
-
-
-      <a routerLink="/psw/profile" routerLinkActive="active-btn" class="nav-item" title="Profile">
-        <div class="profile-icon-wrapper" style="position: relative; display: inline-block;">
+      <a routerLink="/psw/profile" routerLinkActive="app-topnav__link--active" class="app-topnav__link">
+        <span class="app-topnav__profile-wrap">
           <i class="fa-solid fa-user-gear"></i>
           @if (userProfile$ | async; as profile) {
             @if (profile.verificationStatus === 'None' || profile.verificationStatus === 'Rejected') {
-              <span class="profile-warning-badge">
-                <i class="fa-solid fa-exclamation"></i>
-              </span>
+              <span class="app-topnav__warn-dot"></span>
             }
           }
-        </div>
-        <span class="nav-label">Profile</span>
+        </span>
+        <span>Profile</span>
       </a>
-
-      <div class="divider"></div>
-      <button (click)="onLogout()" class="logout-btn" title="Logout">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        <span class="nav-label">Logout</span>
-      </button>
     </div>
+
+    <button (click)="onLogout()" class="app-topnav__logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span>
+    </button>
   </div>
 </nav>

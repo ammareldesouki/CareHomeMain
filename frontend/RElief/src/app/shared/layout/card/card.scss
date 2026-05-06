@@ -1,0 +1,46 @@
+.app-card {
+  background: var(--ink-0);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-card__body {
+  padding: var(--s-5);
+  flex: 1;
+}
+
+// Head + foot slots — consumers apply these classes to their projected content
+::ng-deep .app-card-head {
+  padding: 16px var(--s-5);
+  border-bottom: 1px solid var(--ink-100);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+
+  h4, .app-card-head__title {
+    margin: 0;
+    font-size: var(--t-sm);
+    font-weight: 700;
+    color: var(--ink-900);
+  }
+
+  .app-card-head__meta {
+    margin-left: auto;
+    font-size: var(--t-xs);
+    color: var(--ink-500);
+  }
+}
+
+::ng-deep .app-card-foot {
+  padding: 12px var(--s-5);
+  border-top: 1px solid var(--ink-100);
+  font-size: var(--t-xs);
+  color: var(--ink-500);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}

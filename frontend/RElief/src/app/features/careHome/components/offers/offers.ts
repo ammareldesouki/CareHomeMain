@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { Navbar } from '../../../../shared/components/navbar/navbar';
-import { Footer } from '../../../../shared/components/footer/footer';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { OffersService } from '../../../../core/services/offers.service';
 import { ApplicationsService } from '../../../../core/services/applications.service';
 
@@ -36,11 +37,27 @@ interface Applicant {
 @Component({
   selector: 'app-offers',
   standalone: true,
-  imports: [CommonModule, RouterModule, Navbar, Footer],
+  imports: [CommonModule, RouterModule, DashboardShellComponent],
   templateUrl: './offers.html',
   styleUrls: ['./offers.scss'],
 })
 export class Offers implements OnInit {
+  // Shell config
+  userName = '';
+  userInitials = '';
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Workspace' },
+    { type: 'link', label: 'Dashboard', icon: '⌂', path: '/care-home' },
+    { type: 'link', label: 'Create offer', icon: '⊕', path: '/care-home/create-offer' },
+    { type: 'link', label: 'Notifications', icon: '🔔', path: '/care-home/notifications' },
+    { type: 'section', label: 'Account' },
+    { type: 'link', label: 'Profile', icon: '☺', path: '/care-home/profile' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Workspace' },
+    { label: 'My Posted Offers' },
+  ];
+
   offers: OfferItem[] = [];
   loading = true;
   error: string | null = null;

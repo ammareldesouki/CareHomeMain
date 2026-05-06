@@ -1,182 +1,186 @@
-<div class="admin-shell">
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  userName="Admin"
+  userRole="Super admin"
+  userInitials="A"
+  searchPlaceholder="Search users, care homes, offers, applications…"
+>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
-      <div>
-        <div class="logo-text">PSW Admin</div>
-        <div class="logo-sub">Control Panel</div>
-      </div>
+  <!-- Page header -->
+  <div class="ad-page-h">
+    <div>
+      <h1 class="ad-page-h__title">Platform overview</h1>
+      <p class="ad-page-h__sub">System health, pending moderation, and growth across all care homes.</p>
     </div>
-
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">Main</div>
-      <div class="nav-item">
-        <i class="fa-solid fa-gauge-high"></i>
-        <span>Dashboard</span>
-      </div>
-      <div class="nav-item">
-        <i class="fa-solid fa-user-check"></i>
-        <span>Verifications</span>
-      </div>
-      <div class="nav-item">
-        <i class="fa-solid fa-file-signature"></i>
-        <span>Applications</span>
-      </div>
-
-      <div class="nav-section-label">Manage</div>
-      <div class="nav-item">
-        <i class="fa-solid fa-briefcase"></i>
-        <span>Offers</span>
-      </div>
-      <div class="nav-item">
-        <i class="fa-solid fa-users"></i>
-        <span>Users</span>
-      </div>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="user-avatar">AD</div>
-      <div class="user-info">
-        <span class="user-name">Admin</span>
-        <span class="user-role">Super Admin</span>
-      </div>
-      <button class="logout-side-btn" (click)="onLogout()" title="Logout">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-      </button>
+    <div class="ad-page-h__actions">
+      <button class="ad-btn ad-btn--secondary" routerLink="/admin/users">↓ Export</button>
+      <button class="ad-btn ad-btn--primary">+ Invite admin</button>
     </div>
-  </aside>
+  </div>
 
-  <!-- Main -->
-  <div class="main">
+  <!-- Error banner -->
+  @if (loadError) {
+    <div class="ad-alert">
+      ⚠ {{ loadError }}
+    </div>
+  }
 
-    <!-- Welcome Header -->
-    <div class="welcome-header">
-      <div class="welcome-content">
-        <div class="welcome-badge">
-          <i class="fa-solid fa-shield-halved"></i>
-          Admin Panel
+  <!-- KPI cards -->
+  <div class="ad-kpis">
+    <app-stat-card
+      label="Users"
+      icon="☺"
+      [value]="isLoading ? '—' : stats.users.toString()"
+      delta="+4 this week"
+      deltaDirection="up"
+      tone="brand"
+    />
+    <app-stat-card
+      label="Pending verifications"
+      icon="✓"
+      [value]="isLoading ? '—' : stats.verifications.toString()"
+      delta="action required"
+      deltaDirection="neutral"
+      tone="warn"
+    />
+    <app-stat-card
+      label="Pending applications"
+      icon="⏱"
+      [value]="isLoading ? '—' : stats.applications.toString()"
+      delta="awaiting review"
+      deltaDirection="neutral"
+      tone="warn"
+    />
+    <app-stat-card
+      label="Active offers"
+      icon="≡"
+      [value]="isLoading ? '—' : stats.offers.toString()"
+      delta="+2 vs last week"
+      deltaDirection="up"
+      tone="success"
+    />
+  </div>
+
+  <!-- Content split -->
+  <div class="ad-split">
+
+    <!-- Users table -->
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <h3 class="ds-card__title">All users</h3>
+        <div class="ad-tabs">
+          <button class="ad-tabs__btn ad-tabs__btn--on">All</button>
+          <button class="ad-tabs__btn" [routerLink]="['/admin/users']">PSW</button>
+          <button class="ad-tabs__btn" [routerLink]="['/admin/users']">Care home</button>
+          <button class="ad-tabs__btn" [routerLink]="['/admin/users']">Individual</button>
         </div>
-        <h1>Welcome back, Admin 👋</h1>
-        <p>Manage PSW verifications, applications, and offers from here.</p>
+        <span class="ds-card__meta">{{ isLoading ? '—' : stats.users }} users</span>
       </div>
-      <div class="welcome-actions">
-        <button type="button" class="logout-btn" (click)="onLogout()" title="Logout">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          <span>Logout</span>
-        </button>
+      <div class="ds-card__body">
+        @if (isLoading) {
+          <div class="ad-skeleton ad-skeleton--table"></div>
+        } @else if (userRows.length === 0) {
+          <div class="ad-empty">No users found.</div>
+        } @else {
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Name / label</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of userRows; track u.email) {
+                <tr>
+                  <td>
+                    <div class="ad-ucell">
+                      <div class="ad-av" [ngClass]="'ad-av--b' + u.colorIndex">{{ u.initials }}</div>
+                      <div>
+                        <div class="ad-ucell__name">{{ u.name }}</div>
+                        <div class="ad-ucell__sub">{{ u.subLabel }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td>
+                    <span class="ad-role-pill" [ngClass]="rolePillClass(u.role)">
+                      {{ rolePillLabel(u.role) }}
+                    </span>
+                  </td>
+                  <td>{{ formatDate(u.joined) }}</td>
+                  <td class="ad-action-cell">
+                    <button class="ad-btn ad-btn--secondary ad-btn--sm" [routerLink]="['/admin/users']">View</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
       </div>
-      <div class="header-decoration">
-        <div class="deco-circle c1"></div>
-        <div class="deco-circle c2"></div>
-        <div class="deco-circle c3"></div>
+      <div class="ds-card__foot">
+        Showing {{ userRows.length }} of {{ stats.users }} ·
+        <a class="ds-card__foot-link" routerLink="/admin/users">Open users →</a>
       </div>
     </div>
 
-    <div class="content">
+    <!-- Right rail -->
+    <div class="ad-right-col">
 
-      <div *ngIf="loadError" class="dashboard-error">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        {{ loadError }}
+      <!-- Verification queue -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Verification queue</h3>
+          @if (stats.verifications > 0) {
+            <span class="pill pill--warn"><span class="pill__dot"></span>{{ stats.verifications }} pending</span>
+          }
+        </div>
+        <div class="ds-card__body ad-verif-list">
+          @if (isLoading) {
+            <div class="ad-skeleton"></div>
+            <div class="ad-skeleton"></div>
+          } @else if (verifRows.length === 0) {
+            <div class="ad-empty ad-empty--sm">🎉 All caught up! No pending verifications.</div>
+          } @else {
+            @for (v of verifRows; track v.pswId) {
+              <div class="ad-verif-item">
+                <div class="ad-av" [ngClass]="'ad-av--b' + v.colorIndex">{{ v.initials }}</div>
+                <div class="ad-verif-item__info">
+                  <div class="ad-verif-item__name">{{ v.name }}</div>
+                  <div class="ad-verif-item__meta">{{ v.docType }} · {{ v.submittedAgo }}</div>
+                </div>
+                <button class="ad-btn ad-btn--success ad-btn--sm">Approve</button>
+              </div>
+            }
+          }
+        </div>
+        @if (verifRows.length > 0) {
+          <div class="ds-card__foot">
+            <a class="ds-card__foot-link" routerLink="/admin/verifications">All verifications →</a>
+          </div>
+        }
       </div>
 
-      <!-- Statistics -->
-      <p class="section-label">Overview</p>
-      <div class="stats-grid">
-        <a routerLink="/admin/verifications" class="stat-card verifications">
-          <div class="stat-card-top">
-            <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
-            <span class="stat-tag">Pending</span>
-          </div>
-          <span class="stat-number">{{ isLoading ? '—' : stats.verifications }}</span>
-          <span class="stat-label">Pending Verifications</span>
-          <div class="stat-footer">View All <i class="fa-solid fa-arrow-right"></i></div>
-        </a>
-
-        <a routerLink="/admin/applications" class="stat-card applications">
-          <div class="stat-card-top">
-            <div class="stat-icon"><i class="fa-solid fa-file-signature"></i></div>
-            <span class="stat-tag">Pending</span>
-          </div>
-          <span class="stat-number">{{ isLoading ? '—' : stats.applications }}</span>
-          <span class="stat-label">Pending Applications</span>
-          <div class="stat-footer">View All <i class="fa-solid fa-arrow-right"></i></div>
-        </a>
-
-        <a routerLink="/admin/offers" class="stat-card offers">
-          <div class="stat-card-top">
-            <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
-            <span class="stat-tag">Total</span>
-          </div>
-          <span class="stat-number">{{ isLoading ? '—' : stats.offers }}</span>
-          <span class="stat-label">Total Offers</span>
-          <div class="stat-footer">View All <i class="fa-solid fa-arrow-right"></i></div>
-        </a>
-
-        <a routerLink="/admin/users" class="stat-card users">
-          <div class="stat-card-top">
-            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-            <span class="stat-tag">Total</span>
-          </div>
-          <span class="stat-number">{{ isLoading ? '—' : stats.users }}</span>
-          <span class="stat-label">Total Users</span>
-          <div class="stat-footer">View All <i class="fa-solid fa-arrow-right"></i></div>
-        </a>
-      </div>
-
-      <!-- Quick Actions -->
-      <p class="section-label">Quick Actions</p>
-      <div class="admin-links">
-        <a routerLink="/admin/verifications" class="admin-card">
-          <div class="card-icon verifications">
-            <i class="fa-solid fa-user-shield"></i>
-          </div>
-          <div class="card-content">
-            <h2>Verifications</h2>
-            <p>Review PSW documents and verify accounts</p>
-          </div>
-          <div class="card-badge" *ngIf="stats.verifications > 0">{{ stats.verifications }}</div>
-          <i class="fa-solid fa-chevron-right card-arrow"></i>
-        </a>
-
-        <a routerLink="/admin/applications" class="admin-card">
-          <div class="card-icon applications">
-            <i class="fa-solid fa-clipboard-list"></i>
-          </div>
-          <div class="card-content">
-            <h2>Applications</h2>
-            <p>Approve or reject job applications</p>
-          </div>
-          <div class="card-badge" *ngIf="stats.applications > 0">{{ stats.applications }}</div>
-          <i class="fa-solid fa-chevron-right card-arrow"></i>
-        </a>
-
-        <a routerLink="/admin/offers" class="admin-card">
-          <div class="card-icon offers">
-            <i class="fa-solid fa-handshake"></i>
-          </div>
-          <div class="card-content">
-            <h2>Offers</h2>
-            <p>View all job offers in the system</p>
-          </div>
-          <i class="fa-solid fa-chevron-right card-arrow"></i>
-        </a>
-
-        <a routerLink="/admin/users" class="admin-card">
-          <div class="card-icon users">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div class="card-content">
-            <h2>Users</h2>
-            <p>Browse users, PSW directory, and profiles</p>
-          </div>
-          <i class="fa-solid fa-chevron-right card-arrow"></i>
-        </a>
+      <!-- Recent activity -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Recent activity</h3>
+        </div>
+        <div class="ad-timeline">
+          @for (row of activityRows; track row.when) {
+            <div class="ad-tl-item">
+              <div class="ad-tl-item__ic" [ngClass]="'ad-tl-item__ic--' + row.tone">{{ row.icon }}</div>
+              <div class="ad-tl-item__t" [innerHTML]="row.text"></div>
+              <div class="ad-tl-item__when">{{ row.when }}</div>
+            </div>
+          }
+        </div>
       </div>
 
     </div>
   </div>
-</div>
+
+</app-dashboard-shell>

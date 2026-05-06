@@ -1,259 +1,188 @@
-<app-psw-nav></app-psw-nav>
-<app-toast></app-toast>
+<!-- Phase F: PSW Profile — re-skinned. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="profile.name || userName"
+  userRole="Personal Support Worker"
+  [userInitials]="getInitials(profile.name || userName)"
+  [searchPlaceholder]="''"
+>
 
-<div class="profile-page">
-  <div class="profile-header">
-    <div class="header-content">
-      <div class="header-info">
-        <h1>My Profile</h1>
-        <p>Manage your personal information and settings</p>
+  <div class="pf-page-h">
+    <div>
+      <h1 class="pf-page-h__title">My Profile</h1>
+      <p class="pf-page-h__sub">Manage your personal information and verification documents</p>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="pf-skeleton"></div>
+  }
+
+  @if (!isLoading) {
+    <div class="pf-layout">
+      <!-- Left col: General info -->
+      <div class="pf-col">
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">Personal Details</h2>
+          </div>
+          <div class="pf-card__body">
+            
+            <div class="pf-av-picker">
+              <div class="pf-av-picker__img-wrap">
+                @if (profile.profileImage) {
+                  <img [src]="profile.profileImage" alt="Profile Photo" />
+                } @else {
+                  <span>{{ getInitials(profile.name) }}</span>
+                }
+              </div>
+              <div class="pf-av-picker__actions">
+                <p>Profile Photo</p>
+                <label class="pf-btn pf-btn--secondary pf-btn--sm">
+                  Upload new
+                  <input type="file" hidden accept="image/*" (change)="onPhotoSelected($event)">
+                </label>
+              </div>
+            </div>
+
+            <div class="pf-fields">
+              <div class="pf-field">
+                <label>First Name</label>
+                <input type="text" [(ngModel)]="editModel.firstName" class="pf-input" />
+              </div>
+              <div class="pf-field">
+                <label>Last Name</label>
+                <input type="text" [(ngModel)]="editModel.lastName" class="pf-input" />
+              </div>
+              <div class="pf-field">
+                <label>Phone Number</label>
+                <input type="tel" [(ngModel)]="editModel.phoneNumber" class="pf-input" />
+              </div>
+            </div>
+            
+          </div>
+        </section>
+
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">Address</h2>
+          </div>
+          <div class="pf-card__body">
+            <div class="pf-fields">
+              <div class="pf-field">
+                <label>Street Address</label>
+                <input type="text" [(ngModel)]="editModel.address.street" class="pf-input" />
+              </div>
+              <div class="pf-field-row-2">
+                <div class="pf-field">
+                  <label>Apt / Unit</label>
+                  <input type="number" [(ngModel)]="editModel.address.apartmentNumber" class="pf-input" />
+                </div>
+                <div class="pf-field">
+                  <label>City</label>
+                  <input type="text" [(ngModel)]="editModel.address.city" class="pf-input" />
+                </div>
+              </div>
+              <div class="pf-field-row-2">
+                <div class="pf-field">
+                  <label>Province / State</label>
+                  <input type="text" [(ngModel)]="editModel.address.state" class="pf-input" />
+                </div>
+                <div class="pf-field">
+                  <label>Postal Code</label>
+                  <input type="text" [(ngModel)]="editModel.address.postalCode" class="pf-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="pf-actions">
+          <button class="pf-btn pf-btn--primary pf-btn--lg" (click)="saveProfile()" [disabled]="isSaving">
+            {{ isSaving ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Right col: Verification & Stats -->
+      <div class="pf-col pf-col--side">
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">Verification Status</h2>
+          </div>
+          <div class="pf-card__body pf-card__body--center">
+            <div class="pf-status-badge" [ngClass]="'pf-status-badge--' + getVerificationClass()">
+              @if (isVerified) { ✓ } @else if (verificationStatus === 'Pending') { ◷ } @else if (verificationStatus === 'Rejected') { ✕ } @else { ! }
+            </div>
+            <h3 class="pf-status-text">{{ getVerificationLabel() }}</h3>
+            @if (rejectionReason && verificationStatus === 'Rejected') {
+              <div class="pf-alert pf-alert--danger">
+                <strong>Reason:</strong> {{ rejectionReason }}
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">My Documents</h2>
+          </div>
+          <div class="pf-card__body">
+            @if (docsLoading) {
+              <div style="padding:20px; text-align:center; color:var(--ink-500)"><div class="pf-spinner"></div><p>Loading documents…</p></div>
+            } @else {
+              @if (!hasFiles) {
+                <p style="color:var(--ink-500); font-size:13px;">No documents uploaded. Please complete your verification process to upload documents.</p>
+              } @else {
+                <ul class="pf-doc-list">
+                  @for (doc of documentFiles; track doc.name) {
+                    @if (doc.rawFile) {
+                      <li class="pf-doc-item">
+                        <span class="pf-doc-item__name">{{ doc.name }}</span>
+                        @if (doc.loading) { <span class="pf-doc-item__status">Loading…</span> }
+                        @else if (doc.error) { <span class="pf-doc-item__status pf-doc-item__status--err">Error</span> }
+                        @else if (doc.url) { <button class="pf-btn pf-btn--secondary pf-btn--sm" (click)="openLightbox(doc.url)">View</button> }
+                      </li>
+                    }
+                  }
+                </ul>
+              }
+            }
+          </div>
+        </section>
+
+        <section class="pf-card">
+          <div class="pf-card__head">
+            <h2 class="pf-card__title">Statistics</h2>
+          </div>
+          <div class="pf-card__body">
+            <div class="pf-stats-grid">
+              <div class="pf-stat">
+                <span class="pf-stat__v">{{ getApplicationsCount() }}</span>
+                <span class="pf-stat__l">Total Apps</span>
+              </div>
+              <div class="pf-stat">
+                <span class="pf-stat__v" style="color:var(--success-600)">{{ getAcceptedCount() }}</span>
+                <span class="pf-stat__l">Accepted</span>
+              </div>
+              <div class="pf-stat">
+                <span class="pf-stat__v" style="color:var(--warn-600)">{{ getPendingCount() }}</span>
+                <span class="pf-stat__l">Pending</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
-    <div class="header-pattern"></div>
-  </div>
-
-  <div class="profile-container">
-    @if (isLoading) {
-      <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Loading profile...</p>
-      </div>
-    } @else {
-      <!-- Main Profile Card -->
-      <div class="profile-main-card">
-        <div class="profile-header-section">
-          <div class="profile-avatar-wrapper">
-            <div class="profile-avatar">
-              <img
-                *ngIf="profile.profileImage; else initialsTpl"
-                [src]="profile.profileImage"
-                [alt]="profile.name"
-                class="avatar-img"
-                style="cursor:pointer"
-                (click)="openLightbox(profile.profileImage)"
-              />
-              <ng-template #initialsTpl>
-                <div class="avatar-initials">
-                  {{ getInitials(profile.name || 'P S') }}
-                </div>
-              </ng-template>
-            </div>
-            <button class="change-avatar-btn" (click)="photoInput.click()">
-              <i class="fas fa-camera"></i>
-            </button>
-            <input type="file" #photoInput hidden (change)="onPhotoSelected($event)">
-          </div>
-          
-          <div class="profile-header-info">
-            <div class="name-row">
-              <h2 class="profile-name">{{ profile.name || 'Your Name' }}</h2>
-              <span class="status-badge" [ngClass]="getVerificationClass()">
-                <i class="fas" [ngClass]="{
-                  'fa-check-circle': verificationStatus === 'Approved',
-                  'fa-clock': verificationStatus === 'pending',
-                  'fa-exclamation-circle': verificationStatus === 'rejected' || !verificationStatus
-                }"></i> {{ getVerificationLabel() }}
-              </span>
-            </div>
-
-            @if (!isProfileComplete && verificationStatus !== 'Approved' && verificationStatus !== 'Pending' && verificationStatus !== 'Rejected') {
-              <div class="profile-alert alert-warning">
-                <div class="alert-icon">
-                  <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="alert-content">
-                  <p><strong>Profile Incomplete</strong></p>
-                  <p>Complete your PSW profile and upload required documents to apply for offers.</p>
-                  <a routerLink="/psw/complete-profile" class="btn btn-primary btn-sm">
-                    <i class="fas fa-user-plus"></i> Complete Profile
-                  </a>
-                </div>
-              </div>
-            }
-
-            <div class="profile-alert alert-danger" *ngIf="verificationStatus === 'Rejected' && rejectionReason">
-              <div class="alert-icon">
-                <i class="fas fa-circle-xmark"></i>
-              </div>
-              <div class="alert-content">
-                <p><strong>Your profile was rejected</strong></p>
-                <p>Reason: {{ rejectionReason }}</p>
-                <a routerLink="/psw/complete-profile" class="btn btn-danger btn-sm">Resubmit Documents →</a>
-              </div>
-            </div>
-
-            @if (isProfileComplete && (verificationStatus === 'pending' || verificationStatus === 'Pending')) {
-              <div class="profile-alert alert-warning">
-                <div class="alert-icon">
-                  <i class="fas fa-clock"></i>
-                </div>
-                <div class="alert-content">
-                  <p><strong>Verification Pending</strong></p>
-                  <p>Your profile is under review. You cannot apply for offers until approved.</p>
-                </div>
-              </div>
-            }
-
-            <p class="profile-email">
-              <i class="fas fa-envelope"></i> {{ profile.email }}
-            </p>
-            <div class="profile-meta">
-              <span class="meta-item">
-                <i class="fas fa-map-marker-alt"></i> {{ profile.location || 'Location not set' }}
-              </span>
-              <span class="meta-item">
-                <i class="fas fa-calendar-alt"></i> Member since {{ profile.joinDate || 'N/A' }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="edit-profile-card mt-4">
-        <div class="card-header">
-          <h3><i class="fas fa-file-shield"></i> Verification Documents</h3>
-        </div>
-        <div class="docs-list p-3">
-          @if (docsLoading) {
-            <div class="docs-grid">
-              @for (item of [1,2,3,4,5,6]; track item) {
-                <div class="doc-card doc-card--skeleton">
-                  <div class="skeleton-icon"></div>
-                  <div class="skeleton-text"></div>
-                </div>
-              }
-            </div>
-          } @else if (!hasAnyDoc) {
-            <p class="text-muted text-center py-3">
-              <i class="fas fa-folder-open me-2"></i>No documents uploaded yet.
-            </p>
-          } @else {
-            <div class="docs-grid">
-              @for (doc of documentFiles; track doc.name) {
-                @if (doc.rawFile) {
-                  <div class="doc-card">
-                    <div class="doc-icon">
-                      <i class="fas {{ doc.icon }}"></i>
-                    </div>
-                    <p class="doc-name">{{ doc.name }}</p>
-                    @if (doc.loading) {
-                      <span class="doc-status loading">
-                        <i class="fas fa-spinner fa-spin"></i> Loading...
-                      </span>
-                    } @else if (doc.error) {
-                      <span class="doc-status error">
-                        <i class="fas fa-exclamation-circle"></i> Failed
-                      </span>
-                    } @else if (doc.url) {
-                      <a [href]="doc.url" target="_blank" rel="noopener" class="btn-view">
-                        <i class="fas fa-eye"></i> View
-                      </a>
-                    } @else {
-                      <span class="doc-status error">No URL</span>
-                    }
-                  </div>
-                }
-              }
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Edit Form -->
-      <div class="edit-profile-card">
-        <div class="card-header">
-          <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
-        </div>
-        <form class="edit-form" (ngSubmit)="saveProfile()">
-          <div class="form-section">
-            <h4>Personal Information</h4>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>First Name</label>
-                <input type="text" name="firstName" [(ngModel)]="editModel.firstName" />
-              </div>
-              <div class="form-group">
-                <label>Last Name</label>
-                <input type="text" name="lastName" [(ngModel)]="editModel.lastName" />
-              </div>
-              <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" name="phoneNumber" [(ngModel)]="editModel.phoneNumber" />
-              </div>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <h4>Address</h4>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Apartment</label>
-                <input type="text" name="apartmentNumber" [(ngModel)]="editModel.address.apartmentNumber" />
-              </div>
-              <div class="form-group">
-                <label>Street</label>
-                <input type="text" name="street" [(ngModel)]="editModel.address.street" />
-              </div>
-              <div class="form-group">
-                <label>City</label>
-                <input type="text" name="city" [(ngModel)]="editModel.address.city" />
-              </div>
-              <div class="form-group">
-                <label>State</label>
-                <input type="text" name="state" [(ngModel)]="editModel.address.state" />
-              </div>
-              <div class="form-group">
-                <label>Postal Code</label>
-                <input type="text" name="postalCode" [(ngModel)]="editModel.address.postalCode" />
-              </div>
-              <div class="form-group">
-                <label>Country</label>
-                <input type="text" name="country" [(ngModel)]="editModel.address.country" />
-              </div>
-            </div>
-          </div>
-
-          <button type="submit" class="save-btn" [disabled]="isSaving">
-            {{ isSaving ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </form>
-      </div>
-    }
-  </div>
+  }
 
   <!-- Lightbox -->
-  <div
-    *ngIf="lightboxUrl"
-    class="lightbox-overlay"
-    (click)="closeLightbox()"
-    style="
-      position:fixed; inset:0; z-index:9999;
-      background:rgba(0,0,0,0.85);
-      display:flex; align-items:center; justify-content:center;
-      cursor:zoom-out;
-    ">
-    <img
-      [src]="lightboxUrl"
-      (click)="$event.stopPropagation()"
-      style="
-        max-width:90vw; max-height:90vh;
-        border-radius:12px;
-        box-shadow:0 8px 40px rgba(0,0,0,0.6);
-        object-fit:contain;
-        cursor:default;
-      "
-    />
-    <button
-      (click)="closeLightbox()"
-      style="
-        position:fixed; top:20px; right:28px;
-        background:none; border:none;
-        color:#fff; font-size:2.5rem;
-        cursor:pointer; line-height:1;
-      ">
-      &times;
-    </button>
-  </div>
-</div>
+  @if (lightboxUrl) {
+    <div class="pf-lightbox" (click)="closeLightbox()">
+      <img [src]="lightboxUrl" (click)="$event.stopPropagation()" />
+      <button class="pf-lightbox__close" (click)="closeLightbox()">✕</button>
+    </div>
+  }
 
-<app-footer></app-footer>
+</app-dashboard-shell>

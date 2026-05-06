@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Relief · CareHome — Step 4 · Shared Components</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-700:#0b6b80; --brand-600:#0e8aa6; --brand-500:#1aa6c4; --brand-50:#e8f6fa;
+    --accent-700:#0a4a8a; --accent-600:#1763b8; --accent-50:#eaf2fb;
+    --success-600:#1e9e5a; --success-500:#22b96a; --success-50:#e8f7ee;
+    --danger-600:#c8362f; --danger-500:#e0463f; --danger-50:#fdecea;
+    --warn-700:#8a5a00; --warn-500:#f5b13b; --warn-50:#fff5dd;
+    --info-600:#5a4be0; --info-50:#eee9fb;
+    --ink-900:#0f1f2a; --ink-800:#1c2d3a; --ink-700:#324655; --ink-600:#4a5f6e;
+    --ink-500:#6b7e8b; --ink-400:#93a3ad; --ink-300:#c1ccd3; --ink-200:#dde5ea;
+    --ink-100:#ecf1f4; --ink-50:#f5f8fa; --ink-0:#fff;
+    --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+    --sh-1:0 1px 2px rgba(15,31,42,.04),0 1px 1px rgba(15,31,42,.03);
+    --sh-2:0 2px 6px rgba(15,31,42,.05),0 1px 2px rgba(15,31,42,.04);
+    --sh-3:0 8px 24px rgba(15,31,42,.07),0 2px 6px rgba(15,31,42,.04);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);font-size:14px;color:var(--ink-800);background:#eef2f5;-webkit-font-smoothing:antialiased}
+
+  .canvas{padding:48px 32px;max-width:1280px;margin:0 auto}
+  .canvas-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-600);margin-bottom:8px}
+  .canvas-title{font-size:32px;font-weight:800;color:var(--ink-900);letter-spacing:-.02em;margin:0 0 6px}
+  .canvas-sub{color:var(--ink-600);margin:0 0 32px;font-size:15px;max-width:760px}
+
+  /* component section */
+  .sec{background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);padding:28px;margin-bottom:24px;box-shadow:var(--sh-1)}
+  .sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .sec-num{font-family:var(--font-mono);font-size:11px;color:var(--ink-500);background:var(--ink-50);padding:3px 8px;border-radius:6px;border:1px solid var(--ink-200)}
+  .sec-h h2{margin:0;font-size:18px;font-weight:700;color:var(--ink-900);letter-spacing:-.01em}
+  .sec-h .ng{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--brand-700);background:var(--brand-50);padding:3px 10px;border-radius:6px}
+  .sec-desc{color:var(--ink-600);font-size:13.5px;margin:0 0 22px;max-width:720px}
+  .sec-divider{height:1px;background:var(--ink-100);margin:22px 0}
+  .sec-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-500);margin-bottom:12px}
+
+  .demo{padding:24px;background:var(--ink-50);border:1px dashed var(--ink-200);border-radius:var(--r-md);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+
+  /* ============ BUTTONS ============ */
+  .btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;font:inherit;font-size:13px;font-weight:600;border-radius:var(--r-pill);border:1px solid transparent;cursor:pointer;white-space:nowrap;transition:transform .08s,box-shadow .15s,background .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{color:#fff;background:linear-gradient(180deg,var(--brand-600),var(--brand-700));box-shadow:var(--sh-2)}
+  .btn-primary:hover{box-shadow:var(--sh-3)}
+  .btn-secondary{background:#fff;color:var(--ink-800);border-color:var(--ink-200)}
+  .btn-secondary:hover{border-color:var(--ink-300);background:var(--ink-50)}
+  .btn-ghost{background:transparent;color:var(--ink-700)}
+  .btn-ghost:hover{background:var(--ink-100)}
+  .btn-success{background:var(--success-600);color:#fff}
+  .btn-danger{background:var(--danger-600);color:#fff}
+  .btn-sm{height:30px;padding:0 12px;font-size:12px}
+  .btn-lg{height:46px;padding:0 22px;font-size:14px}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+
+  /* ============ FORMS ============ */
+  .field{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px}
+  .lbl{font-size:12px;font-weight:600;color:var(--ink-700)}
+  .lbl .req{color:var(--danger-600)}
+  .input,.select,.textarea{
+    width:100%;height:44px;padding:0 14px;border:1px solid var(--ink-200);border-radius:var(--r-md);
+    background:#fff;color:var(--ink-900);font:inherit;font-size:14px;transition:border-color .15s,box-shadow .15s
+  }
+  .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--brand-500);box-shadow:0 0 0 4px rgba(26,166,196,.18)}
+  .input.error{border-color:var(--danger-500);box-shadow:0 0 0 4px rgba(224,70,63,.15)}
+  .textarea{height:auto;min-height:100px;padding:12px 14px;resize:vertical;font-family:inherit}
+  .help{font-size:12px;color:var(--ink-500)}
+  .help.err{color:var(--danger-600)}
+  .checkbox-row,.radio-row{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-800);cursor:pointer}
+  .cbox{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--ink-300);display:grid;place-items:center;background:#fff;flex:none}
+  .cbox.on{background:var(--brand-600);border-color:var(--brand-600);color:#fff;font-size:11px;font-weight:900}
+  .rdo{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ink-300);display:grid;place-items:center;background:#fff;flex:none}
+  .rdo.on{border-color:var(--brand-600)}
+  .rdo.on::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--brand-600)}
+  .switch{width:38px;height:22px;background:var(--ink-300);border-radius:var(--r-pill);position:relative;cursor:pointer;transition:background .15s}
+  .switch.on{background:var(--brand-600)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:var(--sh-1);transition:left .15s}
+  .switch.on::after{left:18px}
+
+  /* ============ CARDS ============ */
+  .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+  .card-pad{padding:20px}
+  .card-head-row{padding:16px 20px;border-bottom:1px solid var(--ink-100);display:flex;align-items:center;gap:12px}
+  .card-head-row h4{margin:0;font-size:14px;font-weight:700;color:var(--ink-900)}
+  .card-head-row .meta{margin-left:auto;font-size:12px;color:var(--ink-500)}
+  .card-foot{padding:12px 20px;border-top:1px solid var(--ink-100);font-size:12px;color:var(--ink-500);display:flex;align-items:center;gap:8px}
+
+  /* offer card variant */
+  .ocard .ic{width:42px;height:42px;border-radius:11px;background:linear-gradient(140deg,var(--brand-500),var(--accent-600));color:#fff;display:grid;place-items:center;font-size:16px;flex:none}
+  .ocard h5{margin:0;font-size:15px;font-weight:700;color:var(--ink-900);line-height:1.25}
+  .ocard .role{font-size:12px;color:var(--ink-500);margin-top:2px}
+  .ocard .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12.5px;margin:14px 0}
+  .ocard .kv .k{color:var(--ink-500)}
+  .ocard .kv .v{color:var(--ink-900);font-weight:500;text-align:right}
+  .rate{color:var(--success-600);font-weight:700}
+  .actions{display:flex;gap:8px}
+  .actions .btn{flex:1;justify-content:center}
+
+  /* stat card */
+  .stat .l{display:flex;align-items:center;gap:10px;color:var(--ink-500);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .stat .ico{width:32px;height:32px;border-radius:9px;background:var(--brand-50);color:var(--brand-700);display:grid;place-items:center;font-size:14px}
+  .stat .v{font-size:28px;font-weight:800;color:var(--ink-900);letter-spacing:-.01em;margin-top:8px}
+  .stat .delta{font-size:12px;font-weight:600;color:var(--success-600);margin-top:2px}
+
+  /* ============ TABLE ============ */
+  table.t{width:100%;border-collapse:collapse}
+  table.t th{
+    text-align:left;font-size:11px;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-500);
+    padding:12px 20px;border-bottom:1px solid var(--ink-200);background:var(--ink-50);
+  }
+  table.t td{padding:14px 20px;border-bottom:1px solid var(--ink-100);font-size:13px;color:var(--ink-800);vertical-align:middle}
+  table.t tr:last-child td{border-bottom:0}
+  table.t tr:hover td{background:var(--ink-50)}
+  .ucell{display:flex;align-items:center;gap:10px}
+  .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;flex:none}
+  .av.b1{background:linear-gradient(140deg,#5b6fb1,#3b3f8e)}
+  .av.b2{background:linear-gradient(140deg,#3da9d6,#1f6e98)}
+  .av.b3{background:linear-gradient(140deg,#7d56c9,#4a2f99)}
+  .av.b4{background:linear-gradient(140deg,#e5a341,#c97a16)}
+  .av.b5{background:linear-gradient(140deg,#3fa779,#1d6e4d)}
+  .ucell .nm{font-weight:600;color:var(--ink-900);font-size:13px;line-height:1.25}
+  .ucell .em{color:var(--ink-500);font-size:12px}
+
+  /* ============ PILL / BADGE ============ */
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;font-size:11px;font-weight:600;border-radius:var(--r-pill)}
+  .pill .dot{width:6px;height:6px;border-radius:50%}
+  .pill-success{background:var(--success-50);color:var(--success-600)}.pill-success .dot{background:var(--success-500)}
+  .pill-warn{background:var(--warn-50);color:var(--warn-700)}.pill-warn .dot{background:var(--warn-500)}
+  .pill-danger{background:var(--danger-50);color:var(--danger-600)}.pill-danger .dot{background:var(--danger-500)}
+  .pill-info{background:var(--accent-50);color:var(--accent-600)}.pill-info .dot{background:var(--accent-600)}
+  .pill-neutral{background:var(--ink-100);color:var(--ink-700)}.pill-neutral .dot{background:var(--ink-400)}
+  .pill-violet{background:var(--info-50);color:var(--info-600)}.pill-violet .dot{background:var(--info-600)}
+
+  /* ============ NAVBAR ============ */
+  .navbar{
+    display:flex;align-items:center;gap:24px;padding:14px 22px;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border:1px solid var(--ink-200);border-radius:var(--r-pill);
+  }
+  .navbar .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--accent-700)}
+  .navbar .brand .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(140deg,var(--brand-500),var(--accent-600));color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+  .navbar .links{display:flex;gap:6px}
+  .navbar .links a{padding:8px 14px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--ink-700);text-decoration:none}
+  .navbar .links a:hover{background:var(--ink-50);color:var(--ink-900)}
+  .navbar .links a.on{background:var(--brand-50);color:var(--brand-700)}
+  .navbar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);
+    padding:18px 14px;display:flex;flex-direction:column;gap:4px;width:248px;
+  }
+  .side-brand{display:flex;align-items:center;gap:10px;padding:6px 10px 16px;font-weight:800;font-size:16px;color:var(--accent-700)}
+  .side-brand .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(140deg,var(--brand-500),var(--accent-600));color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+  .side-section{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-400);padding:12px 12px 6px}
+  .side-link{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;color:var(--ink-700);font-weight:500;font-size:13px;cursor:pointer}
+  .side-link:hover{background:var(--ink-50)}
+  .side-link.active{background:linear-gradient(180deg,var(--brand-50),#fff);color:var(--brand-700);font-weight:600}
+  .side-link .ico{width:18px;display:grid;place-items:center;font-size:13px}
+  .side-link .badge{margin-left:auto;background:var(--brand-50);color:var(--brand-700);font-size:11px;font-weight:700;padding:1px 7px;border-radius:var(--r-pill)}
+
+  /* ============ ALERT / EMPTY / MODAL ============ */
+  .alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r-md);border:1px solid;align-items:flex-start;width:100%;max-width:560px}
+  .alert .ic{font-size:16px;line-height:1;margin-top:1px}
+  .alert .body{flex:1}
+  .alert h6{margin:0 0 2px;font-size:13px;font-weight:700}
+  .alert p{margin:0;font-size:12.5px;color:var(--ink-700)}
+  .alert-success{background:var(--success-50);border-color:#bce4cc;color:var(--success-600)}
+  .alert-warn{background:var(--warn-50);border-color:#f1d995;color:var(--warn-700)}
+  .alert-danger{background:var(--danger-50);border-color:#f1c0bd;color:var(--danger-600)}
+  .alert-info{background:var(--accent-50);border-color:#bcd3ee;color:var(--accent-600)}
+
+  .empty{
+    border:1px dashed var(--ink-200);border-radius:var(--r-md);
+    padding:32px;text-align:center;background:var(--ink-50);width:100%;max-width:480px
+  }
+  .empty .ic{width:48px;height:48px;border-radius:14px;background:#fff;display:inline-grid;place-items:center;font-size:20px;color:var(--brand-600);margin-bottom:10px;border:1px solid var(--ink-200)}
+  .empty h6{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--ink-900)}
+  .empty p{margin:0 0 14px;font-size:13px;color:var(--ink-500)}
+
+  .modal{
+    background:#fff;border-radius:var(--r-lg);width:100%;max-width:480px;
+    box-shadow:0 30px 60px rgba(15,31,42,.18);border:1px solid var(--ink-200);overflow:hidden
+  }
+  .modal-head{padding:18px 22px;border-bottom:1px solid var(--ink-100);display:flex;align-items:center;gap:12px}
+  .modal-head h5{margin:0;font-size:15px;font-weight:700;color:var(--ink-900)}
+  .modal-head .x{margin-left:auto;width:28px;height:28px;border-radius:8px;background:var(--ink-50);display:grid;place-items:center;color:var(--ink-600);cursor:pointer;border:1px solid var(--ink-200)}
+  .modal-body{padding:20px 22px;font-size:13.5px;color:var(--ink-700)}
+  .modal-foot{padding:14px 22px;border-top:1px solid var(--ink-100);display:flex;justify-content:flex-end;gap:8px}
+
+  /* ============ TABS ============ */
+  .tabs{display:inline-flex;background:var(--ink-100);padding:3px;border-radius:var(--r-pill);font-size:13px;font-weight:600}
+  .tabs button{border:0;background:transparent;padding:6px 14px;border-radius:var(--r-pill);color:var(--ink-600);cursor:pointer;font:inherit;font-weight:600}
+  .tabs button.on{background:#fff;color:var(--ink-900);box-shadow:var(--sh-1)}
+
+  /* breadcrumb */
+  .bc{font-size:13px;color:var(--ink-500)}
+  .bc .sep{margin:0 8px;color:var(--ink-300)}
+  .bc b{color:var(--ink-900);font-weight:600}
+</style>
+</head>
+<body data-screen-label="04 Shared Components">
+
+<main class="canvas">
+  <div class="canvas-eyebrow">Step 4 · Shared Components</div>
+  <h1 class="canvas-title">Component library</h1>
+  <p class="canvas-sub">Every primitive used across landing + dashboards, in one place. Each card lists the Angular component name to scaffold (e.g. <code>app-button</code>) so the dev handoff is direct.</p>
+
+  <!-- BUTTONS -->
+  <section class="sec" data-screen-label="04A Buttons">
+    <div class="sec-h"><span class="sec-num">4.1</span><h2>Buttons</h2><span class="ng">&lt;app-button&gt;</span></div>
+    <p class="sec-desc">Pill-shaped, three sizes (30 / 38 / 46 px), five variants. Always communicate hierarchy: one primary action per region.</p>
+
+    <div class="sec-label">Variants</div>
+    <div class="demo">
+      <button class="btn btn-primary">Primary action</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-success">Approve</button>
+      <button class="btn btn-danger">Reject</button>
+      <button class="btn btn-secondary" disabled>Disabled</button>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="sec-label">Sizes</div>
+    <div class="demo">
+      <button class="btn btn-primary btn-sm">Small (30)</button>
+      <button class="btn btn-primary">Default (38)</button>
+      <button class="btn btn-primary btn-lg">Large (46)</button>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="sec-label">With icon</div>
+    <div class="demo">
+      <button class="btn btn-primary">+ Create offer</button>
+      <button class="btn btn-secondary">↓ Export CSV</button>
+      <button class="btn btn-success">✓ Approve</button>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section class="sec" data-screen-label="04B Forms">
+    <div class="sec-h"><span class="sec-num">4.2</span><h2>Forms</h2><span class="ng">&lt;app-input&gt; &lt;app-select&gt; &lt;app-checkbox&gt;</span></div>
+    <p class="sec-desc">Label-above pattern, 44 px hit target on inputs, brand teal focus ring. Errors use danger color + helper text below.</p>
+
+    <div class="demo" style="gap:24px">
+      <div class="field">
+        <label class="lbl">Email <span class="req">*</span></label>
+        <input class="input" value="omarpsw@gmail.com" />
+        <span class="help">We'll never share your email.</span>
+      </div>
+      <div class="field">
+        <label class="lbl">Password <span class="req">*</span></label>
+        <input class="input error" type="password" value="••••" />
+        <span class="help err">Must be at least 8 characters.</span>
+      </div>
+      <div class="field">
+        <label class="lbl">Role</label>
+        <select class="select"><option>Personal support worker</option><option>Family member</option></select>
+      </div>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="demo" style="gap:24px;align-items:center">
+      <label class="checkbox-row"><span class="cbox on">✓</span> I agree to the terms</label>
+      <label class="checkbox-row"><span class="cbox"></span> Subscribe to updates</label>
+      <label class="radio-row"><span class="rdo on"></span> Care home</label>
+      <label class="radio-row"><span class="rdo"></span> Individual</label>
+      <div class="switch on" title="Notifications on"></div>
+      <div class="switch" title="Notifications off"></div>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="demo">
+      <div class="field" style="max-width:560px">
+        <label class="lbl">Description</label>
+        <textarea class="textarea" placeholder="Describe the shift requirements…">Looking for an experienced PSW for overnight shift. Experience with dementia care preferred.</textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILLS -->
+  <section class="sec" data-screen-label="04C Status pills">
+    <div class="sec-h"><span class="sec-num">4.3</span><h2>Status pills</h2><span class="ng">&lt;app-pill variant&gt;</span></div>
+    <p class="sec-desc">Single component with variant prop — replaces the 5 different status colors used across screens today.</p>
+    <div class="demo">
+      <span class="pill pill-success"><span class="dot"></span>Active</span>
+      <span class="pill pill-success"><span class="dot"></span>Verified</span>
+      <span class="pill pill-warn"><span class="dot"></span>Pending</span>
+      <span class="pill pill-info"><span class="dot"></span>In review</span>
+      <span class="pill pill-danger"><span class="dot"></span>Rejected</span>
+      <span class="pill pill-neutral"><span class="dot"></span>Cancelled</span>
+      <span class="pill pill-violet"><span class="dot"></span>Admin</span>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="sec" data-screen-label="04D Cards">
+    <div class="sec-h"><span class="sec-num">4.4</span><h2>Cards</h2><span class="ng">&lt;app-card&gt; · &lt;app-offer-card&gt; · &lt;app-stat-card&gt;</span></div>
+    <p class="sec-desc">Three card variants used throughout the product.</p>
+
+    <div class="demo" style="background:transparent;border:0;padding:0">
+      <div class="cards-grid" style="width:100%">
+
+        <!-- offer card -->
+        <div class="card ocard">
+          <div class="card-pad">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div class="ic">★</div>
+              <div style="flex:1">
+                <h5>PSW needed</h5>
+                <div class="role">Wellington House · 2.4 km</div>
+              </div>
+              <span class="pill pill-success"><span class="dot"></span>1 spot</span>
+            </div>
+            <div class="kv">
+              <span class="k">Rate</span><span class="v rate">£28/hr</span>
+              <span class="k">Shift</span><span class="v">May 21 · 09:00 – 17:00</span>
+              <span class="k">Type</span><span class="v">Day</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-secondary btn-sm">View</button>
+              <button class="btn btn-primary btn-sm">Apply now →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- stat card -->
+        <div class="card stat card-pad">
+          <div class="l"><div class="ico">≡</div> Active offers</div>
+          <div class="v">12</div>
+          <div class="delta">+3 this week</div>
+        </div>
+
+        <!-- generic card -->
+        <div class="card">
+          <div class="card-head-row">
+            <h4>Today's schedule</h4>
+            <span class="meta">3 shifts</span>
+          </div>
+          <div class="card-pad" style="font-size:13px;color:var(--ink-700);flex:1">
+            <p style="margin:0 0 6px"><b style="color:var(--ink-900)">07:00 – 15:00</b> · Amman E. (PSW)</p>
+            <p style="margin:0 0 6px"><b style="color:var(--ink-900)">09:00 – 17:00</b> · Nourhan M. (Nurse)</p>
+            <p style="margin:0"><b style="color:var(--ink-900)">15:00 – 23:00</b> · Open shift</p>
+          </div>
+          <div class="card-foot"><span>Last updated 2m ago</span><a style="margin-left:auto;color:var(--brand-700);font-weight:600;text-decoration:none">View all →</a></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="sec" data-screen-label="04E Table">
+    <div class="sec-h"><span class="sec-num">4.5</span><h2>Data table</h2><span class="ng">&lt;app-table&gt;</span></div>
+    <p class="sec-desc">Used for users, applications, payroll. Avatar+text cell, role pill column, inline actions.</p>
+    <div class="demo" style="background:transparent;border:0;padding:0">
+      <div class="card" style="width:100%">
+        <table class="t">
+          <thead><tr><th>Applicant</th><th>Offer</th><th>Shift</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="ucell"><div class="av b1">AE</div><div><div class="nm">Amman Eldesouki</div><div class="em">omarpsw@gmail.com</div></div></div></td>
+              <td>Personal support worker</td>
+              <td>May 29 · 09:00 – 17:00</td>
+              <td><span class="pill pill-warn"><span class="dot"></span>Pending</span></td>
+              <td style="text-align:right"><button class="btn btn-success btn-sm">Approve</button> <button class="btn btn-secondary btn-sm">Reject</button></td>
+            </tr>
+            <tr>
+              <td><div class="ucell"><div class="av b3">MM</div><div><div class="nm">Malak Mohamed</div><div class="em">malakm4737@gmail.com</div></div></div></td>
+              <td>Nurse — overnight</td>
+              <td>May 4 · 08:00 – 16:00</td>
+              <td><span class="pill pill-success"><span class="dot"></span>Approved</span></td>
+              <td style="text-align:right"><button class="btn btn-secondary btn-sm">View</button></td>
+            </tr>
+            <tr>
+              <td><div class="ucell"><div class="av b5">NM</div><div><div class="nm">Nourhan Mohamed</div><div class="em">nourhanm4737@gmail.com</div></div></div></td>
+              <td>PSW needed</td>
+              <td>May 21 · 09:00 – 17:00</td>
+              <td><span class="pill pill-danger"><span class="dot"></span>Rejected</span></td>
+              <td style="text-align:right"><button class="btn btn-secondary btn-sm">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="card-foot"><span>3 of 24</span><div style="margin-left:auto;display:flex;gap:6px"><button class="btn btn-secondary btn-sm">‹ Prev</button><button class="btn btn-secondary btn-sm">Next ›</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAVBAR + SIDEBAR -->
+  <section class="sec" data-screen-label="04F Navigation">
+    <div class="sec-h"><span class="sec-num">4.6</span><h2>Navigation</h2><span class="ng">&lt;app-navbar&gt; · &lt;app-sidebar&gt;</span></div>
+    <p class="sec-desc">Public navbar (used on landing) and authenticated sidebar (used on dashboards). Both consume the same brand/logo subcomponent.</p>
+
+    <div class="sec-label">Public navbar</div>
+    <div class="demo" style="background:linear-gradient(135deg,#f3f7fb,#eaf2fb);padding:32px">
+      <nav class="navbar" style="width:100%">
+        <div class="brand"><div class="mark">R</div> Relief</div>
+        <div class="links">
+          <a class="on">Home</a><a>For PSWs</a><a>For care homes</a><a>Pricing</a><a>About</a>
+        </div>
+        <div class="right">
+          <button class="btn btn-ghost btn-sm">Sign in</button>
+          <button class="btn btn-primary btn-sm">Get started →</button>
+        </div>
+      </nav>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="sec-label">Dashboard sidebar</div>
+    <div class="demo" style="align-items:stretch;gap:24px">
+      <aside class="sidebar">
+        <div class="side-brand"><span class="mark">R</span> Relief</div>
+        <div class="side-section">Workspace</div>
+        <a class="side-link active"><span class="ico">⌂</span> Dashboard</a>
+        <a class="side-link"><span class="ico">≡</span> Offers <span class="badge">12</span></a>
+        <a class="side-link"><span class="ico">⏱</span> Applications <span class="badge">2</span></a>
+        <a class="side-link"><span class="ico">◷</span> Schedule</a>
+        <div class="side-section">Account</div>
+        <a class="side-link"><span class="ico">☺</span> Profile</a>
+        <a class="side-link"><span class="ico">⚙</span> Settings</a>
+      </aside>
+      <div style="flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center">
+        <div class="bc">Workspace <span class="sep">/</span> Offers <span class="sep">/</span> <b>PSW needed</b></div>
+        <div class="tabs"><button class="on">Details</button><button>Applicants (3)</button><button>History</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALERTS / EMPTY / MODAL -->
+  <section class="sec" data-screen-label="04G Feedback">
+    <div class="sec-h"><span class="sec-num">4.7</span><h2>Feedback</h2><span class="ng">&lt;app-alert&gt; · &lt;app-empty&gt; · &lt;app-modal&gt;</span></div>
+    <p class="sec-desc">User feedback states — replaces the inconsistent toast/alert/empty patterns currently in the app.</p>
+
+    <div class="sec-label">Inline alerts</div>
+    <div class="demo" style="flex-direction:column;gap:10px">
+      <div class="alert alert-success"><div class="ic">✓</div><div class="body"><h6>Application approved</h6><p>Amman has been notified and added to the schedule for May 29.</p></div></div>
+      <div class="alert alert-warn"><div class="ic">!</div><div class="body"><h6>1 document expires soon</h6><p>Your First Aid certificate expires in 12 days. Upload a new one to keep accepting shifts.</p></div></div>
+      <div class="alert alert-danger"><div class="ic">✕</div><div class="body"><h6>Couldn't post offer</h6><p>End time must be after start time.</p></div></div>
+      <div class="alert alert-info"><div class="ic">ℹ</div><div class="body"><h6>New shifts in your area</h6><p>3 new offers were posted within 5 km of you in the last hour.</p></div></div>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="sec-label">Empty state</div>
+    <div class="demo" style="justify-content:center">
+      <div class="empty">
+        <div class="ic">≡</div>
+        <h6>No offers yet</h6>
+        <p>Post your first shift offer to start receiving applications from verified PSWs.</p>
+        <button class="btn btn-primary">+ Create offer</button>
+      </div>
+    </div>
+
+    <div class="sec-divider"></div>
+    <div class="sec-label">Modal</div>
+    <div class="demo" style="background:rgba(15,31,42,.06);justify-content:center">
+      <div class="modal">
+        <div class="modal-head"><h5>Reject application?</h5><div class="x">×</div></div>
+        <div class="modal-body">You're about to reject <b>Amman Eldesouki</b>'s application for <b>Personal support worker — May 29</b>. They'll be notified and the slot will reopen for other applicants.</div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary">Cancel</button>
+          <button class="btn btn-danger">Reject application</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

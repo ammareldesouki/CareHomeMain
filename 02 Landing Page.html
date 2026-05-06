@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Relief · CareHome — Step 2 · Landing Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-700:#0b6b80; --brand-600:#0e8aa6; --brand-500:#1aa6c4; --brand-50:#e8f6fa;
+    --accent-700:#0a4a8a; --accent-600:#1763b8; --accent-50:#eaf2fb;
+    --success-600:#1e9e5a; --success-50:#e8f7ee;
+    --danger-600:#c8362f; --warn-500:#f5b13b; --warn-50:#fff5dd;
+    --info-600:#5a4be0; --info-50:#eee9fb;
+    --ink-900:#0f1f2a; --ink-800:#1c2d3a; --ink-700:#324655; --ink-600:#4a5f6e;
+    --ink-500:#6b7e8b; --ink-400:#93a3ad; --ink-300:#c1ccd3; --ink-200:#dde5ea;
+    --ink-100:#ecf1f4; --ink-50:#f5f8fa; --ink-0:#fff;
+    --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    --r-md:12px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+    --sh-2:0 2px 6px rgba(15,31,42,.05),0 1px 2px rgba(15,31,42,.04);
+    --sh-3:0 8px 24px rgba(15,31,42,.07),0 2px 6px rgba(15,31,42,.04);
+    --sh-4:0 20px 48px rgba(15,31,42,.10),0 4px 12px rgba(15,31,42,.05);
+    --container:1200px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--font-sans);font-size:15px;line-height:1.55;color:var(--ink-800);background:var(--ink-0);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent-600);text-decoration:none}
+
+  /* ============== NAV ============== */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(160%) blur(14px);
+    -webkit-backdrop-filter:saturate(160%) blur(14px);
+    border-bottom:1px solid var(--ink-200);
+  }
+  .nav-inner{max-width:var(--container);margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:32px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--accent-700);letter-spacing:-.01em}
+  .logo .mark{
+    width:32px;height:32px;border-radius:9px;
+    background:linear-gradient(140deg,var(--brand-500),var(--accent-600));
+    display:grid;place-items:center;color:#fff;font-size:14px;
+    box-shadow:var(--sh-2);
+  }
+  .nav-links{display:flex;gap:28px;margin-left:8px}
+  .nav-links a{color:var(--ink-700);font-weight:500;font-size:14px}
+  .nav-links a:hover{color:var(--accent-600)}
+  .nav-cta{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;
+    font:inherit;font-size:14px;font-weight:600;border-radius:var(--r-pill);
+    border:1px solid transparent;cursor:pointer;white-space:nowrap;
+    transition:transform .08s,box-shadow .15s,background .15s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{color:#fff;background:linear-gradient(180deg,var(--brand-600),var(--brand-700));box-shadow:var(--sh-2)}
+  .btn-primary:hover{box-shadow:var(--sh-3)}
+  .btn-secondary{background:#fff;color:var(--ink-800);border-color:var(--ink-200)}
+  .btn-secondary:hover{border-color:var(--ink-300);background:var(--ink-50)}
+  .btn-ghost{background:transparent;color:var(--ink-700)}
+  .btn-ghost:hover{background:var(--ink-100)}
+  .btn-lg{height:50px;padding:0 24px;font-size:15px}
+
+  /* ============== HERO ============== */
+  .hero{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(26,166,196,.18), transparent 60%),
+      radial-gradient(1000px 500px at 0% 110%, rgba(23,99,184,.12), transparent 60%),
+      linear-gradient(180deg, #fff, var(--ink-50));
+    padding:88px 24px 96px;
+  }
+  .hero-grid{
+    max-width:var(--container);margin:0 auto;
+    display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border-radius:var(--r-pill);
+    background:var(--brand-50);color:var(--brand-700);
+    font-size:12px;font-weight:600;letter-spacing:.06em;
+    margin-bottom:20px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--success-600)}
+  h1.headline{
+    font-size:60px;font-weight:800;letter-spacing:-.025em;line-height:1.02;
+    color:var(--ink-900);margin:0 0 20px;
+  }
+  h1.headline .accent{
+    background:linear-gradient(120deg,var(--brand-600),var(--accent-600));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  p.sub{
+    font-size:18px;color:var(--ink-600);max-width:54ch;margin:0 0 32px;line-height:1.55;
+  }
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+  .trust{
+    display:flex;gap:28px;flex-wrap:wrap;align-items:center;color:var(--ink-500);font-size:13px;
+  }
+  .trust b{color:var(--ink-900);font-weight:700}
+  .trust .sep{width:1px;height:24px;background:var(--ink-200)}
+
+  /* ============== HERO PREVIEW (right side mock) ============== */
+  .preview{
+    position:relative;
+    aspect-ratio:5/4;
+    border-radius:var(--r-xl);
+    background:linear-gradient(160deg,var(--accent-700),var(--accent-600) 55%,var(--brand-600));
+    box-shadow:var(--sh-4);
+    overflow:hidden;
+    padding:28px;
+  }
+  .preview::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(400px 200px at 90% 0%, rgba(255,255,255,.18), transparent 60%),
+      radial-gradient(300px 180px at 0% 100%, rgba(26,166,196,.35), transparent 60%);
+    pointer-events:none;
+  }
+  .preview-card{
+    position:relative;z-index:2;
+    background:#fff;border-radius:var(--r-lg);
+    box-shadow:0 24px 60px rgba(0,0,0,.18);
+    padding:20px;
+    margin-top:120px;
+  }
+  .preview-card .row{display:flex;align-items:center;gap:12px}
+  .preview-card .ico{
+    width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(140deg,var(--brand-500),var(--accent-600));
+    color:#fff;display:grid;place-items:center;font-weight:700;
+  }
+  .preview-card h4{margin:0;font-size:15px;color:var(--ink-900)}
+  .preview-card .meta{margin:0;font-size:12px;color:var(--ink-500)}
+  .preview-card .pill-success{
+    margin-left:auto;
+    background:var(--success-50);color:var(--success-600);
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);
+  }
+  .preview-card .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .preview-card .stat{
+    background:var(--ink-50);border-radius:var(--r-md);padding:10px 12px;
+  }
+  .preview-card .stat .l{font-size:11px;color:var(--ink-500);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .preview-card .stat .v{font-size:18px;color:var(--ink-900);font-weight:700;margin-top:2px}
+
+  .preview-floater{
+    position:absolute;z-index:3;
+    background:#fff;border-radius:14px;padding:12px 14px;
+    box-shadow:0 14px 30px rgba(0,0,0,.18);
+    display:flex;align-items:center;gap:10px;
+    font-size:13px;font-weight:600;color:var(--ink-800);
+  }
+  .preview-floater .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(140deg,#9aa9b3,#5d6e7a);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+  .floater-1{top:36px;left:24px}
+  .floater-2{bottom:28px;right:24px;background:var(--success-50);color:var(--success-600)}
+  .floater-2 .ic{width:18px;height:18px;border-radius:50%;background:var(--success-600);color:#fff;display:grid;place-items:center;font-size:11px}
+
+  /* ============== STATS BAR ============== */
+  .stats-bar{
+    max-width:var(--container);margin:0 auto;padding:0 24px;
+    transform:translateY(-32px);
+  }
+  .stats-bar .surface{
+    background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);
+    box-shadow:var(--sh-3);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .stat-cell{padding:24px 28px;border-right:1px solid var(--ink-100)}
+  .stat-cell:last-child{border-right:0}
+  .stat-cell .v{font-size:30px;font-weight:800;color:var(--ink-900);letter-spacing:-.01em}
+  .stat-cell .l{font-size:13px;color:var(--ink-500);margin-top:4px}
+
+  /* ============== SECTIONS ============== */
+  section.block{padding:96px 24px}
+  .container{max-width:var(--container);margin:0 auto}
+  .sec-head{max-width:62ch;margin:0 auto 56px;text-align:center}
+  .sec-eyebrow{
+    font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--brand-600);margin-bottom:12px;
+  }
+  h2.sec-title{
+    font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.1;
+    color:var(--ink-900);margin:0 0 14px;
+  }
+  p.sec-sub{font-size:17px;color:var(--ink-600);margin:0}
+
+  /* feature cards */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{
+    background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);
+    padding:28px;transition:transform .15s,box-shadow .15s,border-color .15s;
+  }
+  .feat:hover{transform:translateY(-2px);box-shadow:var(--sh-3);border-color:var(--ink-300)}
+  .feat .ico{
+    width:48px;height:48px;border-radius:14px;
+    background:var(--brand-50);color:var(--brand-700);
+    display:grid;place-items:center;font-size:22px;margin-bottom:18px;
+  }
+  .feat.alt .ico{background:var(--accent-50);color:var(--accent-600)}
+  .feat.warm .ico{background:var(--info-50);color:var(--info-600)}
+  .feat h3{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink-900)}
+  .feat p{margin:0;color:var(--ink-600);font-size:14px;line-height:1.6}
+
+  /* how it works */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative}
+  .step{
+    background:#fff;border:1px solid var(--ink-200);border-radius:var(--r-lg);
+    padding:28px;position:relative;
+  }
+  .step .num{
+    font-family:var(--font-mono);font-size:12px;
+    color:var(--brand-700);background:var(--brand-50);
+    padding:4px 10px;border-radius:var(--r-pill);font-weight:600;
+    display:inline-block;margin-bottom:16px;
+  }
+  .step h3{margin:0 0 6px;font-size:18px;font-weight:700;color:var(--ink-900)}
+  .step p{margin:0;color:var(--ink-600);font-size:14px}
+
+  /* roles split */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .role{
+    border-radius:var(--r-lg);padding:32px;color:#fff;
+    display:flex;flex-direction:column;min-height:280px;
+    box-shadow:var(--sh-3);
+  }
+  .role.psw{background:linear-gradient(160deg,var(--brand-600),var(--brand-700))}
+  .role.home{background:linear-gradient(160deg,var(--accent-600),var(--accent-700))}
+  .role.admin{background:linear-gradient(160deg,#324655,var(--ink-900))}
+  .role h3{font-size:24px;font-weight:800;margin:0 0 8px;letter-spacing:-.01em}
+  .role p{margin:0 0 24px;color:rgba(255,255,255,.85);font-size:14px;line-height:1.55}
+  .role ul{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:8px}
+  .role li{font-size:14px;color:rgba(255,255,255,.92);display:flex;align-items:center;gap:10px}
+  .role li::before{
+    content:"";width:18px;height:18px;border-radius:50%;
+    background:rgba(255,255,255,.18);
+    background-image:radial-gradient(circle,#fff 2px,transparent 3px);
+    flex:none;
+  }
+  .role .role-cta{
+    margin-top:auto;
+    background:rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);
+    color:#fff;border-color:rgba(255,255,255,.25);
+    align-self:flex-start;
+  }
+  .role .role-cta:hover{background:rgba(255,255,255,.24)}
+
+  /* testimonial */
+  .quote{
+    background:linear-gradient(160deg,var(--brand-50),#fff);
+    border:1px solid var(--ink-200);border-radius:var(--r-xl);
+    padding:64px;text-align:center;max-width:880px;margin:0 auto;
+  }
+  .quote q{
+    font-size:24px;line-height:1.4;font-weight:600;color:var(--ink-900);
+    letter-spacing:-.01em;
+  }
+  .quote q::before, .quote q::after{content:""}
+  .quote .author{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    margin-top:24px;color:var(--ink-600);font-size:14px;
+  }
+  .quote .av{
+    width:40px;height:40px;border-radius:50%;
+    background:linear-gradient(140deg,var(--brand-500),var(--accent-600));
+    color:#fff;display:grid;place-items:center;font-weight:700;
+  }
+
+  /* CTA strip */
+  .cta-strip{
+    margin:0 24px 96px;max-width:var(--container);margin-inline:auto;
+    background:linear-gradient(135deg,var(--accent-700),var(--brand-600));
+    border-radius:var(--r-xl);padding:56px;color:#fff;
+    display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;
+    position:relative;overflow:hidden;
+  }
+  .cta-strip::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(500px 240px at 100% 0%,rgba(255,255,255,.18),transparent 60%);
+  }
+  .cta-strip h2{font-size:32px;font-weight:800;margin:0 0 6px;letter-spacing:-.015em;position:relative;z-index:2}
+  .cta-strip p{margin:0;color:rgba(255,255,255,.85);font-size:16px;position:relative;z-index:2}
+  .cta-strip .btn{position:relative;z-index:2}
+  .cta-strip .btn-light{background:#fff;color:var(--accent-700)}
+
+  /* footer */
+  footer{background:var(--ink-900);color:rgba(255,255,255,.7);padding:64px 24px 32px}
+  .foot-grid{max-width:var(--container);margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+  footer h4{color:#fff;font-size:14px;font-weight:700;margin:0 0 16px;letter-spacing:.04em}
+  footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  footer a{color:rgba(255,255,255,.7);font-size:14px}
+  footer a:hover{color:#fff}
+  .foot-brand p{font-size:14px;margin:12px 0 0;max-width:36ch}
+  .foot-bottom{
+    max-width:var(--container);margin:48px auto 0;padding-top:24px;
+    border-top:1px solid rgba(255,255,255,.1);
+    display:flex;justify-content:space-between;font-size:13px;flex-wrap:wrap;gap:12px;
+  }
+
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    h1.headline{font-size:44px}
+    .features,.steps,.roles{grid-template-columns:1fr}
+    .stats-bar .surface{grid-template-columns:repeat(2,1fr)}
+    .stat-cell{border-right:0;border-bottom:1px solid var(--ink-100)}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .quote{padding:40px 24px}
+    .cta-strip{padding:36px}
+  }
+</style>
+</head>
+<body data-screen-label="02 Landing Page">
+
+<!-- ============== NAV ============== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="mark">R</span> Relief</div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#roles">For your team</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <button class="btn btn-ghost">Sign in</button>
+      <button class="btn btn-primary">Get started</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>Trusted by 200+ care homes</span>
+      <h1 class="headline">Care, scheduled with <span class="accent">confidence.</span></h1>
+      <p class="sub">Relief connects verified personal support workers with the care homes and families that need them — covering shifts in minutes, not days.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary btn-lg">Post your first shift →</button>
+        <button class="btn btn-secondary btn-lg">I'm a caregiver</button>
+      </div>
+      <div class="trust">
+        <div><b>4.9★</b> avg rating · 1,200 reviews</div>
+        <span class="sep"></span>
+        <div><b>Verified</b> ID + credentials</div>
+        <span class="sep"></span>
+        <div><b>24/7</b> coverage support</div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-floater floater-1">
+        <div class="av">AE</div>
+        Amman E. accepted your shift
+      </div>
+
+      <div class="preview-card">
+        <div class="row">
+          <div class="ico">★</div>
+          <div>
+            <h4>Personal Support Worker</h4>
+            <p class="meta">May 29 · 09:00 – 17:00 · London, ON</p>
+          </div>
+          <span class="pill-success">● 1 Available</span>
+        </div>
+        <div class="grid2">
+          <div class="stat"><div class="l">Hourly rate</div><div class="v">£30/hr</div></div>
+          <div class="stat"><div class="l">Applicants</div><div class="v">3 pending</div></div>
+        </div>
+      </div>
+
+      <div class="preview-floater floater-2">
+        <span class="ic">✓</span> Shift filled in 12 min
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== STATS BAR ============== -->
+<div class="stats-bar">
+  <div class="surface">
+    <div class="stat-cell"><div class="v">12,400+</div><div class="l">Shifts filled</div></div>
+    <div class="stat-cell"><div class="v">98%</div><div class="l">Coverage rate</div></div>
+    <div class="stat-cell"><div class="v">14 min</div><div class="l">Avg. time-to-fill</div></div>
+    <div class="stat-cell"><div class="v">2,300+</div><div class="l">Verified PSWs</div></div>
+  </div>
+</div>
+
+<!-- ============== FEATURES ============== -->
+<section class="block" id="features" style="padding-top:32px">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-eyebrow">Why Relief</div>
+      <h2 class="sec-title">Built for the realities of care work</h2>
+      <p class="sec-sub">Every feature exists to remove friction between a vacant shift and the right caregiver to fill it.</p>
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <div class="ico">⚡</div>
+        <h3>Shifts filled in minutes</h3>
+        <p>Post once. Verified workers in your area get matched and notified instantly — most shifts fill within 14 minutes.</p>
+      </div>
+      <div class="feat alt">
+        <div class="ico">✓</div>
+        <h3>Verified, every time</h3>
+        <p>ID, PSW certification, immunizations, criminal record check, and First Aid — checked before anyone shows up.</p>
+      </div>
+      <div class="feat warm">
+        <div class="ico">★</div>
+        <h3>One source of truth</h3>
+        <p>Offers, applications, payroll exports, and care-home profiles live in one place — for admins, homes, and caregivers alike.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section class="block" id="how" style="background:var(--ink-50)">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-eyebrow">How it works</div>
+      <h2 class="sec-title">From open shift to covered shift in three steps</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Post the shift</h3>
+        <p>Title, location, hourly rate, and the languages you'd prefer. Takes under a minute.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Review applicants</h3>
+        <p>See verified caregivers nearby. Approve or decline with one tap — full credentials attached.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Track &amp; pay</h3>
+        <p>Confirm completion, export hours, and we handle the rest. Caregivers get paid weekly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ROLES ============== -->
+<section class="block" id="roles">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-eyebrow">For everyone in care</div>
+      <h2 class="sec-title">A workspace for your role</h2>
+      <p class="sec-sub">Whether you're staffing a 50-bed home, supporting a parent at home, or covering shifts as a PSW — Relief has a tailored experience.</p>
+    </div>
+
+    <div class="roles">
+      <div class="role psw">
+        <h3>For PSWs</h3>
+        <p>Find shifts that match your schedule, skills, and travel range.</p>
+        <ul>
+          <li>Browse &amp; apply in seconds</li>
+          <li>Track applications &amp; history</li>
+          <li>Weekly payouts</li>
+        </ul>
+        <button class="btn role-cta">Join as a caregiver →</button>
+      </div>
+      <div class="role home">
+        <h3>For Care Homes</h3>
+        <p>Post offers, vet applicants, manage your verified roster.</p>
+        <ul>
+          <li>Post offers in under a minute</li>
+          <li>One-tap approve / reject</li>
+          <li>Export shift &amp; payroll data</li>
+        </ul>
+        <button class="btn role-cta">Staff your home →</button>
+      </div>
+      <div class="role admin">
+        <h3>For Admins</h3>
+        <p>Full visibility across users, verifications, offers, and applications.</p>
+        <ul>
+          <li>PSW verification queue</li>
+          <li>Role &amp; access management</li>
+          <li>System-wide search &amp; filters</li>
+        </ul>
+        <button class="btn role-cta">Admin overview →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIAL ============== -->
+<section class="block" style="padding-top:0">
+  <div class="container">
+    <div class="quote">
+      <q>We used to lose two shifts a week to no-shows. With Relief we've covered <b>every</b> shift for the last three months — and the applicants come pre-verified.</q>
+      <div class="author">
+        <div class="av">SM</div>
+        <div><b style="color:var(--ink-900)">Sarah Morgan</b> · Director of Care, Wellington House</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA ============== -->
+<div class="cta-strip" id="contact">
+  <div>
+    <h2>Ready to fill your next shift?</h2>
+    <p>Free to post. Verified workers within minutes.</p>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <button class="btn btn-light btn-lg">Get started — it's free</button>
+    <button class="btn btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Talk to sales</button>
+  </div>
+</div>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="logo" style="color:#fff"><span class="mark">R</span> Relief</div>
+      <p>Professional care management solutions for homes and caregivers.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="#">For care homes</a></li><li><a href="#">For caregivers</a></li><li><a href="#">For families</a></li><li><a href="#">Pricing</a></li></ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul><li><a href="#">Help center</a></li><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="mailto:support@relief.com">support@relief.com</a></li></ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>© 2026 Relief Care Inc. All rights reserved.</div>
+    <div>Made with care · Toronto, Canada</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+.app-tabs {
+  display: inline-flex;
+  background: var(--ink-100);
+  padding: 3px;
+  border-radius: var(--r-pill);
+  gap: 2px;
+
+  &__tab {
+    border: none;
+    background: transparent;
+    padding: 6px 16px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-sans);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--ink-600);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+
+    &:hover:not(.app-tabs__tab--active) {
+      color: var(--ink-800);
+    }
+
+    &--active {
+      background: var(--ink-0);
+      color: var(--ink-900);
+      box-shadow: var(--sh-1);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(26, 166, 196, 0.25);
+    }
+  }
+}

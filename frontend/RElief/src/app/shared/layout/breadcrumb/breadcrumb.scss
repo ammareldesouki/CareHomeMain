@@ -1,0 +1,27 @@
+.app-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: var(--t-sm);
+  color: var(--ink-500);
+  flex-wrap: wrap;
+
+  &__item {
+    color: var(--ink-500);
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &[href]:hover { color: var(--accent-600); }
+
+    &--current {
+      color: var(--ink-900);
+      font-weight: 600;
+    }
+  }
+
+  &__sep {
+    margin: 0 var(--s-2);
+    color: var(--ink-300);
+    user-select: none;
+  }
+}

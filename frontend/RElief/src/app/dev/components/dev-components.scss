@@ -1,0 +1,111 @@
+.dev-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--s-9) var(--s-6);
+  font-family: var(--font-sans);
+}
+
+.dev-header {
+  margin-bottom: var(--s-9);
+}
+
+.dev-eyebrow {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--brand-600);
+  margin: 0 0 var(--s-2);
+}
+
+.dev-title {
+  font-size: var(--t-3xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+  margin: 0 0 var(--s-2);
+}
+
+.dev-sub {
+  font-size: var(--t-base);
+  color: var(--ink-500);
+  margin: 0;
+
+  code {
+    font-family: var(--font-mono);
+    font-size: var(--t-sm);
+    background: var(--ink-100);
+    padding: 2px 6px;
+    border-radius: var(--r-xs);
+  }
+}
+
+.dev-section {
+  background: var(--ink-0);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  margin-bottom: var(--s-6);
+  box-shadow: var(--sh-1);
+}
+
+.dev-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: var(--s-5);
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink-900);
+    letter-spacing: -0.01em;
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--brand-700);
+      background: var(--brand-50);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+  }
+}
+
+.dev-section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-500);
+  background: var(--ink-50);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--ink-200);
+}
+
+.dev-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: var(--s-3);
+}
+
+.dev-demo {
+  padding: var(--s-6);
+  background: var(--ink-50);
+  border: 1px dashed var(--ink-200);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+
+.dev-divider {
+  height: 1px;
+  background: var(--ink-100);
+  margin: var(--s-5) 0;
+}

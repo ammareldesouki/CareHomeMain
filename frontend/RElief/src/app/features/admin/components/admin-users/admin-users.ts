@@ -2,6 +2,9 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DashboardShellComponent } from '../../../../shared/components/dashboard-shell/dashboard-shell';
+import { SidebarItem } from '../../../../shared/components/sidebar/sidebar';
+import { BreadcrumbItem } from '../../../../shared/layout/breadcrumb/breadcrumb';
 import { AdminService } from '../../../../core/services/admin.service';
 import { FileService } from '../../../../core/services/file.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -28,11 +31,25 @@ interface DocumentFile {
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DashboardShellComponent],
   templateUrl: './admin-users.html',
-  styleUrls: ['./admin-users.scss', '../../admin-common.scss'],
+  styleUrls: ['./admin-users.scss'],
 })
 export class AdminUsers implements OnInit {
+  // Shell config
+  readonly sidebarItems: SidebarItem[] = [
+    { type: 'section', label: 'Platform' },
+    { type: 'link', label: 'Overview', icon: '⌂', path: '/admin/dashboard' },
+    { type: 'link', label: 'Users', icon: '☺', path: '/admin/users' },
+    { type: 'link', label: 'Verifications', icon: '✓', path: '/admin/verifications' },
+    { type: 'section', label: 'Marketplace' },
+    { type: 'link', label: 'Job offers', icon: '≡', path: '/admin/offers' },
+    { type: 'link', label: 'Applications', icon: '⏱', path: '/admin/applications' },
+  ];
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Admin' },
+    { label: 'Users' },
+  ];
   private admin = inject(AdminService);
   private files = inject(FileService);
   private notifications = inject(NotificationService);
@@ -277,6 +294,14 @@ profileDetail: Record<string, unknown> | null = null;
   pickVerification(row: Record<string, unknown>): string {
     const v = row['verificationStatus'] ?? row['VerificationStatus'];
     return v != null ? String(v) : '—';
+  }
+
+  rolePillClass(role: string): string {
+    const r = role.toLowerCase();
+    if (r.includes('admin')) return 'au-role-pill--admin';
+    if (r.includes('psw')) return 'au-role-pill--psw';
+    if (r.includes('care') || r.includes('home')) return 'au-role-pill--indiv';
+    return 'au-role-pill--indiv';
   }
 
 

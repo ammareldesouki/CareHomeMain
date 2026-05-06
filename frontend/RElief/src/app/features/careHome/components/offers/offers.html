@@ -1,178 +1,122 @@
-<app-navbar></app-navbar>
+<!-- Phase G: Care Home Offers / Applicants — re-skinned. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="userName"
+  userRole="Care Home"
+  [userInitials]="userInitials"
+  [searchPlaceholder]="''"
+>
 
-<div class="carehome-offers-page">
-  <!-- Header Banner -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1>My Job Offers</h1>
-      <p>Manage and track your published job opportunities</p>
+  <div class="cn-page-h">
+    <div>
+      <h1 class="cn-page-h__title">My Posted Offers</h1>
+      <p class="cn-page-h__sub">Manage your job listings and view applicants</p>
     </div>
-    <div class="header-pattern"></div>
+    <div class="cn-page-h__actions">
+      <button class="cn-btn cn-btn--primary" (click)="goToCreateOffer()">+ Create Offer</button>
+      <button class="cn-btn cn-btn--secondary" (click)="load()" [disabled]="loading">↻ Refresh</button>
+    </div>
   </div>
 
-  <main class="container">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="page-title">
-        <h2>Posted Offers</h2>
-        <span class="offer-count" *ngIf="!loading && offers.length > 0">{{ offers.length }} offer(s)</span>
-      </div>
-      <div class="toolbar-actions">
-        <button type="button" class="refresh-btn" (click)="load()" [disabled]="loading">
-          <span class="refresh-icon" [class.spinning]="loading">🔄</span>
-          {{ loading ? 'Loading...' : 'Refresh' }}
-        </button>
-        <button type="button" class="create-btn" (click)="goToCreateOffer()">
-          <i class="fas fa-plus"></i>
-          Create Offer
-        </button>
-      </div>
+  @if (loading) {
+    <div class="cn-state">
+      <div class="cn-spinner"></div>
+      <p>Loading your offers…</p>
     </div>
+  }
 
-    <!-- Loading State -->
-    @if (loading) {
-      <div class="state-card loading">
-        <div class="spinner"></div>
-        <p>Loading your offers...</p>
-      </div>
-    }
+  @if (!loading && error) {
+    <div class="cn-state cn-state--error">
+      <span>⚠</span>
+      <p>{{ error }}</p>
+      <button class="cn-btn cn-btn--primary" (click)="load()">Retry</button>
+    </div>
+  }
 
-    <!-- Error State -->
-    @if (!loading && error) {
-      <div class="state-card error">
-        <i class="fas fa-exclamation-circle"></i>
-        <h3>Error Loading Offers</h3>
-        <p>{{ error }}</p>
-        <button type="button" class="btn btn-primary" (click)="load()">
-          <i class="fas fa-redo"></i> Try Again
-        </button>
-      </div>
-    }
+  @if (!loading && offers.length === 0 && !error) {
+    <div class="cn-state cn-state--empty">
+      <span class="cn-state__ico">💼</span>
+      <h3>No offers posted yet</h3>
+      <p>Create your first job offer to start receiving applicants.</p>
+      <button class="cn-btn cn-btn--primary" (click)="goToCreateOffer()">Create Offer</button>
+    </div>
+  }
 
-    <!-- Empty State -->
-    @if (!loading && !error && offers.length === 0) {
-      <div class="state-card empty">
-        <div class="empty-icon">📋</div>
-        <h3>No Offers Yet</h3>
-        <p>Start by creating your first job offer to attract care professionals.</p>
-        <button type="button" class="create-btn" (click)="goToCreateOffer()">
-          <i class="fas fa-plus"></i> Create Your First Offer
-        </button>
-      </div>
-    }
-
-    <!-- Offers Grid -->
-    @if (!loading && !error && offers.length > 0) {
-      <div class="offers-grid">
-        @for (offer of offers; track offer.id) {
-          <article class="offer-card">
-            <div class="card-header">
-              <div class="offer-icon">💼</div>
-              <div class="offer-info">
-                <h3>{{ getTitle(offer) }}</h3>
-                <span class="status-badge" [class.active]="offer.isActive !== false" [class.inactive]="offer.isActive === false">
-                  {{ getStatus(offer) }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="card-body">
-              @if (offer.description) {
-                <p class="description">{{ offer.description }}</p>
-              }
-              
-              <div class="info-list">
-                <div class="info-row">
-                  <span class="info-label">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Address
-                  </span>
-                  <span class="info-value">{{ getAddress(offer) }}</span>
-                </div>
-                
-                @if (offer.hourlyRate != null) {
-                  <div class="info-row">
-                    <span class="info-label">
-                      <i class="fas fa-pound-sign"></i>
-                      Hourly Rate
-                    </span>
-                    <span class="info-value rate-value">£{{ offer.hourlyRate }}/hr</span>
-                  </div>
-                }
-                
-                @if (offer.shifts && offer.shifts.length > 0) {
-                  <div class="info-row">
-                    <span class="info-label">
-                      <i class="fas fa-calendar-alt"></i>
-                      Shifts
-                    </span>
-                    <span class="info-value">{{ getShiftDates(offer) }}</span>
-                  </div>
-                }
-              </div>
-              
-              @if (offer.shifts && offer.shifts.length > 0) {
-                <div class="shift-count-badge">
-                  <span class="shift-icon">📆</span>
-                  <span>{{ getShiftCount(offer) }} shift(s) total</span>
-                </div>
-              }
-            </div>
-            
-            <div class="card-footer">
-              <button type="button" class="btn btn-outline" (click)="editOffer(offer)">
-                <i class="fas fa-edit"></i>
-                Edit
-              </button>
-              <button type="button" class="btn btn-primary" (click)="viewApplications(offer)">
-                <i class="fas fa-users"></i>
-                View Applications
-              </button>
-            </div>
-          </article>
-        }
-      </div>
-    }
-
-    <!-- Applicants Modal -->
-    <div *ngIf="selectedOfferId" class="modal-overlay applicants-modal" (click)="closeApplicantsModal()">
-      <div class="modal-content applicants-modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>Applicants for <strong>{{ selectedOfferTitle }}</strong></h2>
-          <button class="close-btn" (click)="closeApplicantsModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div *ngIf="applicantsLoading" class="loading-state">
-          <div class="spinner"></div>
-          <p>Loading applicants...</p>
-        </div>
-        <div *ngIf="!applicantsLoading && applicants.length === 0" class="empty-state">
-          <i class="fas fa-users-slash"></i>
-          <p>No applications yet</p>
-        </div>
-        <div class="applicants-list" *ngIf="!applicantsLoading && applicants.length > 0">
-          <div *ngFor="let applicant of applicants" class="applicant-card">
-            <div class="applicant-avatar">
-              <img *ngIf="getApplicantPhotoUrl(applicant)" 
-                   [src]="getApplicantPhotoUrl(applicant)!" 
-                   [alt]="applicant.fullName"
-                   class="photo" 
-                   (error)="onPhotoError($event)" />
-              <span *ngIf="!getApplicantPhotoUrl(applicant)">{{ applicant.fullName.charAt(0).toUpperCase() }}</span>
-            </div>
-            <div class="applicant-info">
-              <h4>{{ applicant.fullName }}</h4>
-              <div class="status-badge" [class]="getStatusClass(applicant.statusCode)">
-                {{ applicant.status }}
-              </div>
+  @if (!loading && offers.length > 0) {
+    <div class="co-grid">
+      @for (offer of offers; track offer.id) {
+        <div class="co-card">
+          <div class="co-card__head">
+            <div class="co-card__info">
+              <h3>{{ getTitle(offer) }}</h3>
+              <span class="pill" [ngClass]="offer.isActive !== false ? 'pill--success' : 'pill--neutral'">
+                <span class="pill__dot"></span>{{ getStatus(offer) }}
+              </span>
             </div>
           </div>
+          
+          <div class="co-card__body">
+            <p class="co-card__desc">{{ offer.description | slice:0:120 }}{{ offer.description.length > 120 ? '...' : '' }}</p>
+            <div class="cn-kv-row"><span class="cn-kv-row__k">Location</span><span class="cn-kv-row__v">{{ getAddress(offer) }}</span></div>
+            <div class="cn-kv-row"><span class="cn-kv-row__k">Shifts</span><span class="cn-kv-row__v">{{ getShiftCount(offer) }} shifts</span></div>
+          </div>
+
+          <div class="co-card__foot">
+            <button class="cn-btn cn-btn--secondary" (click)="editOffer(offer)" style="flex:1">Edit</button>
+            <button class="cn-btn cn-btn--primary" (click)="viewApplications(offer)" style="flex:1">View Applicants</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Applicants Modal / Drawer equivalent -->
+  @if (selectedOfferId) {
+    <div class="cn-modal-backdrop" (click)="closeApplicantsModal()">
+      <div class="cn-modal" (click)="$event.stopPropagation()" style="max-width:600px">
+        <div class="cn-modal__head">
+          <div>
+            <h2 class="cn-modal__title">Applicants</h2>
+            <p class="cn-modal__sub">For: {{ selectedOfferTitle }}</p>
+          </div>
+          <button class="cn-modal__close" (click)="closeApplicantsModal()">✕</button>
+        </div>
+        <div class="cn-modal__body">
+          @if (applicantsLoading) {
+            <div class="cn-state" style="padding:24px"><div class="cn-spinner"></div></div>
+          } @else if (applicants.length === 0) {
+            <div class="cn-state cn-state--empty" style="padding:24px">
+              <p>No applicants yet for this offer.</p>
+            </div>
+          } @else {
+            <div class="co-app-list">
+              @for (app of applicants; track app.id) {
+                <div class="co-app-row">
+                  <div class="co-app-row__av">
+                    @if (getApplicantPhotoUrl(app)) {
+                      <img [src]="getApplicantPhotoUrl(app)" (error)="onPhotoError($event)" />
+                    } @else {
+                      <span>{{ app.fullName.charAt(0).toUpperCase() }}</span>
+                    }
+                  </div>
+                  <div class="co-app-row__info">
+                    <h4>{{ app.fullName }}</h4>
+                    <span class="pill" [ngClass]="'pill--' + getStatusClass(app.statusCode)">
+                      <span class="pill__dot"></span>{{ app.status }}
+                    </span>
+                  </div>
+                  <button class="cn-btn cn-btn--secondary cn-btn--sm" [routerLink]="['/care-home/notifications']" [queryParams]="{offerId: selectedOfferId}" (click)="closeApplicantsModal()">Review</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="cn-modal__foot">
+          <button class="cn-btn cn-btn--secondary" (click)="closeApplicantsModal()">Close</button>
         </div>
       </div>
     </div>
-  </main>
-</div>
+  }
 
-<app-footer></app-footer>
-
+</app-dashboard-shell>

@@ -1,0 +1,23 @@
+<header class="app-topbar">
+  <app-breadcrumb [items]="breadcrumbs" />
+
+  <div class="app-topbar__search">
+    <span class="app-topbar__search-icon" aria-hidden="true">⌕</span>
+    <input
+      class="app-topbar__search-input"
+      type="search"
+      [placeholder]="searchPlaceholder"
+      (input)="searchChange.emit($any($event.target).value)"
+      aria-label="Search"
+    />
+  </div>
+
+  <div class="app-topbar__actions">
+    <ng-content select="[topbar-actions]" />
+    <button class="app-topbar__icon-btn" aria-label="Notifications" title="Notifications">🔔</button>
+    <button class="app-topbar__icon-btn" aria-label="Logout" title="Logout" (click)="onLogout()">⎋</button>
+    @if (userInitials) {
+      <span class="app-topbar__av">{{ userInitials }}</span>
+    }
+  </div>
+</header>

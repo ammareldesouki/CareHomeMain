@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CareHome — Step 1 · Global Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     CareHome — Global Design Tokens
+     Colors are PRESERVED from the existing app.
+     We only refine spacing, type scale, radii, shadows, hierarchy.
+     ============================================================ */
+  :root {
+    /* === Brand colors (lifted directly from current screens) === */
+    --brand-700: #0b6b80;     /* deep teal — primary buttons (gradient end) */
+    --brand-600: #0e8aa6;     /* teal — primary buttons (gradient start)   */
+    --brand-500: #1aa6c4;
+    --brand-50:  #e8f6fa;     /* card header washes                        */
+
+    --accent-700: #0a4a8a;    /* deep blue — landing hero gradient end     */
+    --accent-600: #1763b8;    /* blue — landing hero gradient start, links */
+    --accent-50:  #eaf2fb;
+
+    /* status / semantic — same hues already used */
+    --success-600: #1e9e5a;
+    --success-500: #22b96a;
+    --success-50:  #e8f7ee;
+
+    --danger-600:  #c8362f;
+    --danger-500:  #e0463f;
+    --danger-50:   #fdecea;
+
+    --warn-700:    #8a5a00;   /* pending pill text */
+    --warn-500:    #f5b13b;
+    --warn-50:     #fff5dd;   /* pending pill bg   */
+
+    --info-600:    #5a4be0;   /* indigo accent for verification doc icons  */
+    --info-50:     #eee9fb;
+
+    /* neutrals — slightly cooler than pure gray to match the teal brand */
+    --ink-900: #0f1f2a;
+    --ink-800: #1c2d3a;
+    --ink-700: #324655;
+    --ink-600: #4a5f6e;
+    --ink-500: #6b7e8b;
+    --ink-400: #93a3ad;
+    --ink-300: #c1ccd3;
+    --ink-200: #dde5ea;
+    --ink-100: #ecf1f4;
+    --ink-50:  #f5f8fa;
+    --ink-0:   #ffffff;
+
+    /* === Type === */
+    --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+    /* fluid-ish type scale (1.250 minor third) */
+    --t-xs:   12px;
+    --t-sm:   13px;
+    --t-base: 15px;
+    --t-md:   17px;
+    --t-lg:   20px;
+    --t-xl:   24px;
+    --t-2xl:  30px;
+    --t-3xl:  38px;
+    --t-4xl:  48px;
+    --t-5xl:  60px;
+
+    /* === Spacing (4px grid) === */
+    --s-1:  4px;
+    --s-2:  8px;
+    --s-3:  12px;
+    --s-4:  16px;
+    --s-5:  20px;
+    --s-6:  24px;
+    --s-7:  32px;
+    --s-8:  40px;
+    --s-9:  56px;
+    --s-10: 72px;
+    --s-11: 96px;
+
+    /* === Radii === */
+    --r-xs: 6px;
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 22px;
+    --r-pill: 999px;
+
+    /* === Shadows === */
+    --sh-1: 0 1px 2px rgba(15,31,42,.04), 0 1px 1px rgba(15,31,42,.03);
+    --sh-2: 0 2px 6px rgba(15,31,42,.05), 0 1px 2px rgba(15,31,42,.04);
+    --sh-3: 0 8px 24px rgba(15,31,42,.07), 0 2px 6px rgba(15,31,42,.04);
+    --sh-4: 0 20px 48px rgba(15,31,42,.10), 0 4px 12px rgba(15,31,42,.05);
+
+    /* === Layout === */
+    --container: 1200px;
+    --gutter: var(--s-6);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--t-base);
+    color: var(--ink-800);
+    background: var(--ink-50);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============== Page chrome (for the showcase only) ============== */
+  .page { max-width: var(--container); margin: 0 auto; padding: var(--s-9) var(--s-6); }
+  .page-head { margin-bottom: var(--s-9); }
+  .eyebrow {
+    font-size: var(--t-xs);
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brand-600);
+    margin-bottom: var(--s-3);
+  }
+  h1.title {
+    font-size: var(--t-4xl);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0 0 var(--s-3);
+    color: var(--ink-900);
+  }
+  p.lede {
+    font-size: var(--t-md);
+    color: var(--ink-600);
+    max-width: 70ch;
+    margin: 0;
+  }
+  section + section { margin-top: var(--s-10); }
+  h2.section {
+    font-size: var(--t-xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink-900);
+    margin: 0 0 var(--s-2);
+    display: flex; align-items: baseline; gap: var(--s-3);
+  }
+  h2.section .num {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--ink-400);
+    background: var(--ink-100);
+    padding: 2px 8px;
+    border-radius: var(--r-xs);
+  }
+  p.section-sub {
+    color: var(--ink-500);
+    margin: 0 0 var(--s-6);
+    font-size: var(--t-sm);
+  }
+
+  /* ============== Cards / surfaces ============== */
+  .surface {
+    background: var(--ink-0);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-2);
+  }
+  .grid { display: grid; gap: var(--s-4); }
+  .g-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .g-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .g-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .g-6 { grid-template-columns: repeat(6, minmax(0,1fr)); }
+  @media (max-width: 880px) {
+    .g-3, .g-4, .g-6 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+
+  /* ============== Color swatches ============== */
+  .swatch {
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--ink-200);
+    background: var(--ink-0);
+  }
+  .swatch .chip { height: 84px; }
+  .swatch .meta { padding: var(--s-3) var(--s-4); }
+  .swatch .name { font-weight: 600; font-size: var(--t-sm); color: var(--ink-900); }
+  .swatch .hex  { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-500); margin-top: 2px; }
+
+  /* ============== Type spec ============== */
+  .type-row {
+    display: grid; grid-template-columns: 140px 1fr auto;
+    align-items: baseline; gap: var(--s-6);
+    padding: var(--s-5) 0;
+    border-top: 1px solid var(--ink-200);
+  }
+  .type-row:first-child { border-top: 0; }
+  .type-row .label { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-500); }
+  .type-row .specs { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-400); white-space: nowrap; }
+  .type-row .sample { color: var(--ink-900); }
+
+  .t-display { font-size: var(--t-4xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .t-h1      { font-size: var(--t-3xl); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; }
+  .t-h2      { font-size: var(--t-2xl); font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+  .t-h3      { font-size: var(--t-xl);  font-weight: 700; line-height: 1.3; }
+  .t-h4      { font-size: var(--t-lg);  font-weight: 600; line-height: 1.35; }
+  .t-body    { font-size: var(--t-base); font-weight: 400; line-height: 1.55; color: var(--ink-700); }
+  .t-small   { font-size: var(--t-sm);  font-weight: 400; line-height: 1.5; color: var(--ink-600); }
+  .t-caption { font-size: var(--t-xs);  font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-500); }
+
+  /* ============== Spacing / radius / shadow ============== */
+  .stack { display: flex; flex-wrap: wrap; gap: var(--s-4); align-items: flex-end; }
+  .space-box {
+    background: var(--brand-50);
+    border: 1px dashed var(--brand-600);
+    border-radius: var(--r-xs);
+    color: var(--brand-700);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    display: grid; place-items: center;
+    text-align: center;
+  }
+  .radius-box, .shadow-box {
+    background: var(--ink-0);
+    border: 1px solid var(--ink-200);
+    width: 100%;
+    aspect-ratio: 1.4;
+    display: grid; place-items: center;
+    color: var(--ink-500);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+  }
+  .shadow-1 { box-shadow: var(--sh-1); border-color: transparent; }
+  .shadow-2 { box-shadow: var(--sh-2); border-color: transparent; }
+  .shadow-3 { box-shadow: var(--sh-3); border-color: transparent; }
+  .shadow-4 { box-shadow: var(--sh-4); border-color: transparent; }
+
+  /* ============== Buttons ============== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 40px; padding: 0 18px;
+    font-family: inherit; font-size: var(--t-sm); font-weight: 600;
+    border-radius: var(--r-pill);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+    white-space: nowrap;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(180deg, var(--brand-600), var(--brand-700));
+    box-shadow: var(--sh-2);
+  }
+  .btn-primary:hover { box-shadow: var(--sh-3); }
+  .btn-secondary {
+    background: var(--ink-0);
+    color: var(--ink-800);
+    border-color: var(--ink-200);
+  }
+  .btn-secondary:hover { border-color: var(--ink-300); background: var(--ink-50); }
+  .btn-success {
+    background: var(--success-600); color: #fff;
+  }
+  .btn-danger {
+    background: var(--danger-600); color: #fff;
+  }
+  .btn-ghost {
+    background: transparent; color: var(--brand-700);
+  }
+  .btn-ghost:hover { background: var(--brand-50); }
+  .btn-sm { height: 32px; padding: 0 14px; font-size: var(--t-xs); }
+  .btn-lg { height: 48px; padding: 0 22px; font-size: var(--t-base); }
+
+  /* ============== Form fields ============== */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: var(--t-xs); font-weight: 600; letter-spacing: .04em;
+    color: var(--ink-700); text-transform: none;
+  }
+  .input, .select {
+    height: 44px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--ink-200);
+    background: var(--ink-0);
+    padding: 0 14px;
+    font-family: inherit; font-size: var(--t-sm);
+    color: var(--ink-900);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .input::placeholder { color: var(--ink-400); }
+  .input:focus, .select:focus {
+    outline: none;
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 4px rgba(14,138,166,.12);
+  }
+
+  /* ============== Pills / badges ============== */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    font-size: var(--t-xs); font-weight: 600;
+    border-radius: var(--r-pill);
+    letter-spacing: .02em;
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .pill-success { background: var(--success-50); color: var(--success-600); }
+  .pill-success .dot { background: var(--success-500); }
+  .pill-warn    { background: var(--warn-50);    color: var(--warn-700); }
+  .pill-warn    .dot { background: var(--warn-500); }
+  .pill-danger  { background: var(--danger-50);  color: var(--danger-600); }
+  .pill-danger  .dot { background: var(--danger-500); }
+  .pill-info    { background: var(--accent-50);  color: var(--accent-600); }
+  .pill-info    .dot { background: var(--accent-600); }
+  .pill-neutral { background: var(--ink-100);    color: var(--ink-700); }
+  .pill-neutral .dot { background: var(--ink-400); }
+
+  /* ============== Footer note ============== */
+  footer.note {
+    margin-top: var(--s-11);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--ink-200);
+    font-size: var(--t-xs);
+    color: var(--ink-500);
+  }
+</style>
+</head>
+<body>
+
+<main class="page" data-screen-label="01 Global Design System">
+
+  <header class="page-head">
+    <div class="eyebrow">CareHome · Redesign</div>
+    <h1 class="title">Step 1 — Global Design System</h1>
+    <p class="lede">A foundation of tokens, type, and components reused across every screen. Colors are <strong>preserved</strong> from the existing app — we are only refining spacing, hierarchy, typography, and component craft.</p>
+  </header>
+
+  <!-- ============== COLORS ============== -->
+  <section>
+    <h2 class="section"><span class="num">01</span> Colors (preserved)</h2>
+    <p class="section-sub">Same hues as the current app, organized into a clear role-based scale.</p>
+
+    <div class="grid g-4" style="margin-bottom:var(--s-5)">
+      <div class="swatch"><div class="chip" style="background:var(--brand-700)"></div><div class="meta"><div class="name">Brand 700 · Primary deep</div><div class="hex">#0B6B80</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-600)"></div><div class="meta"><div class="name">Brand 600 · Primary</div><div class="hex">#0E8AA6</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-500)"></div><div class="meta"><div class="name">Brand 500 · Highlight</div><div class="hex">#1AA6C4</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-50)"></div><div class="meta"><div class="name">Brand 50 · Wash</div><div class="hex">#E8F6FA</div></div></div>
+    </div>
+
+    <div class="grid g-4" style="margin-bottom:var(--s-5)">
+      <div class="swatch"><div class="chip" style="background:var(--accent-700)"></div><div class="meta"><div class="name">Accent 700 · Hero deep</div><div class="hex">#0A4A8A</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--accent-600)"></div><div class="meta"><div class="name">Accent 600 · Link / hero</div><div class="hex">#1763B8</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--success-600)"></div><div class="meta"><div class="name">Success 600</div><div class="hex">#1E9E5A</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--danger-600)"></div><div class="meta"><div class="name">Danger 600</div><div class="hex">#C8362F</div></div></div>
+    </div>
+
+    <div class="grid g-4">
+      <div class="swatch"><div class="chip" style="background:var(--warn-500)"></div><div class="meta"><div class="name">Warn 500 · Pending</div><div class="hex">#F5B13B</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--info-600)"></div><div class="meta"><div class="name">Info 600 · Verification</div><div class="hex">#5A4BE0</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink-900)"></div><div class="meta"><div class="name">Ink 900 · Headings</div><div class="hex">#0F1F2A</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink-50);border-bottom:1px solid var(--ink-200)"></div><div class="meta"><div class="name">Ink 50 · App bg</div><div class="hex">#F5F8FA</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============== TYPE ============== -->
+  <section>
+    <h2 class="section"><span class="num">02</span> Typography</h2>
+    <p class="section-sub">Plus Jakarta Sans for UI · JetBrains Mono for data and metadata. One font family does the talking; weight + size carry hierarchy.</p>
+
+    <div class="surface" style="padding: var(--s-2) var(--s-6)">
+      <div class="type-row">
+        <div class="label">Display</div>
+        <div class="sample t-display">Care, scheduled with confidence</div>
+        <div class="specs">48 / 800 / -2%</div>
+      </div>
+      <div class="type-row">
+        <div class="label">H1</div>
+        <div class="sample t-h1">Pending PSW Verifications</div>
+        <div class="specs">38 / 700 / -1.5%</div>
+      </div>
+      <div class="type-row">
+        <div class="label">H2</div>
+        <div class="sample t-h2">My Job Offers &amp; History</div>
+        <div class="specs">30 / 700 / -1%</div>
+      </div>
+      <div class="type-row">
+        <div class="label">H3</div>
+        <div class="sample t-h3">Care Home Profile</div>
+        <div class="specs">24 / 700</div>
+      </div>
+      <div class="type-row">
+        <div class="label">H4 / Card title</div>
+        <div class="sample t-h4">Personal support worker</div>
+        <div class="specs">20 / 600</div>
+      </div>
+      <div class="type-row">
+        <div class="label">Body</div>
+        <div class="sample t-body">Manage your care home information and settings — verified caregivers, applicants, and shifts in one place.</div>
+        <div class="specs">15 / 400 / 1.55</div>
+      </div>
+      <div class="type-row">
+        <div class="label">Small</div>
+        <div class="sample t-small">Showing 12 of 12 · Page 1 of 1</div>
+        <div class="specs">13 / 400</div>
+      </div>
+      <div class="type-row">
+        <div class="label">Caption</div>
+        <div class="sample t-caption">Verification documents</div>
+        <div class="specs">12 / 500 / +8%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== SPACING ============== -->
+  <section>
+    <h2 class="section"><span class="num">03</span> Spacing — 4px grid</h2>
+    <p class="section-sub">All paddings, gaps, and section rhythm derive from a single 4-pixel base. No magic numbers.</p>
+
+    <div class="surface" style="padding: var(--s-7)">
+      <div class="stack">
+        <div class="space-box" style="width:4px;height:32px"></div>
+        <div class="space-box" style="width:8px;height:32px"></div>
+        <div class="space-box" style="width:12px;height:32px">12</div>
+        <div class="space-box" style="width:16px;height:32px">16</div>
+        <div class="space-box" style="width:20px;height:32px">20</div>
+        <div class="space-box" style="width:24px;height:32px">24</div>
+        <div class="space-box" style="width:32px;height:32px">32</div>
+        <div class="space-box" style="width:40px;height:32px">40</div>
+        <div class="space-box" style="width:56px;height:32px">56</div>
+        <div class="space-box" style="width:72px;height:32px">72</div>
+        <div class="space-box" style="width:96px;height:32px">96</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== RADIUS + SHADOW ============== -->
+  <section>
+    <h2 class="section"><span class="num">04</span> Radii &amp; elevation</h2>
+    <p class="section-sub">Soft, generous radii on cards (16px) — pill radii on actionable controls. Four elevation steps total.</p>
+
+    <div class="grid g-6" style="margin-bottom:var(--s-5)">
+      <div class="radius-box" style="border-radius:6px">6</div>
+      <div class="radius-box" style="border-radius:8px">8</div>
+      <div class="radius-box" style="border-radius:12px">12</div>
+      <div class="radius-box" style="border-radius:16px">16</div>
+      <div class="radius-box" style="border-radius:22px">22</div>
+      <div class="radius-box" style="border-radius:999px">pill</div>
+    </div>
+
+    <div class="grid g-4">
+      <div class="shadow-box shadow-1">sh-1</div>
+      <div class="shadow-box shadow-2">sh-2</div>
+      <div class="shadow-box shadow-3">sh-3</div>
+      <div class="shadow-box shadow-4">sh-4</div>
+    </div>
+  </section>
+
+  <!-- ============== BUTTONS ============== -->
+  <section>
+    <h2 class="section"><span class="num">05</span> Buttons</h2>
+    <p class="section-sub">Pill-shaped, 40px default. Primary uses the existing teal gradient. Sizes: sm 32 · md 40 · lg 48.</p>
+
+    <div class="surface" style="padding: var(--s-7)">
+      <div class="stack" style="gap:var(--s-3); margin-bottom:var(--s-5)">
+        <button class="btn btn-primary">Apply now</button>
+        <button class="btn btn-secondary">View details</button>
+        <button class="btn btn-success">✓ Approve</button>
+        <button class="btn btn-danger">✕ Reject</button>
+        <button class="btn btn-ghost">Cancel</button>
+      </div>
+      <div class="stack" style="gap:var(--s-3)">
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== FORMS ============== -->
+  <section>
+    <h2 class="section"><span class="num">06</span> Form fields</h2>
+    <p class="section-sub">Labels above input. 44px hit target. Focus ring uses brand 600 at 12% opacity.</p>
+
+    <div class="surface" style="padding: var(--s-7)">
+      <div class="grid g-3">
+        <div class="field">
+          <label>Search</label>
+          <input class="input" placeholder="Name, email, id…" />
+        </div>
+        <div class="field">
+          <label>Role contains</label>
+          <input class="input" placeholder="e.g. PSW" />
+        </div>
+        <div class="field">
+          <label>Per page</label>
+          <select class="select"><option>12</option><option>24</option><option>48</option></select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STATUS PILLS ============== -->
+  <section>
+    <h2 class="section"><span class="num">07</span> Status pills</h2>
+    <p class="section-sub">Same status colors as today, unified into a single pill component.</p>
+
+    <div class="surface" style="padding: var(--s-7)">
+      <div class="stack" style="gap:var(--s-3)">
+        <span class="pill pill-success"><span class="dot"></span>Active</span>
+        <span class="pill pill-success"><span class="dot"></span>1 Available</span>
+        <span class="pill pill-warn"><span class="dot"></span>Pending</span>
+        <span class="pill pill-info"><span class="dot"></span>Individual</span>
+        <span class="pill pill-info"><span class="dot"></span>Verified</span>
+        <span class="pill pill-danger"><span class="dot"></span>Rejected</span>
+        <span class="pill pill-neutral"><span class="dot"></span>Cancelled</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Step 1 of 4 · Tokens locked. Next steps reuse these variables verbatim — no new colors will be introduced.
+  </footer>
+
+</main>
+
+</body>
+</html>

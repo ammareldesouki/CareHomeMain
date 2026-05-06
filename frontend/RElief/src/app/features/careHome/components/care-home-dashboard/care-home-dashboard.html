@@ -1,0 +1,272 @@
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="homeTitle"
+  userRole="Care Home · Verified"
+  [userInitials]="homeInitials"
+  searchPlaceholder="Search applicants, offers, shifts…"
+>
+
+  <!-- Page header -->
+  <div class="ch-page-h">
+    <div>
+      <h1 class="ch-page-h__title">Today at {{ homeTitle }}</h1>
+      <p class="ch-page-h__sub">{{ today }} · 3 active offers</p>
+    </div>
+    <div class="ch-page-h__actions">
+      <button class="ch-btn ch-btn--primary" (click)="openCreate()">+ Create offer</button>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="ch-kpis">
+    <app-stat-card
+      label="Active offers"
+      icon="≡"
+      [value]="isLoading ? '—' : activeOffers.toString()"
+      delta="+1 this week"
+      deltaDirection="up"
+      tone="brand"
+    />
+    <app-stat-card
+      label="Pending applications"
+      icon="◷"
+      [value]="isLoading ? '—' : pendingApps.toString()"
+      delta="awaiting review"
+      deltaDirection="neutral"
+      tone="warn"
+    />
+    <app-stat-card
+      label="Shifts covered"
+      icon="✓"
+      [value]="isLoading ? '—' : shiftsCovered"
+      delta="+6% vs last month"
+      deltaDirection="up"
+      tone="success"
+    />
+    <app-stat-card
+      label="Spend MTD"
+      icon="$"
+      [value]="spendMtd != null ? ('$' + spendMtd.toLocaleString()) : '—'"
+      delta="vs budget"
+      deltaDirection="neutral"
+      tone="brand"
+    />
+  </div>
+
+  <!-- Content split -->
+  <div class="ch-split">
+
+    <!-- Left: applications table + chart -->
+    <div class="ch-left-col">
+
+      <!-- Pending applications -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Pending applications</h3>
+          <span class="ds-card__meta">{{ pendingApps }} to review</span>
+          <div class="ch-tabs">
+            <button class="ch-tabs__btn ch-tabs__btn--on">Pending</button>
+            <button class="ch-tabs__btn" routerLink="/care-home/notifications">Approved</button>
+            <button class="ch-tabs__btn" routerLink="/care-home/notifications">Rejected</button>
+          </div>
+        </div>
+        <div class="ds-card__body">
+          @if (isLoading) {
+            <div class="ch-skeleton ch-skeleton--table"></div>
+          } @else if (pendingApplications.length === 0) {
+            <div class="ch-empty">
+              <span>🎉</span>
+              <p>No pending applications. Post an offer to attract PSWs!</p>
+            </div>
+          } @else {
+            <table class="ch-table">
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Offer</th>
+                  <th>Shift</th>
+                  <th>Rate</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of pendingApplications; track app.requestId) {
+                  <tr>
+                    <td>
+                      <div class="ch-ucell">
+                        <div class="ch-av" [ngClass]="'ch-av--b' + app.colorIndex">{{ app.initials }}</div>
+                        <div>
+                          <div class="ch-ucell__name">{{ app.applicantName }}</div>
+                          <div class="ch-ucell__email">{{ app.applicantEmail }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ app.offerTitle }}</td>
+                    <td>{{ app.shift }}</td>
+                    <td>
+                      <b class="ch-rate">{{ app.rate != null ? ('$' + app.rate + '/hr') : '—' }}</b>
+                    </td>
+                    <td class="ch-actions-cell">
+                      <button class="ch-btn ch-btn--success ch-btn--sm">Approve</button>
+                      <button class="ch-btn ch-btn--secondary ch-btn--sm">Reject</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+        <div class="ds-card__foot">
+          {{ pendingApplications.length }} of {{ pendingApps }} ·
+          <a class="ds-card__foot-link" routerLink="/care-home/notifications">Open applications →</a>
+        </div>
+      </div>
+
+      <!-- Coverage chart -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Shift coverage — last 12 weeks</h3>
+          <div class="ch-tabs ch-tabs--right">
+            <button class="ch-tabs__btn">Week</button>
+            <button class="ch-tabs__btn ch-tabs__btn--on">Month</button>
+            <button class="ch-tabs__btn">Quarter</button>
+          </div>
+        </div>
+        <div class="ch-chart">
+          @for (bar of chartBars; track $index) {
+            <div class="ch-chart__bar" [ngClass]="$index >= 8 ? 'ch-chart__bar--alt' : ''" [style.height]="bar + '%'"></div>
+          }
+        </div>
+        <div class="ch-chart-x">
+          <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span>
+          <span>W7</span><span>W8</span><span>W9</span><span>W10</span><span>W11</span><span>W12</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: active offers -->
+    <div class="ch-right-col">
+
+      <!-- Active offers -->
+      <div class="ds-card">
+        <div class="ds-card__head">
+          <h3 class="ds-card__title">Active offers</h3>
+          <button class="ch-btn ch-btn--secondary ch-btn--sm" style="margin-left:auto" (click)="openCreate()">+ New</button>
+        </div>
+        <div class="ds-card__body ch-offers-list">
+          @if (isLoading) {
+            <div class="ch-skeleton"></div>
+            <div class="ch-skeleton"></div>
+          } @else if (activeOffersList.length === 0) {
+            <div class="ch-empty ch-empty--sm">No active offers. Create one to get started!</div>
+          } @else {
+            @for (o of activeOffersList; track o.id) {
+              <div class="ch-offer-item">
+                <div class="ch-offer-item__ico">★</div>
+                <div class="ch-offer-item__info">
+                  <div class="ch-offer-item__title">{{ o.title }}</div>
+                  <div class="ch-offer-item__meta">
+                    {{ o.rate != null ? ('$' + o.rate + '/hr') : '—' }} · {{ o.applicantCount }} applicant{{ o.applicantCount !== 1 ? 's' : '' }}
+                  </div>
+                </div>
+                <span class="pill pill--info"><span class="pill__dot"></span>Active</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Create offer modal -->
+  @if (showCreateModal) {
+    <div class="ch-modal-backdrop" (click)="closeCreate()">
+      <div class="ch-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="create-offer-title">
+        <div class="ch-modal__head">
+          <h2 id="create-offer-title" class="ch-modal__title">Create a new offer</h2>
+          <button class="ch-modal__close" (click)="closeCreate()" aria-label="Close">✕</button>
+        </div>
+        <div class="ch-modal__body">
+          <form [formGroup]="offerForm" (ngSubmit)="submitOffer()" class="ch-form">
+            <div class="ch-form__grid">
+              <div class="ch-field">
+                <label class="ch-field__label">Title *</label>
+                <input class="ch-field__input" formControlName="title" placeholder="Offer title">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Position *</label>
+                <input class="ch-field__input" formControlName="position" placeholder="e.g. Registered Nurse">
+              </div>
+              <div class="ch-field ch-field--full">
+                <label class="ch-field__label">Description *</label>
+                <textarea class="ch-field__input ch-field__textarea" formControlName="description" rows="3" placeholder="Describe the role"></textarea>
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Address *</label>
+                <input class="ch-field__input" formControlName="address" placeholder="Street address">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Address Line 2 *</label>
+                <input class="ch-field__input" formControlName="address2" placeholder="Apt/Unit">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">City *</label>
+                <input class="ch-field__input" formControlName="city" placeholder="City">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Province *</label>
+                <input class="ch-field__input" formControlName="province" placeholder="Province">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Postal Code *</label>
+                <input class="ch-field__input" formControlName="postalCode" placeholder="e.g. M5V 2T6">
+              </div>
+              <div class="ch-field">
+                <label class="ch-field__label">Hourly Rate *</label>
+                <input class="ch-field__input" type="number" formControlName="hourlyRate" min="10" placeholder="Min $10">
+              </div>
+            </div>
+
+            <!-- Shifts -->
+            <div class="ch-shifts-head">
+              <span class="ch-shifts-head__label">Shifts *</span>
+              <button type="button" class="ch-btn ch-btn--secondary ch-btn--sm" (click)="addShift()">+ Add shift</button>
+            </div>
+            <div formArrayName="shifts" class="ch-shifts-list">
+              @for (ctrl of shifts.controls; track $index) {
+                <div class="ch-shift-row" [formGroupName]="$index">
+                  <div class="ch-field">
+                    <label class="ch-field__label">Date</label>
+                    <input class="ch-field__input" type="date" formControlName="date">
+                  </div>
+                  <div class="ch-field">
+                    <label class="ch-field__label">Start</label>
+                    <input class="ch-field__input" type="time" formControlName="startTime">
+                  </div>
+                  <div class="ch-field">
+                    <label class="ch-field__label">End</label>
+                    <input class="ch-field__input" type="time" formControlName="endTime">
+                  </div>
+                  @if (shifts.length > 1) {
+                    <button type="button" class="ch-btn ch-btn--danger ch-btn--sm ch-shift-remove" (click)="removeShift($index)" aria-label="Remove shift">✕</button>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="ch-modal__footer">
+              <button type="button" class="ch-btn ch-btn--secondary" (click)="closeCreate()">Cancel</button>
+              <button type="submit" class="ch-btn ch-btn--primary" [disabled]="isSubmitting">
+                {{ isSubmitting ? 'Creating…' : 'Create offer' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+</app-dashboard-shell>

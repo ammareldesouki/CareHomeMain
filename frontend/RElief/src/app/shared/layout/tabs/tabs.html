@@ -1,0 +1,13 @@
+<div class="app-tabs" role="tablist">
+  @for (item of items; track item; let i = $index) {
+    <button
+      class="app-tabs__tab"
+      [class.app-tabs__tab--active]="i === _active()"
+      role="tab"
+      [attr.aria-selected]="i === _active()"
+      (click)="select(i)"
+      (keydown.enter)="select(i)"
+      (keydown.space)="select(i)"
+    >{{ item }}</button>
+  }
+</div>

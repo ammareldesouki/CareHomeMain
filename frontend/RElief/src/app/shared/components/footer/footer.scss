@@ -1,114 +1,89 @@
-$primary-color: #034a90bb;
-$text-gray: #64748b;
-$bg-light: #f8fafc;
-$accent-blue: #0b4897;
-$hover-cyan: #0b96b1;
+.app-footer {
+  background: var(--ink-900);
+  color: rgba(255,255,255,.7);
+  padding: 64px var(--s-6) 32px;
+  font-family: var(--font-sans);
 
-.relief-footer {
-  background-color: white;
-  padding: 60px 20px 20px;
-  border-top: 1px solid #e2e8f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-  .footer-container {
-    max-width: 1100px;
+  &__grid {
+    max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  .footer-section {
-    h4 {
-      color: $accent-blue;
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 700;
-    }
+  &__brand p {
+    font-size: var(--t-sm);
+    margin: var(--s-3) 0 0;
+    max-width: 36ch;
+    color: rgba(255,255,255,.6);
+  }
 
-    p {
-      color: $text-gray;
-      line-height: 1.6;
-      font-size: 14px;
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--ink-0);
+    letter-spacing: -0.01em;
+  }
+
+  &__mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(140deg, var(--brand-500), var(--accent-600));
+    color: var(--ink-0);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  &__col {
+    h4 {
+      color: var(--ink-0);
+      font-size: var(--t-sm);
+      font-weight: 700;
+      margin: 0 0 var(--s-4);
+      letter-spacing: .04em;
+      text-transform: uppercase;
     }
 
     ul {
       list-style: none;
       padding: 0;
-      
-      li {
-        margin-bottom: 12px;
-        
-        a {
-          text-decoration: none;
-          color: $text-gray;
-          transition: 0.3s;
-          
-          &:hover { 
-            color: $hover-cyan; 
-          }
-        }
-      }
-    }
-  }
-
-  .footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-
-    img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    span {
-      font-size: 22px;
-      font-weight: 800;
-      color: $accent-blue;
-    }
-  }
-
-  .social-icons {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-
-    .social-btn {
-      width: 38px;
-      height: 38px;
+      margin: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background-color: #f1f5f9;
-      color: $accent-blue;
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+
+    a {
+      color: rgba(255,255,255,.65);
+      font-size: var(--t-sm);
       text-decoration: none;
-      transition: all 0.3s ease;
-      font-size: 18px;
+      transition: color 0.15s;
 
-      &:hover {
-        background-color: $accent-blue;
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(11, 72, 151, 0.2);
-      }
-
-      &.facebook:hover { background-color: #1877f2; }
-      &.instagram:hover { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
-      &.linkedin:hover { background-color: #0077b5; }
+      &:hover { color: var(--ink-0); }
     }
   }
 
-  .footer-bottom {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 1px solid #f1f5f9;
-    text-align: center;
-    color: #94a3b8;
-    font-size: 13px;
+  &__bottom {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    padding-top: var(--s-6);
+    border-top: 1px solid rgba(255,255,255,.1);
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--t-xs);
+    color: rgba(255,255,255,.45);
+    flex-wrap: wrap;
+    gap: var(--s-3);
   }
 }

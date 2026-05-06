@@ -1,0 +1,13 @@
+<div class="app-shell">
+  <app-sidebar
+    [items]="sidebarItems"
+    [userName]="userName"
+    [userRole]="userRole"
+  />
+  <div class="app-shell__content">
+    <app-topbar [breadcrumbs]="breadcrumbs" [userInitials]="userInitials" [searchPlaceholder]="searchPlaceholder" />
+    <main class="app-shell__main">
+      <ng-content />
+    </main>
+  </div>
+</div>

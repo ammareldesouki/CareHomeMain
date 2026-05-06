@@ -1,0 +1,234 @@
+<div class="dev-page">
+  <header class="dev-header">
+    <p class="dev-eyebrow">Dev · Component Library</p>
+    <h1 class="dev-title">Shared UI Components</h1>
+    <p class="dev-sub">Visual reference for all <code>app-*</code> primitives. Route: <code>/dev/components</code></p>
+  </header>
+
+  <!-- BUTTONS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">4.1</span>
+      <h2>Buttons <code>&lt;app-button&gt;</code></h2>
+    </div>
+
+    <div class="dev-label">Variants</div>
+    <div class="dev-demo">
+      <app-button variant="primary">Primary action</app-button>
+      <app-button variant="secondary">Secondary</app-button>
+      <app-button variant="ghost">Ghost</app-button>
+      <app-button variant="success">Approve</app-button>
+      <app-button variant="danger">Reject</app-button>
+      <app-button variant="secondary" [disabled]="true">Disabled</app-button>
+    </div>
+
+    <div class="dev-divider"></div>
+    <div class="dev-label">Sizes</div>
+    <div class="dev-demo" style="align-items: center">
+      <app-button variant="primary" size="sm">Small (30)</app-button>
+      <app-button variant="primary" size="md">Default (38)</app-button>
+      <app-button variant="primary" size="lg">Large (46)</app-button>
+    </div>
+
+    <div class="dev-divider"></div>
+    <div class="dev-label">With icon prefix</div>
+    <div class="dev-demo">
+      <app-button variant="primary">+ Create offer</app-button>
+      <app-button variant="secondary">↓ Export CSV</app-button>
+      <app-button variant="success">✓ Approve</app-button>
+    </div>
+  </section>
+
+  <!-- PILLS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">4.3</span>
+      <h2>Status Pills <code>&lt;app-pill&gt;</code></h2>
+    </div>
+    <div class="dev-demo">
+      <app-pill variant="success">Active</app-pill>
+      <app-pill variant="success">Verified</app-pill>
+      <app-pill variant="warn">Pending</app-pill>
+      <app-pill variant="info">In review</app-pill>
+      <app-pill variant="danger">Rejected</app-pill>
+      <app-pill variant="neutral">Neutral</app-pill>
+      <app-pill variant="violet">Violet</app-pill>
+    </div>
+  </section>
+
+  <!-- AVATARS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">4.5</span>
+      <h2>Avatars <code>&lt;app-avatar&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="align-items: center">
+      <app-avatar name="Sarah Morgan" [colorIndex]="1"></app-avatar>
+      <app-avatar name="Omar Ali" [colorIndex]="2"></app-avatar>
+      <app-avatar name="Jane Doe" [colorIndex]="3"></app-avatar>
+      <app-avatar name="Mike Chen" [colorIndex]="4" size="lg"></app-avatar>
+      <app-avatar name="Anna B" [colorIndex]="5" size="sm"></app-avatar>
+      <app-avatar name="Relief" [colorIndex]="6"></app-avatar>
+    </div>
+  </section>
+
+  <!-- ── PHASE B ─────────────────────────────────── -->
+
+  <!-- CARD -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.1</span>
+      <h2>Card <code>&lt;app-card&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="align-items: stretch; gap: 20px">
+      <!-- generic card with head + foot slots -->
+      <app-card style="width: 300px">
+        <div card-head class="app-card-head">
+          <h4 class="app-card-head__title">Today's schedule</h4>
+          <span class="app-card-head__meta">3 shifts</span>
+        </div>
+        <p style="margin:0 0 6px; font-size:13px; color:var(--ink-700)"><strong>07:00 – 15:00</strong> · Amman E.</p>
+        <p style="margin:0 0 6px; font-size:13px; color:var(--ink-700)"><strong>09:00 – 17:00</strong> · Nourhan M.</p>
+        <p style="margin:0; font-size:13px; color:var(--ink-500)">15:00 – 23:00 · Open shift</p>
+        <div card-foot class="app-card-foot">Last updated 2m ago</div>
+      </app-card>
+    </div>
+  </section>
+
+  <!-- STAT CARDS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.2</span>
+      <h2>Stat Card <code>&lt;app-stat-card&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="align-items: stretch; gap: 16px; flex-wrap: wrap">
+      <app-stat-card label="Active offers" value="12" delta="+3 this week" deltaDirection="up" icon="≡" tone="brand" style="width:200px"></app-stat-card>
+      <app-stat-card label="Coverage rate" value="98%" delta="+2% vs last month" deltaDirection="up" icon="★" tone="success" style="width:200px"></app-stat-card>
+      <app-stat-card label="Open shifts" value="4" delta="−1 today" deltaDirection="down" icon="⏱" tone="warn" style="width:200px"></app-stat-card>
+      <app-stat-card label="Rejected" value="2" delta="no change" deltaDirection="neutral" icon="✕" tone="danger" style="width:200px"></app-stat-card>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.3</span>
+      <h2>Tabs <code>&lt;app-tabs&gt;</code></h2>
+    </div>
+    <div class="dev-demo">
+      <app-tabs [items]="['Details', 'Applicants (3)', 'History']"></app-tabs>
+    </div>
+  </section>
+
+  <!-- BREADCRUMB -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.4</span>
+      <h2>Breadcrumb <code>&lt;app-breadcrumb&gt;</code></h2>
+    </div>
+    <div class="dev-demo">
+      <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+    </div>
+  </section>
+
+  <!-- EMPTY STATE -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.5</span>
+      <h2>Empty State <code>&lt;app-empty-state&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="justify-content: center">
+      <app-empty-state icon="≡" title="No offers yet" message="Post your first shift offer to start receiving applications from verified PSWs.">
+        <app-button variant="primary">+ Create offer</app-button>
+      </app-empty-state>
+    </div>
+  </section>
+
+  <!-- ALERTS -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">B.6</span>
+      <h2>Alert <code>&lt;app-alert&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="flex-direction: column; gap: 10px">
+      <app-alert variant="success" title="Application approved">Amman has been notified and added to the schedule for May 29.</app-alert>
+      <app-alert variant="warn" title="1 document expires soon">Your First Aid certificate expires in 12 days. Upload a new one to keep accepting shifts.</app-alert>
+      <app-alert variant="danger" title="Couldn't post offer">End time must be after start time.</app-alert>
+      <app-alert variant="info" title="New shifts in your area">3 new offers were posted within 5 km of you in the last hour.</app-alert>
+    </div>
+  </section>
+
+  <!-- ── PHASE C ─────────────────────────────────── -->
+
+  <!-- SIDEBAR -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">C.1</span>
+      <h2>Sidebar <code>&lt;app-sidebar&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="padding: 0; background: var(--ink-100); border-radius: var(--r-lg); overflow: hidden; height: 480px">
+      <app-sidebar [items]="sidebarItems" userName="Amman Eldesouki" userRole="Personal Support Worker"></app-sidebar>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">C.4</span>
+      <h2>Table <code>&lt;app-table&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="padding: 0; background: transparent; border: none; display: block">
+      <app-card>
+        <app-table [columns]="tableColumns" [rows]="tableRows" />
+      </app-card>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">C.5</span>
+      <h2>Modal <code>&lt;app-modal&gt;</code></h2>
+    </div>
+    <div class="dev-demo">
+      <app-button variant="secondary" (click)="modalOpen = true">Open modal</app-button>
+    </div>
+    <app-modal title="Reject application?" [open]="modalOpen" (closed)="modalOpen = false">
+      You're about to reject <strong>Amman Eldesouki</strong>'s application for <strong>Personal support worker — May 29</strong>. They'll be notified and the slot will reopen.
+      <div modal-foot>
+        <app-button variant="secondary" (click)="modalOpen = false">Cancel</app-button>
+        <app-button variant="danger" (click)="modalOpen = false">Reject application</app-button>
+      </div>
+    </app-modal>
+  </section>
+
+  <!-- OFFER CARD -->
+  <section class="dev-section">
+    <div class="dev-section-head">
+      <span class="dev-section-num">C.6</span>
+      <h2>Offer Card <code>&lt;app-offer-card&gt;</code></h2>
+    </div>
+    <div class="dev-demo" style="gap: 16px; align-items: stretch">
+      <app-offer-card
+        title="PSW needed"
+        location="Wellington House · 2.4 km"
+        rate="£28/hr"
+        shift="May 21 · 09:00 – 17:00"
+        type="Day"
+        [spots]="1"
+        statusVariant="success"
+        style="width: 280px"
+      />
+      <app-offer-card
+        title="Nurse — overnight"
+        location="Riverside Care · 1.1 km"
+        rate="£34/hr"
+        shift="May 22 · 23:00 – 07:00"
+        type="Night"
+        [spots]="2"
+        statusVariant="warn"
+        style="width: 280px"
+      />
+    </div>
+  </section>
+</div>

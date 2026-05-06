@@ -1,220 +1,216 @@
-<app-psw-nav></app-psw-nav>
-<app-toast></app-toast>
+<!-- Phase F: PSW Offers — re-skinned. All TS logic untouched. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="userName"
+  userRole="Personal Support Worker"
+  [userInitials]="userInitials"
+  searchPlaceholder="Search offers…"
+>
 
-<div class="psw-offers-page">
-  <!-- Header Banner -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1>Available Offers</h1>
-      <p>Browse and apply for care home job opportunities</p>
+  <!-- Page header -->
+  <div class="po-page-h">
+    <div>
+      <h1 class="po-page-h__title">Available Offers</h1>
+      <p class="po-page-h__sub">Browse and apply for care home job opportunities</p>
     </div>
-    <div class="header-pattern"></div>
-  </div>
-
-  <main class="container">
-    <!-- Search and Actions -->
-    <div class="toolbar">
-      <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Search offers by title or address"
-          [value]="search"
-          (input)="onSearchChange($any($event.target).value)" />
-      </div>
-      <button class="btn btn-secondary" (click)="loadOffersWithApplications()">
-        <i class="fas fa-redo"></i>
-        Refresh
+    <div class="po-page-h__actions">
+      <button class="po-btn po-btn--secondary" (click)="loadOffersWithApplications()" [disabled]="isLoading">
+        ↻ Refresh
       </button>
     </div>
+  </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="state-card loading">
-      <div class="spinner"></div>
-      <p>Loading offers...</p>
+  <!-- Filter bar -->
+  <div class="po-filter-bar">
+    <div class="po-search-box">
+      <span class="po-search-box__ico">🔍</span>
+      <input
+        class="po-search-box__input"
+        type="search"
+        placeholder="Search offers by title or address"
+        [value]="search"
+        (input)="onSearchChange($any($event.target).value)"
+      />
     </div>
+  </div>
 
-    <!-- Error State -->
-    <div *ngIf="!isLoading && error" class="state-card error">
-      <i class="fas fa-exclamation-circle"></i>
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="po-state">
+      <div class="po-spinner"></div>
+      <p>Loading offers…</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (!isLoading && error) {
+    <div class="po-state po-state--error">
+      <span>⚠</span>
       <p>{{ error }}</p>
-      <button class="btn btn-primary" (click)="loadOffersWithApplications()">
-        <i class="fas fa-redo"></i> Retry
-      </button>
+      <button class="po-btn po-btn--primary" (click)="loadOffersWithApplications()">↻ Retry</button>
     </div>
+  }
 
-    <!-- Availability Loading Overlay -->
-    <div *ngIf="loadingAvailability && !isLoading && !error" class="loading-overlay">
-      <div class="spinner"></div>
-      <p>Checking offer availability...</p>
+  <!-- Availability loading overlay -->
+  @if (loadingAvailability && !isLoading && !error) {
+    <div class="po-state">
+      <div class="po-spinner"></div>
+      <p>Checking availability…</p>
     </div>
+  }
 
-    <!-- Empty State -->
-    <div *ngIf="!isLoading && !loadingAvailability && !error && availableOffers.length === 0" class="state-card empty">
-      <i class="fas fa-briefcase"></i>
+  <!-- Empty -->
+  @if (!isLoading && !loadingAvailability && !error && availableOffers.length === 0) {
+    <div class="po-state po-state--empty">
+      <span class="po-state__ico">💼</span>
       <h3>No available offers</h3>
-      <p>No offers with available shifts right now. Check back later for new opportunities.</p>
+      <p>No offers with available shifts right now. Check back later.</p>
     </div>
+  }
 
-    <!-- Offers Grid -->
-    <div class="offers-grid" *ngIf="!isLoading && !loadingAvailability && !error && availableOffers.length > 0">
-      <article
-        class="offer-card"
-        *ngFor="let offer of availableOffers">
-        <div class="card-header">
-          <h2>{{ offer.title || 'Untitled offer' }}</h2>
-          <div class="status-badge-section">
-            <div 
-*ngIf="isAlreadyApplied(offer)"
-              class="badge already-applied">
-              Already Applied
+  <!-- Offers grid -->
+  @if (!isLoading && !loadingAvailability && !error && availableOffers.length > 0) {
+    <div class="po-grid">
+      @for (offer of availableOffers; track offer.id) {
+        <article class="po-card">
+          <div class="po-card__head">
+            <div class="po-card__ico">★</div>
+            <div class="po-card__info">
+              <h2 class="po-card__title">{{ offer.title || 'Untitled offer' }}</h2>
+              @if (offer.address) {
+                <p class="po-card__addr">📍 {{ offer.address }}</p>
+              }
             </div>
-
+            @if (isAlreadyApplied(offer)) {
+              <span class="pill pill--success"><span class="pill__dot"></span>Applied</span>
+            }
           </div>
-          <p class="address" *ngIf="offer.address">
-            <i class="fas fa-map-marker-alt"></i>
-            {{ offer.address }}
-          </p>
-        </div>
-        <div class="card-body">
-          <p class="description" *ngIf="offer.description">
-            {{ offer.description | slice:0:150 }}{{ offer.description.length > 150 ? '...' : '' }}
-          </p>
-          <div class="meta-grid">
-            <div class="meta-item" *ngIf="offer.hourlyRate != null">
-              <div class="meta-icon">
-                <i class="fas fa-pound-sign"></i>
-              </div>
-              <div class="meta-content">
-                <span class="meta-label">Hourly Rate</span>
-                <span class="meta-value">£{{ offer.hourlyRate | number:'1.2-2' }}/hr</span>
-              </div>
-            </div>
-            <div class="meta-item">
-              <div class="meta-icon">
-                <i class="far fa-calendar-check"></i>
-              </div>
-              <div class="meta-content">
-                <span class="meta-label">Shifts</span>
-                <span class="meta-value">Available</span>
+
+          <div class="po-card__body">
+            @if (offer.description) {
+              <p class="po-card__desc">{{ offer.description | slice:0:140 }}{{ offer.description.length > 140 ? '…' : '' }}</p>
+            }
+            <div class="po-card__meta">
+              @if (offer.hourlyRate != null) {
+                <div class="po-meta-chip">
+                  <span class="po-meta-chip__l">Rate</span>
+                  <span class="po-meta-chip__v po-meta-chip__v--rate">${{ offer.hourlyRate | number:'1.2-2' }}/hr</span>
+                </div>
+              }
+              <div class="po-meta-chip">
+                <span class="po-meta-chip__l">Shifts</span>
+                <span class="po-meta-chip__v">Available</span>
               </div>
             </div>
           </div>
-        </div>
-        <div class="card-actions">
-          <button
-            class="btn btn-outline"
-            type="button"
-            (click)="openDetails(offer)">
-            <i class="fas fa-eye"></i>
-            View Details
-          </button>
-          <button 
-            class="btn btn-primary"
-            type="button"
-            [disabled]="applyingOfferId === offer.id || !canApply() || isAlreadyApplied(offer)"
-            (click)="apply(offer)">
-            <i class="fas" [ngClass]="applyingOfferId === offer.id ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
-            {{ applyingOfferId === offer.id ? 'Applying...' : (isAlreadyApplied(offer) ? 'Already Applied' : 'Apply Now') }}
-          </button>
-        </div>
-      </article>
-    </div>
-  </main>
 
-  <!-- Details Modal with Shift Selection -->
-  <div *ngIf="selectedOffer" class="modal-overlay" (click)="closeDetails()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <header class="modal-header">
-        <h2>{{ selectedOffer.title || 'Offer details' }}</h2>
-        <div class="status-badge-section" *ngIf="isAlreadyApplied(selectedOffer)">
-          <div class="badge already-applied">Already Applied</div>
+          <div class="po-card__foot">
+            <button class="po-btn po-btn--secondary po-btn--sm" (click)="openDetails(offer)">View details</button>
+            <button
+              class="po-btn po-btn--primary po-btn--sm"
+              [disabled]="applyingOfferId === offer.id || !canApply() || isAlreadyApplied(offer)"
+              (click)="apply(offer)"
+            >
+              @if (applyingOfferId === offer.id) { Applying… }
+              @else if (isAlreadyApplied(offer)) { Already applied }
+              @else { Apply now → }
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <!-- Details Modal -->
+  @if (selectedOffer) {
+    <div class="po-modal-backdrop" (click)="closeDetails()">
+      <div class="po-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="po-modal__head">
+          <div>
+            <h2 class="po-modal__title">{{ selectedOffer.title || 'Offer details' }}</h2>
+            @if (isAlreadyApplied(selectedOffer)) {
+              <span class="pill pill--success" style="margin-top:4px; display:inline-flex"><span class="pill__dot"></span>Already Applied</span>
+            }
+          </div>
+          <button class="po-modal__close" (click)="closeDetails()" aria-label="Close">✕</button>
         </div>
-        <button type="button" class="close-btn" (click)="closeDetails()">
-          <i class="fas fa-times"></i>
-        </button>
-      </header>
-      
-      <!-- Loading Details -->
-      <div *ngIf="isLoadingDetails" class="modal-loading">
-        <div class="spinner"></div>
-        <p>Loading offer details...</p>
+
+        @if (isLoadingDetails) {
+          <div class="po-modal__loading"><div class="po-spinner"></div><p>Loading…</p></div>
+        }
+
+        @if (!isLoadingDetails && selectedOffer) {
+          <div class="po-modal__body">
+            @if (selectedOffer.description) {
+              <p class="po-modal__desc">{{ selectedOffer.description }}</p>
+            }
+            <div class="po-modal__kv">
+              @if (selectedOffer.address) {
+                <div class="po-kv-row">
+                  <span class="po-kv-row__k">📍 Address</span>
+                  <span class="po-kv-row__v">{{ selectedOffer.address }}</span>
+                </div>
+              }
+              @if (selectedOffer.hourlyRate != null) {
+                <div class="po-kv-row">
+                  <span class="po-kv-row__k">💰 Rate</span>
+                  <span class="po-kv-row__v po-kv-row__v--rate">${{ selectedOffer.hourlyRate | number:'1.2-2' }}/hour</span>
+                </div>
+              }
+            </div>
+
+            @if (selectedOffer.shifts && selectedOffer.shifts.length) {
+              <div class="po-shifts-section">
+                <div class="po-shifts-head">
+                  <span>📅 Select shifts</span>
+                  <span class="po-shifts-head__count">{{ selectedShiftIds.length }} selected</span>
+                </div>
+                <ul class="po-shifts-list">
+                  @for (s of selectedOffer.shifts; track (s.shiftId || s.ShiftId || s.id || s.Id)) {
+                    <li
+                      class="po-shift"
+                      [class.po-shift--selected]="isShiftSelected(s.shiftId || s.ShiftId || s.id || s.Id)"
+                      (click)="toggleShift(s.shiftId || s.ShiftId || s.id || s.Id)"
+                    >
+                      <div class="po-shift__check">
+                        @if (isShiftSelected(s.shiftId || s.ShiftId || s.id || s.Id)) { ✓ }
+                      </div>
+                      <div class="po-shift__detail">
+                        <span class="po-shift__date">{{ (s.date || s.Date) | date:'EEE, MMM d, y' }}</span>
+                        @if (s.startTime || s.start) {
+                          <span class="po-shift__time">
+                            {{ (s.startTime || s.start || s.Start) | slice:0:5 }} – {{ (s.endTime || s.end || s.End) | slice:0:5 }}
+                          </span>
+                        }
+                      </div>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            @if (!selectedOffer.shifts || selectedOffer.shifts.length === 0) {
+              <div class="po-state po-state--empty" style="padding:20px 0">
+                <p>No shifts available for this offer.</p>
+              </div>
+            }
+          </div>
+          <div class="po-modal__foot">
+            <button class="po-btn po-btn--secondary" (click)="closeDetails()">Cancel</button>
+            <button
+              class="po-btn po-btn--primary"
+              [disabled]="applyingOfferId === selectedOffer.id || selectedShiftIds.length === 0 || !canApply() || isAlreadyApplied(selectedOffer)"
+              (click)="apply(selectedOffer)"
+            >
+              @if (applyingOfferId === selectedOffer.id) { Applying… }
+              @else if (isAlreadyApplied(selectedOffer)) { Already Applied }
+              @else { Apply for {{ selectedShiftIds.length }} shift{{ selectedShiftIds.length !== 1 ? 's' : '' }} → }
+            </button>
+          </div>
+        }
       </div>
-      
-      <!-- Offer Details -->
-      <section class="modal-body" *ngIf="!isLoadingDetails && selectedOffer">
-        <p *ngIf="selectedOffer.description" class="offer-description">{{ selectedOffer.description }}</p>
-        
-        <div class="detail-row" *ngIf="selectedOffer.address">
-          <span class="label">Address</span>
-          <span class="value">
-            <i class="fas fa-map-marker-alt"></i>
-            {{ selectedOffer.address }}
-          </span>
-        </div>
-        
-        <div class="detail-row" *ngIf="selectedOffer.hourlyRate != null">
-          <span class="label">Hourly Rate</span>
-          <span class="value rate">£{{ selectedOffer.hourlyRate | number:'1.2-2' }}/hour</span>
-        </div>
-        
-        <!-- Shift Selection -->
-        <div class="shifts-section" *ngIf="selectedOffer.shifts && selectedOffer.shifts.length">
-          <div class="shifts-header">
-            <span class="label">
-              <i class="fas fa-calendar-check"></i> Select Shifts
-            </span>
-            <span class="selected-count">{{ selectedShiftIds.length }} selected</span>
-          </div>
-          <ul class="shifts-list">
-            <li 
-              *ngFor="let s of selectedOffer.shifts" 
-              class="shift-item"
-              [class.selected]="isShiftSelected(s.shiftId || s.ShiftId || s.id || s.Id)"
-              (click)="toggleShift(s.shiftId || s.ShiftId || s.id || s.Id)">
-              <div class="shift-checkbox">
-                <i class="fas" [class.fa-check]="isShiftSelected(s.shiftId || s.ShiftId || s.id || s.Id)"></i>
-              </div>
-              <div class="shift-details">
-                <span class="shift-date">
-                  <i class="far fa-calendar-alt"></i>
-                  {{ (s.date || s.Date) | date:'EEEE, MMM d, y' }}
-                </span>
-                <span class="shift-time" *ngIf="s.startTime || s.start || s.Start">
-                  <i class="far fa-clock"></i>
-                  {{ (s.startTime || s.start || s.Start) | slice:0:5 }}
-                  -
-                  {{ (s.endTime || s.end || s.End) | slice:0:5 }}
-                </span>
-                <span class="shift-status" *ngIf="s.status || s.Status">
-                  {{ s.status || s.Status }}
-                </span>
-              </div>
-            </li>
-          </ul>
-        </div>
-        
-        <!-- No Shifts Available -->
-        <div class="no-shifts" *ngIf="!selectedOffer.shifts || selectedOffer.shifts.length === 0">
-          <i class="fas fa-calendar-times"></i>
-          <p>No shifts available for this offer.</p>
-        </div>
-      </section>
-      
-      <footer class="modal-footer">
-        <button class="btn btn-secondary" type="button" (click)="closeDetails()">Cancel</button>
-        <button 
-          class="btn btn-primary" 
-          type="button"
-          [disabled]="applyingOfferId === selectedOffer.id || selectedShiftIds.length === 0 || !canApply() || isAlreadyApplied(selectedOffer)"
-          (click)="apply(selectedOffer)">
-          <i class="fas" [ngClass]="applyingOfferId === selectedOffer.id ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
-          {{ applyingOfferId === selectedOffer.id ? 'Applying...' : (isAlreadyApplied(selectedOffer) ? 'Already Applied' : 'Apply for ' + selectedShiftIds.length + ' shift(s)') }}
-        </button>
-      </footer>
     </div>
-  </div>
+  }
 
-  <app-footer></app-footer>
-</div>
-
+</app-dashboard-shell>

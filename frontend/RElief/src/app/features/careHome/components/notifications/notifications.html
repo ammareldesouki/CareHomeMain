@@ -1,261 +1,196 @@
-<app-navbar></app-navbar>
+<!-- Phase G: Care Home Notifications — re-skinned. -->
+<app-dashboard-shell
+  [sidebarItems]="sidebarItems"
+  [breadcrumbs]="breadcrumbs"
+  [userName]="userName"
+  userRole="Care Home"
+  [userInitials]="userInitials"
+  searchPlaceholder="Search notifications…"
+>
 
-<div class="carehome-history-page">
-  <div class="page-header">
-    <div class="header-content">
-      <h1>Applications</h1>
-      <p>View and manage applications from care professionals</p>
+  <div class="cn-page-h">
+    <div>
+      <h1 class="cn-page-h__title">Notifications</h1>
+      <p class="cn-page-h__sub">Review PSW applications for your job offers</p>
     </div>
-    <div class="header-pattern"></div>
+    <div class="cn-page-h__actions">
+      <button class="cn-btn cn-btn--secondary" (click)="loadApplications()" [disabled]="loading">
+        ↻ Refresh
+      </button>
+    </div>
   </div>
 
-  <main class="container">
-    <div class="toolbar">
-      <div class="page-title"><h2>Applications</h2></div>
-      <button type="button" class="refresh-btn" (click)="loadApplications()" [disabled]="loading">
-        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
-        {{ loading ? 'Loading...' : 'Refresh' }}
-      </button>
+  @if (loading) {
+    <div class="cn-state">
+      <div class="cn-spinner"></div>
+      <p>Loading applications…</p>
     </div>
+  }
 
-    <div class="tab-nav">
-      <button type="button" class="tab-btn" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
-        <i class="fas fa-clock"></i> Pending
-        <span class="tab-count" *ngIf="getPendingCount() > 0">{{ getPendingCount() }}</span>
-      </button>
-      <button type="button" class="tab-btn" [class.active]="activeTab === 'accepted'" (click)="activeTab = 'accepted'">
-        <i class="fas fa-check-circle"></i> Accepted
-      </button>
-      <button type="button" class="tab-btn" [class.active]="activeTab === 'rejected'" (click)="activeTab = 'rejected'">
-        <i class="fas fa-times-circle"></i> Rejected
-      </button>
+  @if (!loading && error) {
+    <div class="cn-state cn-state--error">
+      <span>⚠</span>
+      <p>{{ error }}</p>
+      <button class="cn-btn cn-btn--primary" (click)="loadApplications()">Retry</button>
     </div>
+  }
 
-    @if (loading) {
-      <div class="state-card loading">
-        <div class="spinner"></div>
-        <p>Loading applications...</p>
-      </div>
-    }
+  @if (!loading && applications.length === 0 && !error) {
+    <div class="cn-state cn-state--empty">
+      <span class="cn-state__ico">🔔</span>
+      <h3>No applications found</h3>
+      <p>You have no active applications for your offers at the moment.</p>
+    </div>
+  }
 
-    @if (!loading && error) {
-      <div class="state-card error">
-        <i class="fas fa-exclamation-circle"></i>
-        <h3>Error</h3><p>{{ error }}</p>
-        <button type="button" class="btn btn-primary" (click)="loadApplications()">Try Again</button>
-      </div>
-    }
-
-    <!-- PENDING -->
-    @if (!loading && !error && activeTab === 'pending') {
-      @if (getPendingApplications().length === 0) {
-        <div class="state-card empty">
-          <div class="empty-icon">📋</div>
-          <h3>No Pending Applications</h3>
-          <p>When PSWs apply to your offers, they will appear here.</p>
+  @if (!loading && applications.length > 0) {
+    <div class="cn-kpi-bar">
+      <button class="cn-kpi-card" [class.cn-kpi-card--active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+        <div class="cn-kpi-card__ico" style="background:var(--warn-50); color:var(--warn-700)">◷</div>
+        <div class="cn-kpi-card__body">
+          <div class="cn-kpi-card__v">{{ getPendingCount() }}</div>
+          <div class="cn-kpi-card__l">Pending Review</div>
         </div>
-      } @else {
-        <div class="offers-grid">
-          @for (app of getPendingApplications(); track app.jobRequestId) {
-            <div class="offer-card">
-              <div class="card-header">
-                <div class="offer-icon">👤</div>
-                <div class="offer-info">
-                  <h3>{{ app.psw.fullName }}</h3>
-                  <span class="status-badge pending">Pending</span>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="info-list">
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
-                    <span class="info-value">{{ app.psw.email }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
-                    <span class="info-value">{{ app.psw.phoneNumber }}</span>
-                  </div>
-                  @if (getFirstShift(app)) {
-                    <div class="info-row">
-                      <span class="info-label"><i class="fas fa-calendar-alt"></i> Date</span>
-                      <span class="info-value">{{ formatDate(getFirstShift(app)!.date) }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label"><i class="fas fa-clock"></i> Time</span>
-                      <span class="info-value">
-                        {{ formatTime(getFirstShift(app)!.startTime) }} - {{ formatTime(getFirstShift(app)!.endTime) }}
-                      </span>
-                    </div>
-                  }
-                </div>
-              </div>
-              <div class="card-footer">
-                <button type="button" class="btn btn-accept" (click)="acceptRequest(app)" [disabled]="isProcessing(app)">
-                  <i class="fas fa-check"></i>
-                  {{ acceptingId === getFirstShift(app)?.jobRequestItemId ? 'Accepting...' : 'Accept' }}
-                </button>
-                <button type="button" class="btn btn-reject" (click)="openRejectModal(app)" [disabled]="isProcessing(app)">
-                  <i class="fas fa-times"></i>
-                  {{ rejectingId === getFirstShift(app)?.jobRequestItemId ? 'Rejecting...' : 'Reject' }}
-                </button>
-                <button type="button" class="btn btn-outline" (click)="viewProfile(app.psw.pswId)">
-                  <i class="fas fa-user"></i> Profile
-                </button>
+      </button>
+
+      <button class="cn-kpi-card" [class.cn-kpi-card--active]="activeTab === 'accepted'" (click)="activeTab = 'accepted'">
+        <div class="cn-kpi-card__ico" style="background:var(--success-50); color:var(--success-600)">✓</div>
+        <div class="cn-kpi-card__body">
+          <div class="cn-kpi-card__v">{{ getAcceptedCount() }}</div>
+          <div class="cn-kpi-card__l">Accepted</div>
+        </div>
+      </button>
+
+      <button class="cn-kpi-card" [class.cn-kpi-card--active]="activeTab === 'rejected'" (click)="activeTab = 'rejected'">
+        <div class="cn-kpi-card__ico" style="background:var(--danger-50); color:var(--danger-600)">✕</div>
+        <div class="cn-kpi-card__body">
+          <div class="cn-kpi-card__v">{{ getRejectedCount() }}</div>
+          <div class="cn-kpi-card__l">Rejected</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Render pending -->
+    @if (activeTab === 'pending') {
+      <div class="cn-grid">
+        @for (app of getPendingApplications(); track app.jobRequestId) {
+          <div class="cn-card cn-card--pending">
+            <div class="cn-card__head">
+              <div class="cn-card__info">
+                <h3>{{ getPswName(app) }}</h3>
+                <span class="pill pill--warn"><span class="pill__dot"></span>Pending</span>
               </div>
             </div>
-          }
-        </div>
-      }
-    }
-
-    <!-- ACCEPTED -->
-    @if (!loading && !error && activeTab === 'accepted') {
-      @if (getAcceptedApplications().length === 0) {
-        <div class="state-card empty">
-          <div class="empty-icon">✅</div>
-          <h3>No Accepted Applications</h3>
-        </div>
-      } @else {
-        <div class="offers-grid">
-          @for (app of getAcceptedApplications(); track app.jobRequestId) {
-            <div class="offer-card accepted-card">
-              <div class="card-header">
-                <div class="offer-icon">✅</div>
-                <div class="offer-info">
-                  <h3>{{ app.psw.fullName }}</h3>
-                  <span class="status-badge accepted">Accepted</span>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="info-list">
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
-                    <span class="info-value">{{ app.psw.email }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
-                    <span class="info-value">{{ app.psw.phoneNumber }}</span>
-                  </div>
-                  @if (getFirstShift(app)) {
-                    <div class="info-row">
-                      <span class="info-label"><i class="fas fa-calendar-alt"></i> Date</span>
-                      <span class="info-value">{{ formatDate(getFirstShift(app)!.date) }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label"><i class="fas fa-clock"></i> Time</span>
-                      <span class="info-value">
-                        {{ formatTime(getFirstShift(app)!.startTime) }} - {{ formatTime(getFirstShift(app)!.endTime) }}
-                      </span>
-                    </div>
-                  }
-                </div>
-              </div>
-              <div class="card-footer">
-                <button type="button" class="btn btn-outline" (click)="viewProfile(app.psw.pswId)">
-                  <i class="fas fa-user"></i> View Profile
-                </button>
+            <div class="cn-card__body">
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Shift Date</span><span class="cn-kv-row__v">{{ formatDate(getFirstShift(app)?.date) }}</span></div>
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Time</span><span class="cn-kv-row__v">{{ formatTime(getFirstShift(app)?.startTime) }} - {{ formatTime(getFirstShift(app)?.endTime) }}</span></div>
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Applied On</span><span class="cn-kv-row__v">{{ formatDate(app.appliedAt) }}</span></div>
+            </div>
+            <div class="cn-card__foot">
+              <button class="cn-btn cn-btn--secondary" style="flex:1" (click)="viewProfile(app.psw?.pswId!)">View Profile</button>
+              <div style="display:flex; gap:8px;">
+                <button class="cn-btn cn-btn--primary" style="background:var(--success-600)" (click)="acceptRequest(app)" [disabled]="isProcessing(app)">✓ Accept</button>
+                <button class="cn-btn cn-btn--danger" (click)="openRejectModal(app)" [disabled]="isProcessing(app)">✕ Reject</button>
               </div>
             </div>
-          }
-        </div>
-      }
+          </div>
+        }
+        @if (getPendingCount() === 0) { <p class="cn-empty-sm">No pending applications.</p> }
+      </div>
     }
 
-    <!-- REJECTED -->
-    @if (!loading && !error && activeTab === 'rejected') {
-      @if (getRejectedApplications().length === 0) {
-        <div class="state-card empty">
-          <div class="empty-icon">❌</div>
-          <h3>No Rejected Applications</h3>
-        </div>
-      } @else {
-        <div class="offers-grid">
-          @for (app of getRejectedApplications(); track app.jobRequestId) {
-            <div class="offer-card rejected-card">
-              <div class="card-header">
-                <div class="offer-icon">❌</div>
-                <div class="offer-info">
-                  <h3>{{ app.psw.fullName }}</h3>
-                  <span class="status-badge rejected">Rejected</span>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="info-list">
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
-                    <span class="info-value">{{ app.psw.email }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
-                    <span class="info-value">{{ app.psw.phoneNumber }}</span>
-                  </div>
-                  @if (getFirstShift(app)) {
-                    <div class="info-row">
-                      <span class="info-label"><i class="fas fa-calendar-alt"></i> Date</span>
-                      <span class="info-value">{{ formatDate(getFirstShift(app)!.date) }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-              <div class="card-footer">
-                <button type="button" class="btn btn-outline" (click)="viewProfile(app.psw.pswId)">
-                  <i class="fas fa-user"></i> View Profile
-                </button>
+    <!-- Render accepted -->
+    @if (activeTab === 'accepted') {
+      <div class="cn-grid">
+        @for (app of getAcceptedApplications(); track app.jobRequestId) {
+          <div class="cn-card cn-card--accepted">
+            <div class="cn-card__head">
+              <div class="cn-card__info">
+                <h3>{{ getPswName(app) }}</h3>
+                <span class="pill pill--success"><span class="pill__dot"></span>Accepted</span>
               </div>
             </div>
-          }
-        </div>
-      }
+            <div class="cn-card__body">
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Shift Date</span><span class="cn-kv-row__v">{{ formatDate(getFirstShift(app)?.date) }}</span></div>
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Time</span><span class="cn-kv-row__v">{{ formatTime(getFirstShift(app)?.startTime) }} - {{ formatTime(getFirstShift(app)?.endTime) }}</span></div>
+            </div>
+            <div class="cn-card__foot">
+              <button class="cn-btn cn-btn--secondary" (click)="viewProfile(app.psw?.pswId!)">View Profile</button>
+            </div>
+          </div>
+        }
+        @if (getAcceptedCount() === 0) { <p class="cn-empty-sm">No accepted applications.</p> }
+      </div>
     }
 
-    <div class="actions">
-      <a routerLink="/care-home" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Back to Home
-      </a>
-    </div>
-  </main>
-</div>
+    <!-- Render rejected -->
+    @if (activeTab === 'rejected') {
+      <div class="cn-grid">
+        @for (app of getRejectedApplications(); track app.jobRequestId) {
+          <div class="cn-card cn-card--rejected">
+            <div class="cn-card__head">
+              <div class="cn-card__info">
+                <h3>{{ getPswName(app) }}</h3>
+                <span class="pill pill--danger"><span class="pill__dot"></span>Rejected</span>
+              </div>
+            </div>
+            <div class="cn-card__body">
+              <div class="cn-kv-row"><span class="cn-kv-row__k">Shift Date</span><span class="cn-kv-row__v">{{ formatDate(getFirstShift(app)?.date) }}</span></div>
+            </div>
+            <div class="cn-card__foot">
+              <button class="cn-btn cn-btn--secondary" (click)="viewProfile(app.psw?.pswId!)">View Profile</button>
+            </div>
+          </div>
+        }
+        @if (getRejectedCount() === 0) { <p class="cn-empty-sm">No rejected applications.</p> }
+      </div>
+    }
+  }
 
-<!-- Profile Modal -->
-@if (showProfileModal) {
-  <div class="modal-overlay" (click)="closeProfileModal()">
-    <div class="profile-card-popup" (click)="$event.stopPropagation()">
-      <button class="close-btn" (click)="closeProfileModal()">&times;</button>
-      <div class="profile-photo">
-        <img [src]="selectedPsw?.profilePhoto?.url || 'assets/person.png'" class="profile-img" alt="Profile">
-      </div>
-      <h2>{{ selectedPsw?.firstName }} {{ selectedPsw?.lastName }}</h2>
-      <p><i class="fas fa-envelope"></i> {{ selectedPsw?.email || 'N/A' }}</p>
-      <p><i class="fas fa-phone"></i> {{ selectedPsw?.phoneNumber || 'N/A' }}</p>
-      <p><strong>Gender:</strong> {{ selectedPsw?.gender || 'N/A' }}</p>
-      <p><strong>Birthday:</strong> {{ selectedPsw?.dateOfBirth ? (selectedPsw.dateOfBirth | date:'longDate') : 'N/A' }}</p>
-    </div>
-  </div>
-}
-
-<!-- Reject Modal -->
-@if (showRejectModal) {
-  <div class="modal-overlay" (click)="closeRejectModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Reject Application</h3>
-        <button type="button" class="modal-close" (click)="closeRejectModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p class="modal-description">Please provide a reason for rejecting this application.</p>
-        <textarea [(ngModel)]="rejectReason" placeholder="Enter rejection reason..." maxlength="500" rows="4"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" (click)="closeRejectModal()">Cancel</button>
-        <button type="button" class="btn btn-reject" (click)="confirmReject()" [disabled]="!rejectReason.trim() || !!rejectingId">
-          <i class="fas fa-check"></i>
-          {{ rejectingId ? 'Rejecting...' : 'Confirm Reject' }}
-        </button>
+  <!-- Reject Modal -->
+  @if (showRejectModal) {
+    <div class="cn-modal-backdrop" (click)="closeRejectModal()">
+      <div class="cn-modal" (click)="$event.stopPropagation()">
+        <div class="cn-modal__head">
+          <h2 class="cn-modal__title">Reject Application</h2>
+        </div>
+        <div class="cn-modal__body">
+          <p class="cn-modal__sub" style="margin-bottom:12px">Please provide a reason for rejecting this application.</p>
+          <textarea
+            [(ngModel)]="rejectReason"
+            placeholder="Reason..."
+            style="width:100%; height:80px; padding:8px; border:1px solid var(--ink-200); border-radius:var(--r-md); font-family:inherit;"
+          ></textarea>
+        </div>
+        <div class="cn-modal__foot">
+          <button class="cn-btn cn-btn--secondary" (click)="closeRejectModal()">Cancel</button>
+          <button class="cn-btn cn-btn--danger" (click)="confirmReject()" [disabled]="!rejectReason || rejectingId === getFirstShift(selectedApp!)?.jobRequestItemId">
+            Confirm Reject
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-}
+  }
 
-<app-footer></app-footer>
+  <!-- Profile Modal -->
+  @if (showProfileModal) {
+    <div class="cn-modal-backdrop" (click)="closeProfileModal()">
+      <div class="cn-modal" (click)="$event.stopPropagation()">
+        <div class="cn-modal__head">
+          <h2 class="cn-modal__title">{{ selectedPsw?.firstName }} {{ selectedPsw?.lastName }}</h2>
+          <button class="cn-modal__close" (click)="closeProfileModal()">✕</button>
+        </div>
+        <div class="cn-modal__body" style="display:flex; flex-direction:column; gap:8px;">
+          <div class="cn-kv-row"><span class="cn-kv-row__k">Email</span><span class="cn-kv-row__v">{{ selectedPsw?.email || 'N/A' }}</span></div>
+          <div class="cn-kv-row"><span class="cn-kv-row__k">Phone</span><span class="cn-kv-row__v">{{ selectedPsw?.phoneNumber || 'N/A' }}</span></div>
+          <div class="cn-kv-row"><span class="cn-kv-row__k">Verification</span><span class="cn-kv-row__v">{{ selectedPsw?.verificationStatus || 'N/A' }}</span></div>
+          <div class="cn-kv-row"><span class="cn-kv-row__k">Experience</span><span class="cn-kv-row__v">{{ selectedPsw?.experienceYears }} years</span></div>
+        </div>
+        <div class="cn-modal__foot">
+          <button class="cn-btn cn-btn--secondary" (click)="closeProfileModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+</app-dashboard-shell>

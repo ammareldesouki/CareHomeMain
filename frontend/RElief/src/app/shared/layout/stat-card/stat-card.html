@@ -1,0 +1,12 @@
+<div class="app-stat-card" [class]="'app-stat-card app-stat-card--' + tone">
+  <div class="app-stat-card__label">
+    <span class="app-stat-card__icon">{{ icon }}</span>
+    {{ label }}
+  </div>
+  <div class="app-stat-card__value">{{ value }}</div>
+  @if (delta) {
+    <div class="app-stat-card__delta" [class]="'app-stat-card__delta--' + deltaDirection">
+      {{ deltaDirection === 'up' ? '↑' : deltaDirection === 'down' ? '↓' : '' }} {{ delta }}
+    </div>
+  }
+</div>
