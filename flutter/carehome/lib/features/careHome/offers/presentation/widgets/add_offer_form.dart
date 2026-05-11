@@ -119,7 +119,7 @@ class _AddOfferDialogState extends State<AddOfferDialog> {
 
   /// Converts "HH:MM" → "HH:MM:00" for the API
   String _toApiTime(String hhmm) =>
-      hhmm.length == 5 ? '$hhmm:00' : hhmm;
+      hhmm.length == 5 ? '$hhmm:00.0000000' : hhmm;
 
   Future<void> _submit() async {
     // If address is typed manually but coordinates are missing, geocode it FIRST
@@ -779,7 +779,7 @@ class _TimeRangePickerDialogState extends State<_TimeRangePickerDialog> {
     final picked = await showTimePicker(
       context: context,
       initialTime: initial,
-      initialEntryMode: TimePickerEntryMode.dial,
+      initialEntryMode: TimePickerEntryMode.input,
       builder: (ctx, child) {
         return MediaQuery(
           data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),

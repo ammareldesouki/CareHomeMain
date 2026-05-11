@@ -3,8 +3,23 @@ import 'package:carehome/features/auth/presentation/pages/OrganizationRegisterSc
 import 'package:carehome/features/auth/presentation/widgets/custome_form_field.dart';
 import 'package:flutter/material.dart';
 
-class IndividualForm extends StatelessWidget {
+class IndividualForm extends StatefulWidget {
   const IndividualForm({super.key});
+
+  @override
+  State<IndividualForm> createState() => _IndividualFormState();
+}
+
+class _IndividualFormState extends State<IndividualForm> {
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,14 +75,20 @@ class IndividualForm extends StatelessWidget {
           validation: Validator.validateEmail,
         ),
         TCustomeFormField(
+          controller: passwordController,
           hint: "Password",
           isObscured: true,
           validation: Validator.validatePassword,
         ),
         TCustomeFormField(
+          controller: confirmPasswordController,
           hint: "Confirm Password",
           isObscured: true,
-          validation: Validator.validatePassword,
+          validation: (value) =>
+              Validator.validateConfirmPassword(
+                value,
+                passwordController.text,
+              ),
         ),
       ],
     );

@@ -5,7 +5,7 @@ class ApiConstat {
 
 class EndPoints {
   static const String login = "/api/auth/login";
-  static const String offers = 'api/offers';
+  static const String offers = 'api/Offers';
   static const String profile = 'api/profile';
   static const String logout = '/api/auth/logout';
 

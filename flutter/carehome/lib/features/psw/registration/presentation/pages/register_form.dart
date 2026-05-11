@@ -24,6 +24,7 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   DateTime? selectedDateOfBirth;
   final TextEditingController dobController = TextEditingController();
@@ -210,6 +211,20 @@ class _PSWSignUpScreenState extends State<PSWSignUpScreen> {
                               hint: 'Password',
                               isObscured: true,
                               validation: Validator.validatePassword,
+                              prefixIcon: const Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            TCustomeFormField(
+                              controller: confirmPasswordController,
+                              hint: 'Confirm Password',
+                              isObscured: true,
+                              validation: (value) =>
+                                  Validator.validateConfirmPassword(
+                                    value,
+                                    passwordController.text,
+                                  ),
                               prefixIcon: const Icon(
                                 Icons.lock_outline,
                                 color: Colors.grey,

@@ -21,6 +21,8 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
   final TextEditingController stateController = TextEditingController();
   final TextEditingController postalCodeController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   void _dispatch(String field, String value) {
     context.read<CareHomeRegistrationBloc>().add(
@@ -37,6 +39,18 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
   Future<void> _pickDocument(String documentKey) async {
     final path = await ImagePickerHelper.showPickerSheet(context);
     if (path != null) _uploadDoc(documentKey, path);
+  }
+
+  @override
+  void dispose() {
+    streetController.dispose();
+    cityController.dispose();
+    stateController.dispose();
+    postalCodeController.dispose();
+    countryController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 
   Widget _uploadButton(String label, String documentKey) {
@@ -255,15 +269,21 @@ class _MultipleCareHomeFormState extends State<MultipleCareHomeForm> {
               onChanged: (val) => _dispatch('accountEmail', val),
             ),
             TCustomeFormField(
+              controller: passwordController,
               hint: "Password",
               isObscured: true,
               validation: Validator.validatePassword,
               onChanged: (val) => _dispatch('password', val),
             ),
             TCustomeFormField(
+              controller: confirmPasswordController,
               hint: "Confirm Password",
               isObscured: true,
-              validation: Validator.validatePassword,
+              validation: (value) =>
+                  Validator.validateConfirmPassword(
+                    value,
+                    passwordController.text,
+                  ),
               // No dispatch — local confirm-only field
             ),
           ],

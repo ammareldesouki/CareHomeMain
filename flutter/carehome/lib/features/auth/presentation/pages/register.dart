@@ -26,6 +26,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +128,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               hint: 'Password',
                               isObscured: true,
                               validation: Validator.validatePassword,
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              ),
+                            ),
+
+                            TCustomeFormField(
+                              controller: confirmPasswordController,
+                              hint: 'Confirm Password',
+                              isObscured: true,
+                              validation: (value) =>
+                                  Validator.validateConfirmPassword(
+                                    value,
+                                    passwordController.text,
+                                  ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
                                 color: Colors.grey,

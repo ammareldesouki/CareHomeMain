@@ -214,8 +214,13 @@ class _EditOfferDialogState extends State<EditOfferDialog> {
         .map((s) {
       final dateStr =
           '${s.date!.year}-${s.date!.month.toString().padLeft(2, '0')}-${s.date!.day.toString().padLeft(2, '0')}';
-      final start = s.startTime.length == 5 ? '${s.startTime}:00' : s.startTime;
-      final end = s.endTime.length == 5 ? '${s.endTime}:00' : s.endTime;
+      String _fmt(String t) {
+        if (t.length == 5) return '$t:00.0000000';
+        if (t.length == 8) return '$t.0000000';
+        return t;
+      }
+      final start = _fmt(s.startTime);
+      final end = _fmt(s.endTime);
       return ShiftRequest(
         shiftId: s.shiftId,
         date: dateStr,
@@ -238,7 +243,7 @@ class _EditOfferDialogState extends State<EditOfferDialog> {
 
     context.read<CareHomeOffersBloc>().add(UpdateOfferEvent(
           offerId: widget.offerId,
-          request: UpdateOfferRequest(
+      request: UpdateOfferRequest(id: widget.offerId,
             title: _titleCtrl.text.trim(),
             position: selectedPosition,
             description: _descCtrl.text.trim(),
@@ -859,7 +864,7 @@ class _TimeRangePickerDialogState extends State<_TimeRangePickerDialog> {
     final picked = await showTimePicker(
       context: context,
       initialTime: initial,
-      initialEntryMode: TimePickerEntryMode.dial,
+      initialEntryMode: TimePickerEntryMode.input,
       builder: (ctx, child) {
         return MediaQuery(
           data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),

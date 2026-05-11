@@ -21,11 +21,27 @@ class _IndividualFormState extends State<IndividualForm> {
   final TextEditingController stateController = TextEditingController();
   final TextEditingController postalCodeController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   void _dispatch(BuildContext context, String field, String value) {
     context.read<CareHomeRegistrationBloc>().add(
       UpdateFormFieldEvent(fieldName: field, value: value),
     );
+  }
+
+  @override
+  void dispose() {
+    apartmentController.dispose();
+    streetController.dispose();
+    cityController.dispose();
+    stateController.dispose();
+    postalCodeController.dispose();
+    countryController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -136,19 +152,23 @@ class _IndividualFormState extends State<IndividualForm> {
           prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey),
           onChanged: (val) => _dispatch(context, 'accountEmail', val),
         ),
-        TCustomeFormField(
-          hint: "Password",
+        TCustomeFormField((
+          controller: passwordControllerhint: "Password",
           isObscured: true,
           validation: Validator.validatePassword,
           prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
           onChanged: (val) => _dispatch(context, 'password', val),
         ),
         TCustomeFormField(
+          controller: confirmPasswordController,
           hint: "Confirm Password",
           isObscured: true,
-          validation: Validator.validatePassword,
+          validation: (value) =>
+              Validator.validateConfirmPassword(
+                value,
+                passwordController.text,
+              ),
           prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
-          // No dispatch — local confirm-only field
         ),
       ],
     );

@@ -261,7 +261,7 @@ class _OfferDetailsDialogState extends State<OfferDetailsDialog> {
                                 .read<CareHomeOffersBloc>()
                                 .add(UpdateOfferEvent(
                               offerId: offer.id,
-                              request: UpdateOfferRequest(
+                              request: UpdateOfferRequest(id: offer.id, 
                                 title: _titleCtrl.text.trim(),
                                 position: offer.position,
                                 description: offer.description,
@@ -279,8 +279,15 @@ class _OfferDetailsDialogState extends State<OfferDetailsDialog> {
                                         ShiftRequest(
                                           shiftId: s.shiftId,
                                           date: s.date,
-                                          startTime: s.startTime,
-                                          endTime: s.endTime,
+                                          startTime: s.startTime.length == 5
+                                              ? '${s.startTime}:00.0000000'
+                                              : (s.startTime.length == 8 ? '${s
+                                              .startTime}.0000000' : s
+                                              .startTime),
+                                          endTime: s.endTime.length == 5 ? '${s
+                                              .endTime}:00.0000000' : (s.endTime
+                                              .length == 8 ? '${s
+                                              .endTime}.0000000' : s.endTime),
                                         ))
                                     .toList(),
                               ),
@@ -354,18 +361,25 @@ class _DetailRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: Colors.grey.shade500),
         const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                    fontWeight: FontWeight.w500)),
-            Text(value,
+        // التعديل هنا: تغليف الـ Column بـ Expanded
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.w500)),
+              Text(
+                value,
                 style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600)),
-          ],
+                    fontSize: 14, fontWeight: FontWeight.w600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -2,8 +2,8 @@
 class ShiftRequest {
   final String? shiftId; // null for new shifts; required by PUT for existing
   final String date; // "2026-03-04"
-  final String startTime; // "09:00:00"
-  final String endTime; // "17:00:00"
+  final String startTime; // "09:00:00.0000000"
+  final String endTime; // "17:00:00.0000000"
 
   const ShiftRequest({
     this.shiftId,
@@ -14,11 +14,11 @@ class ShiftRequest {
 
   Map<String, dynamic> toMap() {
     final m = <String, dynamic>{
-      'date': date,
-      'startTime': startTime,
-      'endTime': endTime,
+      'Date': date,
+      'StartTime': startTime,
+      'EndTime': endTime,
     };
-    if (shiftId != null && shiftId!.isNotEmpty) m['shiftId'] = shiftId;
+    if (shiftId != null && shiftId!.isNotEmpty) m['ShiftId'] = shiftId;
     return m;
   }
 }
@@ -56,25 +56,28 @@ class CreateOfferRequest {
   });
 
   Map<String, dynamic> toMap() => {
-    'title': title,
-    'position': position,
-    'description': description,
-    'address': address,
-    if (address2 != null) 'address2': address2,
-    'city': city,
-    'postalCode': postalCode,
-    'province': province,
-    'latitude': latitude,
-    'longitude': longitude,
-    'hourlyRate': hourlyRate,
-    'preferences': preferences,
-    'shifts': shifts.map((s) => s.toMap()).toList(),
+    'Title': title,
+    'Position': position,
+    'Description': description,
+    'Address': address,
+    if (address2 != null) 'Address2': address2,
+    'City': city,
+    'PostalCode': postalCode,
+    'Province': province,
+    'Latitude': latitude,
+    'Longitude': longitude,
+    'HourlyRate': hourlyRate,
+    'Preferences': preferences,
+    'Shifts': shifts.map((s) => s.toMap()).toList(),
   };
 }
 
 // ── Update offer request — same shape but shifts carry shiftId ────────────────
 class UpdateOfferRequest extends CreateOfferRequest {
+  final String id;
+
   const UpdateOfferRequest({
+    required this.id,
     required super.title,
     required super.position,
     required super.description,
@@ -89,6 +92,13 @@ class UpdateOfferRequest extends CreateOfferRequest {
     required super.preferences,
     required super.shifts,
   });
+
+  @override
+  Map<String, dynamic> toMap() {
+    final map = super.toMap();
+    map['Id'] = id;
+    return map;
+  }
 }
 
 // ── Paginated wrapper returned by GET /api/offers ─────────────────────────────
@@ -128,10 +138,10 @@ class CareHomeOfferListItem {
 
   factory CareHomeOfferListItem.fromMap(Map<String, dynamic> map) =>
       CareHomeOfferListItem(
-        id: map['id'] ?? '',
-        title: map['title'] ?? '',
-        address: map['address'] ?? '',
-        hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
+        id: map['id'] ?? map['Id'] ?? '',
+        title: map['title'] ?? map['Title'] ?? '',
+        address: map['address'] ?? map['Address'] ?? '',
+        hourlyRate: (map['hourlyRate'] ?? map['HourlyRate'] ?? 0.0).toDouble(),
       );
 }
 
@@ -152,11 +162,11 @@ class CareHomeShift {
   });
 
   factory CareHomeShift.fromMap(Map<String, dynamic> map) => CareHomeShift(
-    shiftId: map['shiftId'] ?? '',
-    date: map['date'] ?? '',
-    startTime: map['startTime'] ?? '',
-    endTime: map['endTime'] ?? '',
-    isAvailable: map['isAvailable'] ?? false,
+    shiftId: map['shiftId'] ?? map['ShiftId'] ?? map['id'] ?? map['Id'] ?? '',
+    date: map['date'] ?? map['Date'] ?? '',
+    startTime: map['startTime'] ?? map['StartTime'] ?? '',
+    endTime: map['endTime'] ?? map['EndTime'] ?? '',
+    isAvailable: map['isAvailable'] ?? map['IsAvailable'] ?? false,
   );
 }
 
@@ -195,20 +205,21 @@ class CareHomeOfferDetail {
 
   factory CareHomeOfferDetail.fromMap(Map<String, dynamic> map) =>
       CareHomeOfferDetail(
-        id: map['id'] ?? '',
-        title: map['title'] ?? '',
-        position: map['position'] ?? '',
-        description: map['description'] ?? '',
-        address: map['address'] ?? '',
-        address2: map['address2'],
-        city: map['city'] ?? '',
-        postalCode: map['postalCode'] ?? '',
-        province: map['province'] ?? '',
-        latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
-        longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
-        hourlyRate: (map['hourlyRate'] as num?)?.toDouble() ?? 0.0,
-        preferences: List<String>.from(map['preferences'] ?? []),
-        shifts: (map['shifts'] as List<dynamic>? ?? [])
+        id: map['id'] ?? map['Id'] ?? '',
+        title: map['title'] ?? map['Title'] ?? '',
+        position: map['position'] ?? map['Position'] ?? '',
+        description: map['description'] ?? map['Description'] ?? '',
+        address: map['address'] ?? map['Address'] ?? '',
+        address2: map['address2'] ?? map['Address2'],
+        city: map['city'] ?? map['City'] ?? '',
+        postalCode: map['postalCode'] ?? map['PostalCode'] ?? '',
+        province: map['province'] ?? map['Province'] ?? '',
+        latitude: (map['latitude'] ?? map['Latitude'] ?? 0.0).toDouble(),
+        longitude: (map['longitude'] ?? map['Longitude'] ?? 0.0).toDouble(),
+        hourlyRate: (map['hourlyRate'] ?? map['HourlyRate'] ?? 0.0).toDouble(),
+        preferences: List<String>.from(
+            map['preferences'] ?? map['Preferences'] ?? []),
+        shifts: ((map['shifts'] ?? map['Shifts'] ?? []) as List)
             .map((s) => CareHomeShift.fromMap(s as Map<String, dynamic>))
             .toList(),
       );
